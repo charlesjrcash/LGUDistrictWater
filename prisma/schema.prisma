@@ -5,3 +5,24 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model customers {
+  customer_id Int      @id
+  account_no  String   @db.VarChar(10)
+  first_name  String   @db.VarChar
+  last_name   String   @db.VarChar
+  address     String
+  created_at  DateTime @db.Timestamp(6)
+}
+
+model water_consumers {
+  consumer_id   Int      @id @default(autoincrement())
+  account_no    String   @db.VarChar(20)
+  first_name    String   @db.VarChar(50)
+  last_name     String   @db.VarChar(50)
+  address       String?
+  meter_no      String?  @db.VarChar(30)
+  meter_reading Decimal? @default(0) @db.Decimal(12, 2)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now()) @db.Timestamp(6)
+}
