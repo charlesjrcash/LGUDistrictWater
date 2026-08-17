@@ -1,10 +1,8 @@
-import { randomBytes, scrypt as scryptCallback } from "node:crypto";
-import { promisify } from "node:util";
 import { Pool } from "pg";
+import { hashPassword } from "@/lib/auth";
 import { sendTemporaryCredentialsEmail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
-const scrypt = promisify(scryptCallback);
 const globalForDb = globalThis as unknown as { userPool?: Pool };
 
 // Reuse one PostgreSQL connection pool during local hot reloads. DATABASE_URL is
@@ -14,13 +12,6 @@ if (process.env.NODE_ENV !== "production") globalForDb.userPool = pool;
 
 /** Converts an unknown request value into a trimmed string before validation. */
 function clean(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
-
-/** Creates a salted, one-way scrypt hash; plain-text passwords are never stored. */
-async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const derivedKey = (await scrypt(password, salt, 64)) as Buffer;
-  return `scrypt:${salt}:${derivedKey.toString("hex")}`;
-}
 
 /**
  * Handles POST /api/users from the registration form.
@@ -81,17 +72,8 @@ export async function POST(request: Request) {
       // Always return the checked-out client to the shared pool.
       client.release();
     }
-  } catch (error) {
+  } catch {
     // Keep database implementation details out of the response, but log them server-side.
-    //console.error("User registration failed:", error);
-   // return Response.json({ message: "The user could not be saved. Check the database connection and try again." }, { status: 500 });
-   console.error("User registration failed:", error);
-
-return Response.json(
-  {
-    message: error instanceof Error ? error.message : String(error)
-  },
-  { status: 500 }
-);
+    return Response.json({ message: "The user could not be saved. Check the database connection and try again." }, { status: 500 });
   }
 }
