@@ -1,5 +1,9 @@
 import { Pool } from "pg";
 
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set");
+}
+
 const globalForDb = globalThis as unknown as { userPool?: Pool };
 
 // Keep a single pool while Next.js hot reloads server files during development.
