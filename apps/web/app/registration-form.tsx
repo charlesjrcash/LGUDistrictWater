@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 const inputClass = "mt-2 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-xs outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100";
 const labelClass = "block text-sm font-semibold text-slate-800";
@@ -19,6 +19,13 @@ export default function RegistrationForm({ initialRoles }: RegistrationFormProps
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    if (!status) return;
+
+    const dismissTimer = window.setTimeout(() => setStatus(null), 5000);
+    return () => window.clearTimeout(dismissTimer);
+  }, [status]);
 
   /** Sends the form values to the server route, then shows its success or error message. */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -69,10 +76,28 @@ export default function RegistrationForm({ initialRoles }: RegistrationFormProps
           </div>
         </section>
 
-        {status && <div role="alert" className={`flex gap-3 rounded-lg border px-4 py-3 text-sm ${status.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}><span className="mt-0.5 font-bold" aria-hidden="true">{status.type === "success" ? "✓" : "!"}</span><p>{status.message}</p></div>}
       </div>
 
       <div className="flex flex-col-reverse gap-4 border-t border-slate-200 bg-slate-50 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8"><p className="flex items-center gap-2 text-xs leading-5 text-slate-500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4 shrink-0" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" /><path strokeLinecap="round" d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>Account details are securely stored.</p><button type="submit" disabled={submitting} className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60">{submitting && <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}{submitting ? "Creating user..." : "Create user"}</button></div>
+
+      {status && (
+        <div
+          role={status.type === "error" ? "alert" : "status"}
+          aria-live={status.type === "error" ? "assertive" : "polite"}
+          className={`fixed right-4 top-4 z-50 flex w-[calc(100%-2rem)] max-w-sm items-start gap-3 rounded-xl border p-4 shadow-lg sm:right-6 sm:top-6 ${status.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-red-200 bg-red-50 text-red-900"}`}
+        >
+          <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-current/10 text-sm font-bold" aria-hidden="true">{status.type === "success" ? "✓" : "!"}</span>
+          <p className="min-w-0 flex-1 text-sm font-medium leading-6">{status.message}</p>
+          <button
+            type="button"
+            onClick={() => setStatus(null)}
+            className="flex size-7 shrink-0 items-center justify-center rounded-md text-current/70 transition hover:bg-black/5 hover:text-current focus:outline-none focus:ring-2 focus:ring-current/30"
+            aria-label="Dismiss notification"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4" aria-hidden="true"><path strokeLinecap="round" d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+        </div>
+      )}
     </form>
   );
 }
