@@ -23,7 +23,7 @@ export default function RegistrationForm({ initialRoles }: RegistrationFormProps
   useEffect(() => {
     if (!status) return;
 
-    const dismissTimer = window.setTimeout(() => setStatus(null), 5000);
+    const dismissTimer = window.setTimeout(() => setStatus(null), 15000);
     return () => window.clearTimeout(dismissTimer);
   }, [status]);
 
