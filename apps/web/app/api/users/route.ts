@@ -3,9 +3,6 @@ import { promisify } from "node:util";
 import { Pool } from "pg";
 
 export const runtime = "nodejs";
-
-// Only these application roles may be assigned during registration.
-const allowedRoles = new Set(["Administrator", "Billing Office", "Cashier", "Collection Officer", "Accounting Officer", "Report User", "Viewer"]);
 const scrypt = promisify(scryptCallback);
 const globalForDb = globalThis as unknown as { userPool?: Pool };
 
@@ -41,8 +38,6 @@ export async function POST(request: Request) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return Response.json({ message: "Enter a valid email address." }, { status: 400 });
     if (password.length < 8) return Response.json({ message: "Password must contain at least 8 characters." }, { status: 400 });
     if (password !== confirmPassword) return Response.json({ message: "Passwords do not match." }, { status: 400 });
-    if (!allowedRoles.has(role)) return Response.json({ message: "Select a valid role." }, { status: 400 });
-
     // A single client is used so all writes succeed or fail together.
     const client = await pool.connect();
     try {
@@ -52,10 +47,17 @@ export async function POST(request: Request) {
       const duplicate = await client.query("SELECT 1 FROM users WHERE username = $1 OR LOWER(email) = $2 LIMIT 1", [username, email]);
       if (duplicate.rowCount) { await client.query("ROLLBACK"); return Response.json({ message: "That username or email is already registered." }, { status: 409 }); }
 
-      // Insert the account, ensure its role exists, then link both records.
+      // A role must already exist and be active in the database. This keeps the
+      // API in sync with the role selector rather than accepting hardcoded names.
+      const roleResult = await client.query<{ role_id: string }>("SELECT role_id FROM roles WHERE role_name = $1 AND is_active = true", [role]);
+      if (!roleResult.rowCount) {
+        await client.query("ROLLBACK");
+        return Response.json({ message: "Select an active role from the list." }, { status: 400 });
+      }
+
+      // Insert the account and link it to the selected database role.
       const passwordHash = await hashPassword(password);
       const userResult = await client.query<{ user_id: string }>("INSERT INTO users (username, password_hash, first_name, middle_name, last_name, email) VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id", [username, passwordHash, firstName, middleName, lastName, email]);
-      const roleResult = await client.query<{ role_id: string }>("INSERT INTO roles (role_name) VALUES ($1) ON CONFLICT (role_name) DO UPDATE SET is_active = true RETURNING role_id", [role]);
       await client.query("INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)", [userResult.rows[0].user_id, roleResult.rows[0].role_id]);
       await client.query("COMMIT");
       return Response.json({ message: "User created successfully." }, { status: 201 });
