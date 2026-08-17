@@ -56,6 +56,8 @@ model users {
   last_name     String       @db.VarChar(50)
   email         String?      @db.VarChar(150)
   is_active     Boolean      @default(true)
+  must_change_password Boolean @default(false)
+  temporary_password_expires_at DateTime? @db.Timestamp(6)
   last_login_at DateTime?    @db.Timestamp(6)
   created_at    DateTime     @default(now()) @db.Timestamp(6)
   updated_at    DateTime     @default(now()) @db.Timestamp(6)
