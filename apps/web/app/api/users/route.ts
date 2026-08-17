@@ -71,7 +71,15 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     // Keep database implementation details out of the response, but log them server-side.
-    console.error("User registration failed:", error);
-    return Response.json({ message: "The user could not be saved. Check the database connection and try again." }, { status: 500 });
+    //console.error("User registration failed:", error);
+   // return Response.json({ message: "The user could not be saved. Check the database connection and try again." }, { status: 500 });
+   console.error("User registration failed:", error);
+
+return Response.json(
+  {
+    message: error instanceof Error ? error.message : String(error)
+  },
+  { status: 500 }
+);
   }
 }
