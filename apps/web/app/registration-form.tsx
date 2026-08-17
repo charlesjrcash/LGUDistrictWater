@@ -1,7 +1,8 @@
 ﻿"use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 
+const roles = ["Administrator", "Billing Office", "Cashier", "Collection Officer", "Accounting Officer", "Report User", "Viewer"];
 const inputClass = "mt-2 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-xs outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100";
 const labelClass = "block text-sm font-semibold text-slate-800";
 
@@ -10,41 +11,11 @@ function EyeIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>;
 }
 
-type RegistrationFormProps = {
-  initialRoles: string[];
-};
-
-export default function RegistrationForm({ initialRoles }: RegistrationFormProps) {
+export default function RegistrationForm() {
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  // The server provides roles with the initial HTML, avoiding a loading state after hydration.
-  const [roles, setRoles] = useState<string[]>(initialRoles);
-  const [rolesError, setRolesError] = useState<string | null>(null);
-
-  /** Loads active role names from PostgreSQL through the server-only roles API. */
-  useEffect(() => {
-    // Roles are already available on the initial render. Fetch only if the
-    // server could not supply them, so the client still has a recovery path.
-    if (initialRoles.length > 0) return;
-
-    let cancelled = false;
-
-    async function loadRoles() {
-      try {
-        const response = await fetch("/api/roles");
-        const result = (await response.json()) as { message?: string; roles?: string[] };
-        if (!response.ok) throw new Error(result.message || "Unable to load system roles.");
-        if (!cancelled) setRoles(result.roles || []);
-      } catch (error) {
-        if (!cancelled) setRolesError(error instanceof Error ? error.message : "Unable to load system roles.");
-      }
-    }
-
-    void loadRoles();
-    return () => { cancelled = true; };
-  }, [initialRoles.length]);
 
   /** Sends the form values to the server route, then shows its success or error message. */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -79,8 +50,8 @@ export default function RegistrationForm({ initialRoles }: RegistrationFormProps
       <div className="space-y-8 px-6 py-7 sm:px-8 sm:py-8">
         <section aria-labelledby="identity-heading">
           <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
-            <label className={labelClass}>Username <span className="text-red-600">*</span><input className={inputClass} name="username" required minLength={3} maxLength={50} autoComplete="username" placeholder="e.g. juan.delacruz" /><span className="mt-1.5 block text-xs font-normal text-slate-500">At least 3 characters. This will be used to sign in.</span></label>
-            <label className={labelClass}>System role <span className="text-red-600">*</span><select className={inputClass} name="role" required defaultValue="" disabled={Boolean(rolesError) || roles.length === 0}><option value="" disabled>{rolesError ? "Roles unavailable" : roles.length === 0 ? "Loading roles..." : "Select a role"}</option>{roles.map((role) => <option key={role} value={role}>{role}</option>)}</select><span className="mt-1.5 block text-xs font-normal text-slate-500">Roles are loaded from the active records in the database.</span>{rolesError && <span className="mt-1 block text-xs font-normal text-red-600">{rolesError}</span>}</label>
+            <label className={labelClass}>Username <span className="text-red-600">*</span><input className={inputClass} name="username" required minLength={3} maxLength={50} autoComplete="username" placeholder="e.g. juan.delacruz" /></label>
+            <label className={labelClass}>System role <span className="text-red-600">*</span><select className={inputClass} name="role" required defaultValue=""><option value="" disabled>Select a role</option>{roles.map((role) => <option key={role} value={role}>{role}</option>)}</select><span className="mt-1.5 block text-xs font-normal text-slate-500">Sets this user&apos;s access level.</span></label>
             <label className={labelClass}>First name <span className="text-red-600">*</span><input className={inputClass} name="firstName" required maxLength={50} autoComplete="given-name" /></label>
             <label className={labelClass}>Middle name <span className="font-normal text-slate-400">(optional)</span><input className={inputClass} name="middleName" maxLength={50} autoComplete="additional-name" /></label>
             <label className={labelClass}>Last name <span className="text-red-600">*</span><input className={inputClass} name="lastName" required maxLength={50} autoComplete="family-name" /></label>
