@@ -49,7 +49,6 @@ export default function RegistrationForm() {
 
       <div className="space-y-8 px-6 py-7 sm:px-8 sm:py-8">
         <section aria-labelledby="identity-heading">
-          <div className="mb-5 flex items-baseline justify-between gap-4"><div><h3 id="identity-heading" className="text-sm font-bold text-slate-900">Employee details</h3><p className="mt-1 text-sm text-slate-500">Use the employee&apos;s official information.</p></div><span className="shrink-0 text-xs text-slate-500"><span className="text-red-600">*</span> Required</span></div>
           <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
             <label className={labelClass}>Username <span className="text-red-600">*</span><input className={inputClass} name="username" required minLength={3} maxLength={50} autoComplete="username" placeholder="e.g. juan.delacruz" /><span className="mt-1.5 block text-xs font-normal text-slate-500">At least 3 characters. This will be used to sign in.</span></label>
             <label className={labelClass}>System role <span className="text-red-600">*</span><select className={inputClass} name="role" required defaultValue=""><option value="" disabled>Select a role</option>{roles.map((role) => <option key={role} value={role}>{role}</option>)}</select><span className="mt-1.5 block text-xs font-normal text-slate-500">Sets this user&apos;s access level.</span></label>
