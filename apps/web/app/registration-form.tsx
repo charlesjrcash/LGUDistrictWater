@@ -6,10 +6,10 @@ const roles = ["Administrator", "Billing Office", "Cashier", "Collection Officer
 const inputClass = "mt-2 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-xs outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100";
 const labelClass = "block text-sm font-semibold text-slate-800";
 
-/** Renders the shared password-visibility icon used by both credential fields. */
-function EyeIcon() {
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>;
-}
+// /** Renders the shared password-visibility icon used by both credential fields. */
+// function EyeIcon() {
+//   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>;
+// }
 
 export default function RegistrationForm() {
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -61,8 +61,8 @@ export default function RegistrationForm() {
         <section aria-labelledby="access-heading" className="border-t border-slate-200 pt-7">
           <div className="mb-5"><h3 id="access-heading" className="text-sm font-bold text-slate-900">Account access</h3><p className="mt-1 text-sm text-slate-500">Create a temporary password that expires in 24 hours and must be changed at first sign-in.</p></div>
           <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
-            <label className={labelClass}>Temporary password <span className="text-red-600">*</span><span className="relative mt-2 block"><input className={`${inputClass} mt-0 pr-11`} name="password" type={showPassword ? "text" : "password"} required minLength={8} autoComplete="new-password" /><button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword}><EyeIcon /></button></span><span className="mt-1.5 block text-xs font-normal text-slate-500">Use 8 or more characters. It will expire after 24 hours.</span></label>
-            <label className={labelClass}>Confirm temporary password <span className="text-red-600">*</span><span className="relative mt-2 block"><input className={`${inputClass} mt-0 pr-11`} name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required minLength={8} autoComplete="new-password" /><button type="button" onClick={() => setShowConfirmPassword((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600" aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"} aria-pressed={showConfirmPassword}><EyeIcon /></button></span></label>
+            <label className={labelClass}>Temporary password <span className="text-red-600">*</span><span className="relative mt-2 block"><input className={`${inputClass} mt-0 pr-11`} name="password" type={showPassword ? "text" : "password"} required minLength={8} autoComplete="new-password" /><button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword}></button></span><span className="mt-1.5 block text-xs font-normal text-slate-500">Use 8 or more characters. It will expire after 24 hours.</span></label>
+            <label className={labelClass}>Confirm temporary password <span className="text-red-600">*</span><span className="relative mt-2 block"><input className={`${inputClass} mt-0 pr-11`} name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required minLength={8} autoComplete="new-password" /><button type="button" onClick={() => setShowConfirmPassword((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600" aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"} aria-pressed={showConfirmPassword}></button></span></label>
           </div>
         </section>
 
