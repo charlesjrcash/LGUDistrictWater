@@ -17,7 +17,7 @@ function CustomerCard({ customer }: { customer: CustomerSummary }) {
   return <div className={styles.customerCard}>{fields.map(([label, value]) => <div className={styles.customerCardItem} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>;
 }
 
-export function ApplicationForm({ applicationNo }: { applicationNo?: string }) {
+export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicationNo?: string; initialCustomerNo?: string }) {
   const router = useRouter();
   const editing = Boolean(applicationNo);
   const [types, setTypes] = useState<ReferenceOption[]>([]);
@@ -63,6 +63,26 @@ export function ApplicationForm({ applicationNo }: { applicationNo?: string }) {
     void load();
     return () => { cancelled = true; };
   }, [applicationNo]);
+
+  useEffect(() => {
+    if (editing || !initialCustomerNo) return;
+    const customerToSelect = initialCustomerNo;
+    let cancelled = false;
+    async function selectInitialCustomer() {
+      try {
+        const response = await fetch(`/api/service-applications/customers?q=${encodeURIComponent(customerToSelect)}`);
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.message);
+        const match = (body.data as CustomerSummary[]).find((customer) => customer.customerNo === customerToSelect);
+        if (!cancelled && match) setSelectedCustomer(match);
+        if (!cancelled && !match) setError("The newly selected customer could not be found.");
+      } catch (loadError) {
+        if (!cancelled) setError(loadError instanceof Error ? loadError.message : "Unable to select the customer.");
+      }
+    }
+    void selectInitialCustomer();
+    return () => { cancelled = true; };
+  }, [editing, initialCustomerNo]);
 
   useEffect(() => {
     if (editing || customerQuery.trim().length < 2) return;
@@ -120,7 +140,7 @@ export function ApplicationForm({ applicationNo }: { applicationNo?: string }) {
           {loading ? <div className={styles.loading}><div className={styles.skeleton} style={{ height: 24, marginBottom: 18 }} /><div className={styles.skeleton} style={{ height: 130 }} /></div> : <>
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Customer</h2><p className={styles.sectionDescription}>Select an existing customer record for this application.</p>
-              {!editing && !selectedCustomer && <div className={styles.fullField}><label className={styles.label} htmlFor="customer-search">Search customer <span className={styles.required}>*</span></label><div className={styles.searchWrap}><svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg><input id="customer-search" className={styles.input} value={customerQuery} onChange={(event) => setCustomerQuery(event.target.value)} placeholder="Search by customer name, number, or contact number..." autoComplete="off" /></div>{fieldErrors.customerNo && <div className={styles.fieldError}>{fieldErrors.customerNo}</div>}{customerQuery.trim().length >= 2 && <div className={styles.customerResults}>{searching ? <div className={styles.loading} style={{ padding: 18 }}>Searching customers…</div> : customerResults.length ? customerResults.map((customer) => <button key={customer.customerNo} type="button" className={styles.customerResult} onClick={() => { setSelectedCustomer(customer); setCustomerResults([]); setCustomerQuery(""); }}><span><strong className={styles.strong}>{customer.name}</strong><span className={styles.muted}>{customer.customerNo} · {customer.barangay || customer.address || "Address not available"}</span></span><span className={styles.muted}>{customer.contactNo || "No contact"}</span></button>) : <div className={styles.loading} style={{ padding: 18 }}>No customers match your search.</div>}</div>}<p className={styles.muted}>Customer not listed? <Link href="/customers/new" className={styles.viewLink}>＋ Add New Customer</Link></p></div>}
+              {!editing && !selectedCustomer && <div className={styles.fullField}><label className={styles.label} htmlFor="customer-search">Search customer <span className={styles.required}>*</span></label><div className={styles.searchWrap}><svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg><input id="customer-search" className={styles.input} value={customerQuery} onChange={(event) => setCustomerQuery(event.target.value)} placeholder="Search by customer name, number, or contact number..." autoComplete="off" /></div>{fieldErrors.customerNo && <div className={styles.fieldError}>{fieldErrors.customerNo}</div>}{customerQuery.trim().length >= 2 && <div className={styles.customerResults}>{searching ? <div className={styles.loading} style={{ padding: 18 }}>Searching customers…</div> : customerResults.length ? customerResults.map((customer) => <button key={customer.customerNo} type="button" className={styles.customerResult} onClick={() => { setSelectedCustomer(customer); setCustomerResults([]); setCustomerQuery(""); }}><span><strong className={styles.strong}>{customer.name}</strong><span className={styles.muted}>{customer.customerNo} · {customer.barangay || customer.address || "Address not available"}</span></span><span className={styles.muted}>{customer.contactNo || "No contact"}</span></button>) : <div className={styles.loading} style={{ padding: 18 }}>No customers match your search.</div>}</div>}<p className={styles.muted}>Customer not listed? <Link href="/customers/new?returnTo=/service-applications/new" className={styles.viewLink}>＋ Add New Customer</Link></p></div>}
               {selectedCustomer && <><CustomerCard customer={selectedCustomer} />{!editing && <div style={{ marginTop: 12 }}><button type="button" className={styles.ghostButton} onClick={() => setSelectedCustomer(null)}>Change customer</button></div>}</>}
             </section>
             <section className={styles.section}>
