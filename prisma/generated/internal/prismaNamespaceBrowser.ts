@@ -52,7 +52,61 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   customers: 'customers',
-  water_consumers: 'water_consumers'
+  roles: 'roles',
+  user_roles: 'user_roles',
+  users: 'users',
+  user_sessions: 'user_sessions',
+  audit_logs: 'audit_logs',
+  bill_adjustments: 'bill_adjustments',
+  bill_details: 'bill_details',
+  bill_penalties: 'bill_penalties',
+  bills: 'bills',
+  connection_fees: 'connection_fees',
+  disconnection_orders: 'disconnection_orders',
+  document_attachments: 'document_attachments',
+  meter_installations: 'meter_installations',
+  meter_readings: 'meter_readings',
+  meters: 'meters',
+  mt_application_status: 'mt_application_status',
+  mt_application_type: 'mt_application_type',
+  mt_barangay: 'mt_barangay',
+  mt_billing_cycle: 'mt_billing_cycle',
+  mt_billing_period: 'mt_billing_period',
+  mt_connection_status: 'mt_connection_status',
+  mt_connection_type: 'mt_connection_type',
+  mt_customer_classification: 'mt_customer_classification',
+  mt_disconnection_reason: 'mt_disconnection_reason',
+  mt_disconnection_rule: 'mt_disconnection_rule',
+  mt_document_series: 'mt_document_series',
+  mt_due_date_rule: 'mt_due_date_rule',
+  mt_employee: 'mt_employee',
+  mt_fees: 'mt_fees',
+  mt_holiday: 'mt_holiday',
+  mt_material: 'mt_material',
+  mt_meter_brand: 'mt_meter_brand',
+  mt_meter_reader: 'mt_meter_reader',
+  mt_meter_size: 'mt_meter_size',
+  mt_meter_type: 'mt_meter_type',
+  mt_payment_method: 'mt_payment_method',
+  mt_payment_type: 'mt_payment_type',
+  mt_penalty_rates: 'mt_penalty_rates',
+  mt_permission: 'mt_permission',
+  mt_purok: 'mt_purok',
+  mt_reading_route: 'mt_reading_route',
+  mt_reading_status: 'mt_reading_status',
+  mt_receipt_type: 'mt_receipt_type',
+  mt_role_permission: 'mt_role_permission',
+  mt_service_type: 'mt_service_type',
+  mt_system_settings: 'mt_system_settings',
+  mt_unit_of_measure: 'mt_unit_of_measure',
+  mt_water_rates: 'mt_water_rates',
+  payment_allocations: 'payment_allocations',
+  payments: 'payments',
+  reconnection_orders: 'reconnection_orders',
+  service_accounts: 'service_accounts',
+  service_applications: 'service_applications',
+  service_installation_materials: 'service_installation_materials',
+  service_installations: 'service_installations'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -73,29 +127,918 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const CustomersScalarFieldEnum = {
   customer_id: 'customer_id',
-  account_no: 'account_no',
+  customer_no: 'customer_no',
   first_name: 'first_name',
+  middle_name: 'middle_name',
   last_name: 'last_name',
+  customer_name: 'customer_name',
   address: 'address',
-  created_at: 'created_at'
+  barangay_id: 'barangay_id',
+  purok_id: 'purok_id',
+  contact_no: 'contact_no',
+  email: 'email',
+  status: 'status',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type CustomersScalarFieldEnum = (typeof CustomersScalarFieldEnum)[keyof typeof CustomersScalarFieldEnum]
 
 
-export const Water_consumersScalarFieldEnum = {
-  consumer_id: 'consumer_id',
-  account_no: 'account_no',
-  first_name: 'first_name',
-  last_name: 'last_name',
-  address: 'address',
-  meter_no: 'meter_no',
-  meter_reading: 'meter_reading',
+export const RolesScalarFieldEnum = {
+  role_id: 'role_id',
+  role_name: 'role_name',
+  description: 'description',
   is_active: 'is_active',
   created_at: 'created_at'
 } as const
 
-export type Water_consumersScalarFieldEnum = (typeof Water_consumersScalarFieldEnum)[keyof typeof Water_consumersScalarFieldEnum]
+export type RolesScalarFieldEnum = (typeof RolesScalarFieldEnum)[keyof typeof RolesScalarFieldEnum]
+
+
+export const User_rolesScalarFieldEnum = {
+  user_id: 'user_id',
+  role_id: 'role_id',
+  assigned_at: 'assigned_at'
+} as const
+
+export type User_rolesScalarFieldEnum = (typeof User_rolesScalarFieldEnum)[keyof typeof User_rolesScalarFieldEnum]
+
+
+export const UsersScalarFieldEnum = {
+  user_id: 'user_id',
+  username: 'username',
+  password_hash: 'password_hash',
+  first_name: 'first_name',
+  middle_name: 'middle_name',
+  last_name: 'last_name',
+  email: 'email',
+  is_active: 'is_active',
+  last_login_at: 'last_login_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  must_change_password: 'must_change_password',
+  temporary_password_expires_at: 'temporary_password_expires_at'
+} as const
+
+export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
+
+
+export const User_sessionsScalarFieldEnum = {
+  session_id: 'session_id',
+  user_id: 'user_id',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  created_at: 'created_at'
+} as const
+
+export type User_sessionsScalarFieldEnum = (typeof User_sessionsScalarFieldEnum)[keyof typeof User_sessionsScalarFieldEnum]
+
+
+export const Audit_logsScalarFieldEnum = {
+  audit_id: 'audit_id',
+  user_id: 'user_id',
+  action: 'action',
+  table_name: 'table_name',
+  record_id: 'record_id',
+  old_value: 'old_value',
+  new_value: 'new_value',
+  description: 'description',
+  ip_address: 'ip_address',
+  created_at: 'created_at'
+} as const
+
+export type Audit_logsScalarFieldEnum = (typeof Audit_logsScalarFieldEnum)[keyof typeof Audit_logsScalarFieldEnum]
+
+
+export const Bill_adjustmentsScalarFieldEnum = {
+  adjustment_id: 'adjustment_id',
+  bill_id: 'bill_id',
+  adjustment_type: 'adjustment_type',
+  amount: 'amount',
+  reason: 'reason',
+  approved_by: 'approved_by',
+  approved_at: 'approved_at',
+  created_by: 'created_by',
+  created_at: 'created_at'
+} as const
+
+export type Bill_adjustmentsScalarFieldEnum = (typeof Bill_adjustmentsScalarFieldEnum)[keyof typeof Bill_adjustmentsScalarFieldEnum]
+
+
+export const Bill_detailsScalarFieldEnum = {
+  bill_detail_id: 'bill_detail_id',
+  bill_id: 'bill_id',
+  charge_type: 'charge_type',
+  rate_id: 'rate_id',
+  description: 'description',
+  quantity: 'quantity',
+  rate: 'rate',
+  amount: 'amount',
+  sequence_no: 'sequence_no',
+  created_at: 'created_at'
+} as const
+
+export type Bill_detailsScalarFieldEnum = (typeof Bill_detailsScalarFieldEnum)[keyof typeof Bill_detailsScalarFieldEnum]
+
+
+export const Bill_penaltiesScalarFieldEnum = {
+  bill_penalty_id: 'bill_penalty_id',
+  bill_id: 'bill_id',
+  penalty_id: 'penalty_id',
+  base_amount: 'base_amount',
+  rate: 'rate',
+  amount: 'amount',
+  created_at: 'created_at'
+} as const
+
+export type Bill_penaltiesScalarFieldEnum = (typeof Bill_penaltiesScalarFieldEnum)[keyof typeof Bill_penaltiesScalarFieldEnum]
+
+
+export const BillsScalarFieldEnum = {
+  bill_id: 'bill_id',
+  bill_no: 'bill_no',
+  service_account_id: 'service_account_id',
+  billing_period_id: 'billing_period_id',
+  reading_id: 'reading_id',
+  bill_date: 'bill_date',
+  due_date: 'due_date',
+  water_consumption_amount: 'water_consumption_amount',
+  previous_balance: 'previous_balance',
+  penalty_amount: 'penalty_amount',
+  connection_fee_amount: 'connection_fee_amount',
+  adjustment_amount: 'adjustment_amount',
+  total_amount_due: 'total_amount_due',
+  status: 'status',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type BillsScalarFieldEnum = (typeof BillsScalarFieldEnum)[keyof typeof BillsScalarFieldEnum]
+
+
+export const Connection_feesScalarFieldEnum = {
+  connection_fee_id: 'connection_fee_id',
+  service_account_id: 'service_account_id',
+  fee_id: 'fee_id',
+  assessed_amount: 'assessed_amount',
+  amount_paid: 'amount_paid',
+  balance_amount: 'balance_amount',
+  assessment_date: 'assessment_date',
+  status: 'status',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Connection_feesScalarFieldEnum = (typeof Connection_feesScalarFieldEnum)[keyof typeof Connection_feesScalarFieldEnum]
+
+
+export const Disconnection_ordersScalarFieldEnum = {
+  disconnection_id: 'disconnection_id',
+  service_account_id: 'service_account_id',
+  reason_id: 'reason_id',
+  order_date: 'order_date',
+  disconnection_date: 'disconnection_date',
+  status: 'status',
+  performed_by: 'performed_by',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Disconnection_ordersScalarFieldEnum = (typeof Disconnection_ordersScalarFieldEnum)[keyof typeof Disconnection_ordersScalarFieldEnum]
+
+
+export const Document_attachmentsScalarFieldEnum = {
+  attachment_id: 'attachment_id',
+  document_type: 'document_type',
+  record_id: 'record_id',
+  file_name: 'file_name',
+  file_path: 'file_path',
+  mime_type: 'mime_type',
+  file_size: 'file_size',
+  uploaded_by: 'uploaded_by',
+  uploaded_at: 'uploaded_at',
+  description: 'description'
+} as const
+
+export type Document_attachmentsScalarFieldEnum = (typeof Document_attachmentsScalarFieldEnum)[keyof typeof Document_attachmentsScalarFieldEnum]
+
+
+export const Meter_installationsScalarFieldEnum = {
+  installation_id: 'installation_id',
+  service_account_id: 'service_account_id',
+  meter_id: 'meter_id',
+  installation_date: 'installation_date',
+  removed_date: 'removed_date',
+  installation_type: 'installation_type',
+  reason: 'reason',
+  remarks: 'remarks',
+  performed_by: 'performed_by',
+  created_at: 'created_at'
+} as const
+
+export type Meter_installationsScalarFieldEnum = (typeof Meter_installationsScalarFieldEnum)[keyof typeof Meter_installationsScalarFieldEnum]
+
+
+export const Meter_readingsScalarFieldEnum = {
+  reading_id: 'reading_id',
+  service_account_id: 'service_account_id',
+  meter_id: 'meter_id',
+  billing_period_id: 'billing_period_id',
+  reading_date: 'reading_date',
+  previous_reading: 'previous_reading',
+  present_reading: 'present_reading',
+  consumption: 'consumption',
+  reading_status_id: 'reading_status_id',
+  meter_reader_id: 'meter_reader_id',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Meter_readingsScalarFieldEnum = (typeof Meter_readingsScalarFieldEnum)[keyof typeof Meter_readingsScalarFieldEnum]
+
+
+export const MetersScalarFieldEnum = {
+  meter_id: 'meter_id',
+  service_account_id: 'service_account_id',
+  meter_no: 'meter_no',
+  meter_size_id: 'meter_size_id',
+  meter_type_id: 'meter_type_id',
+  meter_brand_id: 'meter_brand_id',
+  serial_no: 'serial_no',
+  installation_date: 'installation_date',
+  initial_reading: 'initial_reading',
+  status: 'status',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type MetersScalarFieldEnum = (typeof MetersScalarFieldEnum)[keyof typeof MetersScalarFieldEnum]
+
+
+export const Mt_application_statusScalarFieldEnum = {
+  application_status_id: 'application_status_id',
+  status_code: 'status_code',
+  status_name: 'status_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_application_statusScalarFieldEnum = (typeof Mt_application_statusScalarFieldEnum)[keyof typeof Mt_application_statusScalarFieldEnum]
+
+
+export const Mt_application_typeScalarFieldEnum = {
+  application_type_id: 'application_type_id',
+  application_type_code: 'application_type_code',
+  application_type_name: 'application_type_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_application_typeScalarFieldEnum = (typeof Mt_application_typeScalarFieldEnum)[keyof typeof Mt_application_typeScalarFieldEnum]
+
+
+export const Mt_barangayScalarFieldEnum = {
+  barangay_id: 'barangay_id',
+  barangay_code: 'barangay_code',
+  barangay_name: 'barangay_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_barangayScalarFieldEnum = (typeof Mt_barangayScalarFieldEnum)[keyof typeof Mt_barangayScalarFieldEnum]
+
+
+export const Mt_billing_cycleScalarFieldEnum = {
+  billing_cycle_id: 'billing_cycle_id',
+  cycle_code: 'cycle_code',
+  cycle_name: 'cycle_name',
+  number_of_days: 'number_of_days',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_billing_cycleScalarFieldEnum = (typeof Mt_billing_cycleScalarFieldEnum)[keyof typeof Mt_billing_cycleScalarFieldEnum]
+
+
+export const Mt_billing_periodScalarFieldEnum = {
+  billing_period_id: 'billing_period_id',
+  period_code: 'period_code',
+  period_name: 'period_name',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  due_date: 'due_date',
+  disconnection_date: 'disconnection_date',
+  status: 'status',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_billing_periodScalarFieldEnum = (typeof Mt_billing_periodScalarFieldEnum)[keyof typeof Mt_billing_periodScalarFieldEnum]
+
+
+export const Mt_connection_statusScalarFieldEnum = {
+  connection_status_id: 'connection_status_id',
+  status_code: 'status_code',
+  status_name: 'status_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_connection_statusScalarFieldEnum = (typeof Mt_connection_statusScalarFieldEnum)[keyof typeof Mt_connection_statusScalarFieldEnum]
+
+
+export const Mt_connection_typeScalarFieldEnum = {
+  connection_type_id: 'connection_type_id',
+  connection_type_code: 'connection_type_code',
+  connection_type_name: 'connection_type_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_connection_typeScalarFieldEnum = (typeof Mt_connection_typeScalarFieldEnum)[keyof typeof Mt_connection_typeScalarFieldEnum]
+
+
+export const Mt_customer_classificationScalarFieldEnum = {
+  classification_id: 'classification_id',
+  classification_code: 'classification_code',
+  classification_name: 'classification_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_customer_classificationScalarFieldEnum = (typeof Mt_customer_classificationScalarFieldEnum)[keyof typeof Mt_customer_classificationScalarFieldEnum]
+
+
+export const Mt_disconnection_reasonScalarFieldEnum = {
+  reason_id: 'reason_id',
+  reason_code: 'reason_code',
+  reason_name: 'reason_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_disconnection_reasonScalarFieldEnum = (typeof Mt_disconnection_reasonScalarFieldEnum)[keyof typeof Mt_disconnection_reasonScalarFieldEnum]
+
+
+export const Mt_disconnection_ruleScalarFieldEnum = {
+  rule_id: 'rule_id',
+  rule_name: 'rule_name',
+  unpaid_bill_count: 'unpaid_bill_count',
+  overdue_days: 'overdue_days',
+  minimum_balance: 'minimum_balance',
+  grace_period_days: 'grace_period_days',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_disconnection_ruleScalarFieldEnum = (typeof Mt_disconnection_ruleScalarFieldEnum)[keyof typeof Mt_disconnection_ruleScalarFieldEnum]
+
+
+export const Mt_document_seriesScalarFieldEnum = {
+  series_id: 'series_id',
+  document_type: 'document_type',
+  prefix: 'prefix',
+  year_value: 'year_value',
+  month_value: 'month_value',
+  current_number: 'current_number',
+  padding_length: 'padding_length',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_document_seriesScalarFieldEnum = (typeof Mt_document_seriesScalarFieldEnum)[keyof typeof Mt_document_seriesScalarFieldEnum]
+
+
+export const Mt_due_date_ruleScalarFieldEnum = {
+  rule_id: 'rule_id',
+  rule_name: 'rule_name',
+  rule_type: 'rule_type',
+  days_after_billing: 'days_after_billing',
+  fixed_day: 'fixed_day',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_due_date_ruleScalarFieldEnum = (typeof Mt_due_date_ruleScalarFieldEnum)[keyof typeof Mt_due_date_ruleScalarFieldEnum]
+
+
+export const Mt_employeeScalarFieldEnum = {
+  employee_id: 'employee_id',
+  employee_code: 'employee_code',
+  first_name: 'first_name',
+  middle_name: 'middle_name',
+  last_name: 'last_name',
+  employee_name: 'employee_name',
+  position: 'position',
+  contact_no: 'contact_no',
+  email: 'email',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_employeeScalarFieldEnum = (typeof Mt_employeeScalarFieldEnum)[keyof typeof Mt_employeeScalarFieldEnum]
+
+
+export const Mt_feesScalarFieldEnum = {
+  fee_id: 'fee_id',
+  fee_code: 'fee_code',
+  fee_name: 'fee_name',
+  fee_type: 'fee_type',
+  amount: 'amount',
+  effective_date: 'effective_date',
+  expiration_date: 'expiration_date',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_feesScalarFieldEnum = (typeof Mt_feesScalarFieldEnum)[keyof typeof Mt_feesScalarFieldEnum]
+
+
+export const Mt_holidayScalarFieldEnum = {
+  holiday_id: 'holiday_id',
+  holiday_date: 'holiday_date',
+  holiday_name: 'holiday_name',
+  holiday_type: 'holiday_type',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_holidayScalarFieldEnum = (typeof Mt_holidayScalarFieldEnum)[keyof typeof Mt_holidayScalarFieldEnum]
+
+
+export const Mt_materialScalarFieldEnum = {
+  material_id: 'material_id',
+  material_code: 'material_code',
+  material_name: 'material_name',
+  unit_id: 'unit_id',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_materialScalarFieldEnum = (typeof Mt_materialScalarFieldEnum)[keyof typeof Mt_materialScalarFieldEnum]
+
+
+export const Mt_meter_brandScalarFieldEnum = {
+  meter_brand_id: 'meter_brand_id',
+  brand_code: 'brand_code',
+  brand_name: 'brand_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_meter_brandScalarFieldEnum = (typeof Mt_meter_brandScalarFieldEnum)[keyof typeof Mt_meter_brandScalarFieldEnum]
+
+
+export const Mt_meter_readerScalarFieldEnum = {
+  meter_reader_id: 'meter_reader_id',
+  employee_id: 'employee_id',
+  reader_code: 'reader_code',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_meter_readerScalarFieldEnum = (typeof Mt_meter_readerScalarFieldEnum)[keyof typeof Mt_meter_readerScalarFieldEnum]
+
+
+export const Mt_meter_sizeScalarFieldEnum = {
+  meter_size_id: 'meter_size_id',
+  meter_size: 'meter_size',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_meter_sizeScalarFieldEnum = (typeof Mt_meter_sizeScalarFieldEnum)[keyof typeof Mt_meter_sizeScalarFieldEnum]
+
+
+export const Mt_meter_typeScalarFieldEnum = {
+  meter_type_id: 'meter_type_id',
+  meter_type_code: 'meter_type_code',
+  meter_type_name: 'meter_type_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_meter_typeScalarFieldEnum = (typeof Mt_meter_typeScalarFieldEnum)[keyof typeof Mt_meter_typeScalarFieldEnum]
+
+
+export const Mt_payment_methodScalarFieldEnum = {
+  payment_method_id: 'payment_method_id',
+  payment_method_code: 'payment_method_code',
+  payment_method_name: 'payment_method_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_payment_methodScalarFieldEnum = (typeof Mt_payment_methodScalarFieldEnum)[keyof typeof Mt_payment_methodScalarFieldEnum]
+
+
+export const Mt_payment_typeScalarFieldEnum = {
+  payment_type_id: 'payment_type_id',
+  payment_type_code: 'payment_type_code',
+  payment_type_name: 'payment_type_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_payment_typeScalarFieldEnum = (typeof Mt_payment_typeScalarFieldEnum)[keyof typeof Mt_payment_typeScalarFieldEnum]
+
+
+export const Mt_penalty_ratesScalarFieldEnum = {
+  penalty_id: 'penalty_id',
+  penalty_code: 'penalty_code',
+  penalty_name: 'penalty_name',
+  penalty_type: 'penalty_type',
+  rate: 'rate',
+  grace_period_days: 'grace_period_days',
+  maximum_penalty: 'maximum_penalty',
+  effective_date: 'effective_date',
+  expiration_date: 'expiration_date',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_penalty_ratesScalarFieldEnum = (typeof Mt_penalty_ratesScalarFieldEnum)[keyof typeof Mt_penalty_ratesScalarFieldEnum]
+
+
+export const Mt_permissionScalarFieldEnum = {
+  permission_id: 'permission_id',
+  permission_code: 'permission_code',
+  permission_name: 'permission_name',
+  module_name: 'module_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_permissionScalarFieldEnum = (typeof Mt_permissionScalarFieldEnum)[keyof typeof Mt_permissionScalarFieldEnum]
+
+
+export const Mt_purokScalarFieldEnum = {
+  purok_id: 'purok_id',
+  barangay_id: 'barangay_id',
+  purok_code: 'purok_code',
+  purok_name: 'purok_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_purokScalarFieldEnum = (typeof Mt_purokScalarFieldEnum)[keyof typeof Mt_purokScalarFieldEnum]
+
+
+export const Mt_reading_routeScalarFieldEnum = {
+  route_id: 'route_id',
+  route_code: 'route_code',
+  route_name: 'route_name',
+  barangay_id: 'barangay_id',
+  sequence_no: 'sequence_no',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_reading_routeScalarFieldEnum = (typeof Mt_reading_routeScalarFieldEnum)[keyof typeof Mt_reading_routeScalarFieldEnum]
+
+
+export const Mt_reading_statusScalarFieldEnum = {
+  reading_status_id: 'reading_status_id',
+  status_code: 'status_code',
+  status_name: 'status_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_reading_statusScalarFieldEnum = (typeof Mt_reading_statusScalarFieldEnum)[keyof typeof Mt_reading_statusScalarFieldEnum]
+
+
+export const Mt_receipt_typeScalarFieldEnum = {
+  receipt_type_id: 'receipt_type_id',
+  receipt_type_code: 'receipt_type_code',
+  receipt_type_name: 'receipt_type_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_receipt_typeScalarFieldEnum = (typeof Mt_receipt_typeScalarFieldEnum)[keyof typeof Mt_receipt_typeScalarFieldEnum]
+
+
+export const Mt_role_permissionScalarFieldEnum = {
+  role_id: 'role_id',
+  permission_id: 'permission_id',
+  created_at: 'created_at'
+} as const
+
+export type Mt_role_permissionScalarFieldEnum = (typeof Mt_role_permissionScalarFieldEnum)[keyof typeof Mt_role_permissionScalarFieldEnum]
+
+
+export const Mt_service_typeScalarFieldEnum = {
+  service_type_id: 'service_type_id',
+  service_type_code: 'service_type_code',
+  service_type_name: 'service_type_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_service_typeScalarFieldEnum = (typeof Mt_service_typeScalarFieldEnum)[keyof typeof Mt_service_typeScalarFieldEnum]
+
+
+export const Mt_system_settingsScalarFieldEnum = {
+  setting_id: 'setting_id',
+  setting_key: 'setting_key',
+  setting_value: 'setting_value',
+  data_type: 'data_type',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_system_settingsScalarFieldEnum = (typeof Mt_system_settingsScalarFieldEnum)[keyof typeof Mt_system_settingsScalarFieldEnum]
+
+
+export const Mt_unit_of_measureScalarFieldEnum = {
+  unit_id: 'unit_id',
+  unit_code: 'unit_code',
+  unit_name: 'unit_name',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_unit_of_measureScalarFieldEnum = (typeof Mt_unit_of_measureScalarFieldEnum)[keyof typeof Mt_unit_of_measureScalarFieldEnum]
+
+
+export const Mt_water_ratesScalarFieldEnum = {
+  rate_id: 'rate_id',
+  classification_id: 'classification_id',
+  meter_size_id: 'meter_size_id',
+  minimum_cubic_meter: 'minimum_cubic_meter',
+  maximum_cubic_meter: 'maximum_cubic_meter',
+  rate_type: 'rate_type',
+  rate_amount: 'rate_amount',
+  effective_date: 'effective_date',
+  expiration_date: 'expiration_date',
+  description: 'description',
+  is_active: 'is_active',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Mt_water_ratesScalarFieldEnum = (typeof Mt_water_ratesScalarFieldEnum)[keyof typeof Mt_water_ratesScalarFieldEnum]
+
+
+export const Payment_allocationsScalarFieldEnum = {
+  allocation_id: 'allocation_id',
+  payment_id: 'payment_id',
+  bill_id: 'bill_id',
+  amount_allocated: 'amount_allocated',
+  created_at: 'created_at'
+} as const
+
+export type Payment_allocationsScalarFieldEnum = (typeof Payment_allocationsScalarFieldEnum)[keyof typeof Payment_allocationsScalarFieldEnum]
+
+
+export const PaymentsScalarFieldEnum = {
+  payment_id: 'payment_id',
+  receipt_no: 'receipt_no',
+  service_account_id: 'service_account_id',
+  payment_date: 'payment_date',
+  payment_type_id: 'payment_type_id',
+  payment_method_id: 'payment_method_id',
+  receipt_type_id: 'receipt_type_id',
+  amount: 'amount',
+  cashier_id: 'cashier_id',
+  status: 'status',
+  reference_no: 'reference_no',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type PaymentsScalarFieldEnum = (typeof PaymentsScalarFieldEnum)[keyof typeof PaymentsScalarFieldEnum]
+
+
+export const Reconnection_ordersScalarFieldEnum = {
+  reconnection_id: 'reconnection_id',
+  service_account_id: 'service_account_id',
+  order_date: 'order_date',
+  reconnection_date: 'reconnection_date',
+  fee_amount: 'fee_amount',
+  status: 'status',
+  performed_by: 'performed_by',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Reconnection_ordersScalarFieldEnum = (typeof Reconnection_ordersScalarFieldEnum)[keyof typeof Reconnection_ordersScalarFieldEnum]
+
+
+export const Service_accountsScalarFieldEnum = {
+  service_account_id: 'service_account_id',
+  customer_id: 'customer_id',
+  control_no: 'control_no',
+  classification_id: 'classification_id',
+  connection_type_id: 'connection_type_id',
+  connection_status_id: 'connection_status_id',
+  service_type_id: 'service_type_id',
+  route_id: 'route_id',
+  date_connected: 'date_connected',
+  address: 'address',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Service_accountsScalarFieldEnum = (typeof Service_accountsScalarFieldEnum)[keyof typeof Service_accountsScalarFieldEnum]
+
+
+export const Service_applicationsScalarFieldEnum = {
+  application_id: 'application_id',
+  application_no: 'application_no',
+  customer_id: 'customer_id',
+  application_type_id: 'application_type_id',
+  application_status_id: 'application_status_id',
+  application_date: 'application_date',
+  connection_type_id: 'connection_type_id',
+  requested_meter_size_id: 'requested_meter_size_id',
+  investigation_date: 'investigation_date',
+  investigation_result: 'investigation_result',
+  inspection_date: 'inspection_date',
+  inspection_result: 'inspection_result',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Service_applicationsScalarFieldEnum = (typeof Service_applicationsScalarFieldEnum)[keyof typeof Service_applicationsScalarFieldEnum]
+
+
+export const Service_installation_materialsScalarFieldEnum = {
+  installation_material_id: 'installation_material_id',
+  installation_id: 'installation_id',
+  material_id: 'material_id',
+  quantity: 'quantity',
+  unit_cost: 'unit_cost',
+  amount: 'amount',
+  created_at: 'created_at'
+} as const
+
+export type Service_installation_materialsScalarFieldEnum = (typeof Service_installation_materialsScalarFieldEnum)[keyof typeof Service_installation_materialsScalarFieldEnum]
+
+
+export const Service_installationsScalarFieldEnum = {
+  installation_id: 'installation_id',
+  service_account_id: 'service_account_id',
+  installation_date: 'installation_date',
+  inspector_id: 'inspector_id',
+  installer_id: 'installer_id',
+  installation_status: 'installation_status',
+  remarks: 'remarks',
+  created_by: 'created_by',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Service_installationsScalarFieldEnum = (typeof Service_installationsScalarFieldEnum)[keyof typeof Service_installationsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -104,6 +1047,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -120,4 +1071,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

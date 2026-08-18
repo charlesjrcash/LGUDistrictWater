@@ -23,7 +23,277 @@ export * from './enums.ts';
  */
 export type customers = Prisma.customersModel
 /**
- * Model water_consumers
+ * Model roles
  * 
  */
-export type water_consumers = Prisma.water_consumersModel
+export type roles = Prisma.rolesModel
+/**
+ * Model user_roles
+ * 
+ */
+export type user_roles = Prisma.user_rolesModel
+/**
+ * Model users
+ * 
+ */
+export type users = Prisma.usersModel
+/**
+ * Model user_sessions
+ * 
+ */
+export type user_sessions = Prisma.user_sessionsModel
+/**
+ * Model audit_logs
+ * 
+ */
+export type audit_logs = Prisma.audit_logsModel
+/**
+ * Model bill_adjustments
+ * 
+ */
+export type bill_adjustments = Prisma.bill_adjustmentsModel
+/**
+ * Model bill_details
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type bill_details = Prisma.bill_detailsModel
+/**
+ * Model bill_penalties
+ * 
+ */
+export type bill_penalties = Prisma.bill_penaltiesModel
+/**
+ * Model bills
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type bills = Prisma.billsModel
+/**
+ * Model connection_fees
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type connection_fees = Prisma.connection_feesModel
+/**
+ * Model disconnection_orders
+ * 
+ */
+export type disconnection_orders = Prisma.disconnection_ordersModel
+/**
+ * Model document_attachments
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type document_attachments = Prisma.document_attachmentsModel
+/**
+ * Model meter_installations
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type meter_installations = Prisma.meter_installationsModel
+/**
+ * Model meter_readings
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type meter_readings = Prisma.meter_readingsModel
+/**
+ * Model meters
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type meters = Prisma.metersModel
+/**
+ * Model mt_application_status
+ * 
+ */
+export type mt_application_status = Prisma.mt_application_statusModel
+/**
+ * Model mt_application_type
+ * 
+ */
+export type mt_application_type = Prisma.mt_application_typeModel
+/**
+ * Model mt_barangay
+ * 
+ */
+export type mt_barangay = Prisma.mt_barangayModel
+/**
+ * Model mt_billing_cycle
+ * 
+ */
+export type mt_billing_cycle = Prisma.mt_billing_cycleModel
+/**
+ * Model mt_billing_period
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type mt_billing_period = Prisma.mt_billing_periodModel
+/**
+ * Model mt_connection_status
+ * 
+ */
+export type mt_connection_status = Prisma.mt_connection_statusModel
+/**
+ * Model mt_connection_type
+ * 
+ */
+export type mt_connection_type = Prisma.mt_connection_typeModel
+/**
+ * Model mt_customer_classification
+ * 
+ */
+export type mt_customer_classification = Prisma.mt_customer_classificationModel
+/**
+ * Model mt_disconnection_reason
+ * 
+ */
+export type mt_disconnection_reason = Prisma.mt_disconnection_reasonModel
+/**
+ * Model mt_disconnection_rule
+ * 
+ */
+export type mt_disconnection_rule = Prisma.mt_disconnection_ruleModel
+/**
+ * Model mt_document_series
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type mt_document_series = Prisma.mt_document_seriesModel
+/**
+ * Model mt_due_date_rule
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type mt_due_date_rule = Prisma.mt_due_date_ruleModel
+/**
+ * Model mt_employee
+ * 
+ */
+export type mt_employee = Prisma.mt_employeeModel
+/**
+ * Model mt_fees
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type mt_fees = Prisma.mt_feesModel
+/**
+ * Model mt_holiday
+ * 
+ */
+export type mt_holiday = Prisma.mt_holidayModel
+/**
+ * Model mt_material
+ * 
+ */
+export type mt_material = Prisma.mt_materialModel
+/**
+ * Model mt_meter_brand
+ * 
+ */
+export type mt_meter_brand = Prisma.mt_meter_brandModel
+/**
+ * Model mt_meter_reader
+ * 
+ */
+export type mt_meter_reader = Prisma.mt_meter_readerModel
+/**
+ * Model mt_meter_size
+ * 
+ */
+export type mt_meter_size = Prisma.mt_meter_sizeModel
+/**
+ * Model mt_meter_type
+ * 
+ */
+export type mt_meter_type = Prisma.mt_meter_typeModel
+/**
+ * Model mt_payment_method
+ * 
+ */
+export type mt_payment_method = Prisma.mt_payment_methodModel
+/**
+ * Model mt_payment_type
+ * 
+ */
+export type mt_payment_type = Prisma.mt_payment_typeModel
+/**
+ * Model mt_penalty_rates
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type mt_penalty_rates = Prisma.mt_penalty_ratesModel
+/**
+ * Model mt_permission
+ * 
+ */
+export type mt_permission = Prisma.mt_permissionModel
+/**
+ * Model mt_purok
+ * 
+ */
+export type mt_purok = Prisma.mt_purokModel
+/**
+ * Model mt_reading_route
+ * 
+ */
+export type mt_reading_route = Prisma.mt_reading_routeModel
+/**
+ * Model mt_reading_status
+ * 
+ */
+export type mt_reading_status = Prisma.mt_reading_statusModel
+/**
+ * Model mt_receipt_type
+ * 
+ */
+export type mt_receipt_type = Prisma.mt_receipt_typeModel
+/**
+ * Model mt_role_permission
+ * 
+ */
+export type mt_role_permission = Prisma.mt_role_permissionModel
+/**
+ * Model mt_service_type
+ * 
+ */
+export type mt_service_type = Prisma.mt_service_typeModel
+/**
+ * Model mt_system_settings
+ * 
+ */
+export type mt_system_settings = Prisma.mt_system_settingsModel
+/**
+ * Model mt_unit_of_measure
+ * 
+ */
+export type mt_unit_of_measure = Prisma.mt_unit_of_measureModel
+/**
+ * Model mt_water_rates
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type mt_water_rates = Prisma.mt_water_ratesModel
+/**
+ * Model payment_allocations
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type payment_allocations = Prisma.payment_allocationsModel
+/**
+ * Model payments
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type payments = Prisma.paymentsModel
+/**
+ * Model reconnection_orders
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type reconnection_orders = Prisma.reconnection_ordersModel
+/**
+ * Model service_accounts
+ * 
+ */
+export type service_accounts = Prisma.service_accountsModel
+/**
+ * Model service_applications
+ * 
+ */
+export type service_applications = Prisma.service_applicationsModel
+/**
+ * Model service_installation_materials
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type service_installation_materials = Prisma.service_installation_materialsModel
+/**
+ * Model service_installations
+ * 
+ */
+export type service_installations = Prisma.service_installationsModel
