@@ -23,6 +23,7 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
   const [types, setTypes] = useState<ReferenceOption[]>([]);
   const [customerQuery, setCustomerQuery] = useState("");
   const [customerResults, setCustomerResults] = useState<CustomerSummary[]>([]);
+  const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerSummary | null>(null);
   const [applicationTypeCode, setApplicationTypeCode] = useState("");
   const [applicationDate, setApplicationDate] = useState(localDate);
@@ -100,6 +101,22 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
     return () => { window.clearTimeout(timer); controller.abort(); };
   }, [customerQuery, editing]);
 
+  async function browseCustomers() {
+    if (editing || searching) return;
+    setCustomerPickerOpen(true);
+    setSearching(true);
+    try {
+      const response = await fetch("/api/service-applications/customers");
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.message || "Unable to browse customers.");
+      setCustomerResults(body.data);
+    } catch (browseError) {
+      setError(browseError instanceof Error ? browseError.message : "Unable to browse customers.");
+    } finally {
+      setSearching(false);
+    }
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting) return;
@@ -140,7 +157,7 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
           {loading ? <div className={styles.loading}><div className={styles.skeleton} style={{ height: 24, marginBottom: 18 }} /><div className={styles.skeleton} style={{ height: 130 }} /></div> : <>
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Customer</h2><p className={styles.sectionDescription}>Select an existing customer record for this application.</p>
-              {!editing && !selectedCustomer && <div className={styles.fullField}><label className={styles.label} htmlFor="customer-search">Search customer <span className={styles.required}>*</span></label><div className={styles.searchWrap}><svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg><input id="customer-search" className={styles.input} value={customerQuery} onChange={(event) => setCustomerQuery(event.target.value)} placeholder="Search by customer name, number, or contact number..." autoComplete="off" /></div>{fieldErrors.customerNo && <div className={styles.fieldError}>{fieldErrors.customerNo}</div>}{customerQuery.trim().length >= 2 && <div className={styles.customerResults}>{searching ? <div className={styles.loading} style={{ padding: 18 }}>Searching customers…</div> : customerResults.length ? customerResults.map((customer) => <button key={customer.customerNo} type="button" className={styles.customerResult} onClick={() => { setSelectedCustomer(customer); setCustomerResults([]); setCustomerQuery(""); }}><span><strong className={styles.strong}>{customer.name}</strong><span className={styles.muted}>{customer.customerNo} · {customer.barangay || customer.address || "Address not available"}</span></span><span className={styles.muted}>{customer.contactNo || "No contact"}</span></button>) : <div className={styles.loading} style={{ padding: 18 }}>No customers match your search.</div>}</div>}<p className={styles.muted}>Customer not listed? <Link href="/customers/new?returnTo=/service-applications/new" className={styles.viewLink}>＋ Add New Customer</Link></p></div>}
+              {!editing && !selectedCustomer && <div className={styles.fullField}><label className={styles.label} htmlFor="customer-search">Search customer <span className={styles.required}>*</span></label><div className={styles.searchWrap}><svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg><input id="customer-search" className={styles.input} value={customerQuery} onFocus={() => { if (!customerQuery && !customerResults.length) void browseCustomers(); else setCustomerPickerOpen(true); }} onChange={(event) => { setCustomerQuery(event.target.value); setCustomerPickerOpen(true); }} placeholder="Search by customer name, number, or contact number..." autoComplete="off" /></div>{fieldErrors.customerNo && <div className={styles.fieldError}>{fieldErrors.customerNo}</div>}{customerPickerOpen && <div className={styles.customerResults}>{searching ? <div className={styles.loading} style={{ padding: 18 }}>Loading customers…</div> : customerResults.length ? customerResults.map((customer) => <button key={customer.customerNo} type="button" className={styles.customerResult} onClick={() => { setSelectedCustomer(customer); setCustomerResults([]); setCustomerQuery(""); setCustomerPickerOpen(false); }}><span><strong className={styles.strong}>{customer.name}</strong><span className={styles.muted}>{customer.customerNo} · {customer.barangay || customer.address || "Address not available"}</span></span><span className={styles.muted}>{customer.contactNo || "No contact"}</span></button>) : <div className={styles.loading} style={{ padding: 18 }}>{customerQuery.trim().length >= 2 ? "No customers match your search." : "No customers are available."}</div>}</div>}<div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 10 }}><button type="button" className={styles.ghostButton} onClick={() => void browseCustomers()}>Browse Customers</button><p className={styles.muted} style={{ margin: 0 }}>Customer not listed? <Link href="/customers/new?returnTo=/service-applications/new" className={styles.viewLink}>＋ Add New Customer</Link></p></div></div>}
               {selectedCustomer && <><CustomerCard customer={selectedCustomer} />{!editing && <div style={{ marginTop: 12 }}><button type="button" className={styles.ghostButton} onClick={() => setSelectedCustomer(null)}>Change customer</button></div>}</>}
             </section>
             <section className={styles.section}>
