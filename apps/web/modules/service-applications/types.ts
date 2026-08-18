@@ -28,4 +28,5 @@ export type ServiceApplicationDetail = ServiceApplicationRow & {
   statuses: ApplicationStatus[];
   createdAt: string;
   updatedAt: string | null;
+  serviceAccountControlNo: string | null;
 };
