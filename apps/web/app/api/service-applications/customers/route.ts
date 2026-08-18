@@ -1,9 +1,12 @@
 import { db } from "@/lib/db";
+import { requireSessionUser } from "@/lib/server-session";
 import { clean } from "@/modules/service-applications/server";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const query = clean(new URL(request.url).searchParams.get("q"), 100);
   if (query.length < 2) return Response.json({ success: true, data: [] });
 

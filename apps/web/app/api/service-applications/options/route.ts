@@ -1,8 +1,11 @@
 import { db } from "@/lib/db";
+import { requireSessionUser } from "@/lib/server-session";
 
 export const runtime = "nodejs";
 
 export async function GET() {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   try {
     const [types, statuses] = await Promise.all([
       db.query<{ code: string; name: string }>(

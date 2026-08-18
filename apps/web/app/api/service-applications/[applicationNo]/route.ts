@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getSessionUser } from "@/lib/server-session";
+import { requireSessionUser } from "@/lib/server-session";
 import { clean, isIsoDate } from "@/modules/service-applications/server";
 
 export const runtime = "nodejs";
@@ -7,6 +7,8 @@ export const runtime = "nodejs";
 type Context = { params: Promise<{ applicationNo: string }> };
 
 export async function GET(_request: Request, context: Context) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const applicationNo = decodeURIComponent((await context.params).applicationNo);
 
   try {
@@ -46,7 +48,8 @@ export async function GET(_request: Request, context: Context) {
 }
 
 export async function PUT(request: Request, context: Context) {
-  const user = await getSessionUser();
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const applicationNo = decodeURIComponent((await context.params).applicationNo);
 
   let body: Record<string, unknown>;
@@ -87,7 +90,7 @@ export async function PUT(request: Request, context: Context) {
           SET application_type_id = $1, application_date = $2::date, remarks = $3,
               updated_by = $4, updated_at = NOW()
         WHERE application_id = $5`,
-      [type.rows[0].application_type_id, applicationDate, remarks, user?.userId ?? null, current.rows[0].application_id],
+      [type.rows[0].application_type_id, applicationDate, remarks, auth.user.userId, current.rows[0].application_id],
     );
     await client.query("COMMIT");
     return Response.json({ success: true, message: `Application ${applicationNo} was updated successfully.` });

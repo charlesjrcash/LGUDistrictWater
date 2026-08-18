@@ -1,8 +1,11 @@
 import { db } from "@/lib/db";
+import { requireSessionUser } from "@/lib/server-session";
 
 export const runtime = "nodejs";
 
 export async function GET() {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   try {
     const [classifications, connectionTypes, statuses] = await Promise.all([
       db.query(`SELECT classification_code AS code, classification_name AS name FROM mt_customer_classification WHERE is_active = TRUE ORDER BY classification_name`),
