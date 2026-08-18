@@ -33,6 +33,10 @@
 .input:focus, .select:focus, .textarea:focus { border-color: #4b98ee; box-shadow: 0 0 0 3px rgba(8,116,232,.1); }
 .searchWrap { position: relative; }
 .searchWrap .input { padding-left: 39px; }
+.browseInput .input { padding-right: 132px; }
+.browseButton { position: absolute; right: 5px; top: 5px; height: 33px; padding: 0 11px; border: 0; border-left: 1px solid #d7e1ec; background: #f4f8fc; color: #1268c7; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.browseButton:hover { background: #e8f3ff; }
+.browseButton:disabled { color: #8b98a9; cursor: wait; }
 .searchIcon { position: absolute; left: 13px; top: 13px; width: 17px; height: 17px; color: #77869b; pointer-events: none; }
 .tableWrap { overflow-x: auto; }
 .table { width: 100%; border-collapse: collapse; min-width: 930px; }
