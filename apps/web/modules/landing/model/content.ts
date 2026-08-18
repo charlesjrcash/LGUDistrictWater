@@ -1,8 +1,7 @@
 export const features = [
-  { icon: "users", title: "Customer Management", copy: "Keep consumer records, accounts, and service details organized in one secure place." },
-  { icon: "meter", title: "Meter Management", copy: "Track readings, usage history, and meter status with less manual work." },
-  { icon: "receipt", title: "Billing & Invoicing", copy: "Generate accurate bills from verified consumption and current rates." },
-  { icon: "card", title: "Payments", copy: "Record payments and manage collections through a clear, reliable workflow." },
-  { icon: "chart", title: "Reports & Analytics", copy: "Turn operational data into useful reports for faster decisions." },
-  { icon: "settings", title: "System Settings", copy: "Configure rates, roles, and preferences for district operations." },
+  { title: "Customer Overview", copy: "See consumer accounts, balances, and service details in one clear view.", visual: "account" },
+  { title: "Automated Billing", copy: "Generate accurate monthly bills from verified meter readings—without repetitive work.", visual: "trend" },
+  { title: "Collection Insights", copy: "Understand paid, unpaid, and partially paid accounts at a glance.", visual: "donuts" },
+  { title: "Reliable Meter Tracking", copy: "Keep readings and consumption history organized and ready for billing.", visual: "meter" },
+  { title: "Collection Performance", copy: "Follow key collection metrics and district progress in real time.", visual: "score" },
 ] as const;
