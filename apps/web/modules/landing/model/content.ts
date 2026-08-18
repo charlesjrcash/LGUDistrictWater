@@ -6,9 +6,3 @@ export const features = [
   { icon: "chart", title: "Reports & Analytics", copy: "Turn operational data into useful reports for faster decisions." },
   { icon: "settings", title: "System Settings", copy: "Configure rates, roles, and preferences for district operations." },
 ] as const;
-
-export const benefits = [
-  { icon: "shield", title: "Accurate billing", copy: "Verified readings and dependable calculations." },
-  { icon: "clock", title: "Save time", copy: "Simpler workflows with less repetitive work." },
-  { icon: "heart", title: "Better service", copy: "Clearer records and faster customer support." },
-] as const;
