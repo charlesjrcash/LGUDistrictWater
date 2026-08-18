@@ -4,3 +4,4 @@
 @media(prefers-reduced-motion:reduce){.form>button{transition:none}.spinner{animation:none}}
 .page{min-height:calc(100vh - 92px)}
 @media(max-width:900px){.formPanel{min-height:calc(100vh - 74px)}}
+.googleButton{width:100%;height:51px;margin-top:28px;display:flex;align-items:center;justify-content:center;gap:11px;border:1px solid #dbe4ef;border-radius:9px;background:#fff;color:#223653;font-size:13px;font-weight:700;box-shadow:0 5px 15px #17304a0a;transition:border-color .2s,background .2s,transform .2s}.googleButton:hover{border-color:#b8c8da;background:#fafdff;transform:translateY(-1px)}.googleButton svg{width:20px;height:20px}.divider{height:20px;margin:22px 0 0;display:flex;align-items:center;color:#9aa5b4;font-size:10px}.divider:before,.divider:after{content:"";height:1px;flex:1;background:#e5eaf0}.divider span{padding:0 12px}.googleButton+.divider+.fields{margin-top:20px}
