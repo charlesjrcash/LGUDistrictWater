@@ -8,33 +8,41 @@ datasource db {
 }
 
 model customers {
-  customer_id Int      @id
-  account_no  String   @db.VarChar(10)
-  first_name  String   @db.VarChar
-  last_name   String   @db.VarChar
-  address     String
-  created_at  DateTime @db.Timestamp(6)
-}
+  customer_id                       BigInt                 @id @default(autoincrement())
+  customer_no                       String                 @unique @db.VarChar(50)
+  first_name                        String?                @db.VarChar(100)
+  middle_name                       String?                @db.VarChar(100)
+  last_name                         String?                @db.VarChar(100)
+  customer_name                     String                 @db.VarChar(200)
+  address                           String?
+  barangay_id                       BigInt?
+  purok_id                          BigInt?
+  contact_no                        String?                @db.VarChar(50)
+  email                             String?                @db.VarChar(150)
+  status                            String                 @default("ACTIVE") @db.VarChar(30)
+  created_by                        BigInt?
+  updated_by                        BigInt?
+  created_at                        DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                        DateTime?              @db.Timestamp(6)
+  mt_barangay                       mt_barangay?           @relation(fields: [barangay_id], references: [barangay_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_barangay")
+  users_customers_created_byTousers users?                 @relation("customers_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_created_by")
+  mt_purok                          mt_purok?              @relation(fields: [purok_id], references: [purok_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_purok")
+  users_customers_updated_byTousers users?                 @relation("customers_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_updated_by")
+  service_accounts                  service_accounts[]
+  service_applications              service_applications[]
 
-model water_consumers {
-  consumer_id   Int      @id @default(autoincrement())
-  account_no    String   @db.VarChar(20)
-  first_name    String   @db.VarChar(50)
-  last_name     String   @db.VarChar(50)
-  address       String?
-  meter_no      String?  @db.VarChar(30)
-  meter_reading Decimal? @default(0) @db.Decimal(12, 2)
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now()) @db.Timestamp(6)
+  @@index([barangay_id], map: "idx_customer_barangay")
+  @@index([purok_id], map: "idx_customer_purok")
 }
 
 model roles {
-  role_id     BigInt       @id @default(autoincrement())
-  role_name   String       @unique @db.VarChar(50)
-  description String?      @db.VarChar(255)
-  is_active   Boolean      @default(true)
-  created_at  DateTime     @default(now()) @db.Timestamp(6)
-  user_roles  user_roles[]
+  role_id            BigInt               @id @default(autoincrement())
+  role_name          String               @unique @db.VarChar(50)
+  description        String?              @db.VarChar(255)
+  is_active          Boolean              @default(true)
+  created_at         DateTime             @default(now()) @db.Timestamp(6)
+  mt_role_permission mt_role_permission[]
+  user_roles         user_roles[]
 }
 
 model user_roles {
@@ -48,21 +56,114 @@ model user_roles {
 }
 
 model users {
-  user_id       BigInt       @id @default(autoincrement())
-  username      String       @unique @db.VarChar(50)
-  password_hash String
-  first_name    String       @db.VarChar(50)
-  middle_name   String?      @db.VarChar(50)
-  last_name     String       @db.VarChar(50)
-  email         String?      @db.VarChar(150)
-  is_active     Boolean      @default(true)
-  must_change_password Boolean @default(false)
-  temporary_password_expires_at DateTime? @db.Timestamp(6)
-  last_login_at DateTime?    @db.Timestamp(6)
-  created_at    DateTime     @default(now()) @db.Timestamp(6)
-  updated_at    DateTime     @default(now()) @db.Timestamp(6)
-  user_roles    user_roles[]
-  user_sessions user_sessions[]
+  user_id                                                                 BigInt                       @id @default(autoincrement())
+  username                                                                String                       @unique @db.VarChar(50)
+  password_hash                                                           String
+  first_name                                                              String                       @db.VarChar(50)
+  middle_name                                                             String?                      @db.VarChar(50)
+  last_name                                                               String                       @db.VarChar(50)
+  email                                                                   String?                      @db.VarChar(150)
+  is_active                                                               Boolean                      @default(true)
+  last_login_at                                                           DateTime?                    @db.Timestamp(6)
+  created_at                                                              DateTime                     @default(now()) @db.Timestamp(6)
+  updated_at                                                              DateTime                     @default(now()) @db.Timestamp(6)
+  must_change_password                                                    Boolean                      @default(false)
+  temporary_password_expires_at                                           DateTime?                    @db.Timestamp(6)
+  audit_logs                                                              audit_logs[]
+  bill_adjustments_bill_adjustments_approved_byTousers                    bill_adjustments[]           @relation("bill_adjustments_approved_byTousers")
+  bill_adjustments_bill_adjustments_created_byTousers                     bill_adjustments[]           @relation("bill_adjustments_created_byTousers")
+  bills_bills_created_byTousers                                           bills[]                      @relation("bills_created_byTousers")
+  bills_bills_updated_byTousers                                           bills[]                      @relation("bills_updated_byTousers")
+  connection_fees_connection_fees_created_byTousers                       connection_fees[]            @relation("connection_fees_created_byTousers")
+  connection_fees_connection_fees_updated_byTousers                       connection_fees[]            @relation("connection_fees_updated_byTousers")
+  customers_customers_created_byTousers                                   customers[]                  @relation("customers_created_byTousers")
+  customers_customers_updated_byTousers                                   customers[]                  @relation("customers_updated_byTousers")
+  disconnection_orders_disconnection_orders_created_byTousers             disconnection_orders[]       @relation("disconnection_orders_created_byTousers")
+  disconnection_orders_disconnection_orders_performed_byTousers           disconnection_orders[]       @relation("disconnection_orders_performed_byTousers")
+  document_attachments                                                    document_attachments[]
+  meter_installations                                                     meter_installations[]
+  meter_readings_meter_readings_created_byTousers                         meter_readings[]             @relation("meter_readings_created_byTousers")
+  meter_readings_meter_readings_updated_byTousers                         meter_readings[]             @relation("meter_readings_updated_byTousers")
+  meters_meters_created_byTousers                                         meters[]                     @relation("meters_created_byTousers")
+  meters_meters_updated_byTousers                                         meters[]                     @relation("meters_updated_byTousers")
+  mt_application_status_mt_application_status_created_byTousers           mt_application_status[]      @relation("mt_application_status_created_byTousers")
+  mt_application_status_mt_application_status_updated_byTousers           mt_application_status[]      @relation("mt_application_status_updated_byTousers")
+  mt_application_type_mt_application_type_created_byTousers               mt_application_type[]        @relation("mt_application_type_created_byTousers")
+  mt_application_type_mt_application_type_updated_byTousers               mt_application_type[]        @relation("mt_application_type_updated_byTousers")
+  mt_barangay_mt_barangay_created_byTousers                               mt_barangay[]                @relation("mt_barangay_created_byTousers")
+  mt_barangay_mt_barangay_updated_byTousers                               mt_barangay[]                @relation("mt_barangay_updated_byTousers")
+  mt_billing_cycle_mt_billing_cycle_created_byTousers                     mt_billing_cycle[]           @relation("mt_billing_cycle_created_byTousers")
+  mt_billing_cycle_mt_billing_cycle_updated_byTousers                     mt_billing_cycle[]           @relation("mt_billing_cycle_updated_byTousers")
+  mt_billing_period_mt_billing_period_created_byTousers                   mt_billing_period[]          @relation("mt_billing_period_created_byTousers")
+  mt_billing_period_mt_billing_period_updated_byTousers                   mt_billing_period[]          @relation("mt_billing_period_updated_byTousers")
+  mt_connection_status_mt_connection_status_created_byTousers             mt_connection_status[]       @relation("mt_connection_status_created_byTousers")
+  mt_connection_status_mt_connection_status_updated_byTousers             mt_connection_status[]       @relation("mt_connection_status_updated_byTousers")
+  mt_connection_type_mt_connection_type_created_byTousers                 mt_connection_type[]         @relation("mt_connection_type_created_byTousers")
+  mt_connection_type_mt_connection_type_updated_byTousers                 mt_connection_type[]         @relation("mt_connection_type_updated_byTousers")
+  mt_customer_classification_mt_customer_classification_created_byTousers mt_customer_classification[] @relation("mt_customer_classification_created_byTousers")
+  mt_customer_classification_mt_customer_classification_updated_byTousers mt_customer_classification[] @relation("mt_customer_classification_updated_byTousers")
+  mt_disconnection_reason_mt_disconnection_reason_created_byTousers       mt_disconnection_reason[]    @relation("mt_disconnection_reason_created_byTousers")
+  mt_disconnection_reason_mt_disconnection_reason_updated_byTousers       mt_disconnection_reason[]    @relation("mt_disconnection_reason_updated_byTousers")
+  mt_disconnection_rule_mt_disconnection_rule_created_byTousers           mt_disconnection_rule[]      @relation("mt_disconnection_rule_created_byTousers")
+  mt_disconnection_rule_mt_disconnection_rule_updated_byTousers           mt_disconnection_rule[]      @relation("mt_disconnection_rule_updated_byTousers")
+  mt_document_series_mt_document_series_created_byTousers                 mt_document_series[]         @relation("mt_document_series_created_byTousers")
+  mt_document_series_mt_document_series_updated_byTousers                 mt_document_series[]         @relation("mt_document_series_updated_byTousers")
+  mt_due_date_rule_mt_due_date_rule_created_byTousers                     mt_due_date_rule[]           @relation("mt_due_date_rule_created_byTousers")
+  mt_due_date_rule_mt_due_date_rule_updated_byTousers                     mt_due_date_rule[]           @relation("mt_due_date_rule_updated_byTousers")
+  mt_employee_mt_employee_created_byTousers                               mt_employee[]                @relation("mt_employee_created_byTousers")
+  mt_employee_mt_employee_updated_byTousers                               mt_employee[]                @relation("mt_employee_updated_byTousers")
+  mt_fees_mt_fees_created_byTousers                                       mt_fees[]                    @relation("mt_fees_created_byTousers")
+  mt_fees_mt_fees_updated_byTousers                                       mt_fees[]                    @relation("mt_fees_updated_byTousers")
+  mt_holiday_mt_holiday_created_byTousers                                 mt_holiday[]                 @relation("mt_holiday_created_byTousers")
+  mt_holiday_mt_holiday_updated_byTousers                                 mt_holiday[]                 @relation("mt_holiday_updated_byTousers")
+  mt_material_mt_material_created_byTousers                               mt_material[]                @relation("mt_material_created_byTousers")
+  mt_material_mt_material_updated_byTousers                               mt_material[]                @relation("mt_material_updated_byTousers")
+  mt_meter_brand_mt_meter_brand_created_byTousers                         mt_meter_brand[]             @relation("mt_meter_brand_created_byTousers")
+  mt_meter_brand_mt_meter_brand_updated_byTousers                         mt_meter_brand[]             @relation("mt_meter_brand_updated_byTousers")
+  mt_meter_reader_mt_meter_reader_created_byTousers                       mt_meter_reader[]            @relation("mt_meter_reader_created_byTousers")
+  mt_meter_reader_mt_meter_reader_updated_byTousers                       mt_meter_reader[]            @relation("mt_meter_reader_updated_byTousers")
+  mt_meter_size_mt_meter_size_created_byTousers                           mt_meter_size[]              @relation("mt_meter_size_created_byTousers")
+  mt_meter_size_mt_meter_size_updated_byTousers                           mt_meter_size[]              @relation("mt_meter_size_updated_byTousers")
+  mt_meter_type_mt_meter_type_created_byTousers                           mt_meter_type[]              @relation("mt_meter_type_created_byTousers")
+  mt_meter_type_mt_meter_type_updated_byTousers                           mt_meter_type[]              @relation("mt_meter_type_updated_byTousers")
+  mt_payment_method_mt_payment_method_created_byTousers                   mt_payment_method[]          @relation("mt_payment_method_created_byTousers")
+  mt_payment_method_mt_payment_method_updated_byTousers                   mt_payment_method[]          @relation("mt_payment_method_updated_byTousers")
+  mt_payment_type_mt_payment_type_created_byTousers                       mt_payment_type[]            @relation("mt_payment_type_created_byTousers")
+  mt_payment_type_mt_payment_type_updated_byTousers                       mt_payment_type[]            @relation("mt_payment_type_updated_byTousers")
+  mt_penalty_rates_mt_penalty_rates_created_byTousers                     mt_penalty_rates[]           @relation("mt_penalty_rates_created_byTousers")
+  mt_penalty_rates_mt_penalty_rates_updated_byTousers                     mt_penalty_rates[]           @relation("mt_penalty_rates_updated_byTousers")
+  mt_permission_mt_permission_created_byTousers                           mt_permission[]              @relation("mt_permission_created_byTousers")
+  mt_permission_mt_permission_updated_byTousers                           mt_permission[]              @relation("mt_permission_updated_byTousers")
+  mt_purok_mt_purok_created_byTousers                                     mt_purok[]                   @relation("mt_purok_created_byTousers")
+  mt_purok_mt_purok_updated_byTousers                                     mt_purok[]                   @relation("mt_purok_updated_byTousers")
+  mt_reading_route_mt_reading_route_created_byTousers                     mt_reading_route[]           @relation("mt_reading_route_created_byTousers")
+  mt_reading_route_mt_reading_route_updated_byTousers                     mt_reading_route[]           @relation("mt_reading_route_updated_byTousers")
+  mt_reading_status_mt_reading_status_created_byTousers                   mt_reading_status[]          @relation("mt_reading_status_created_byTousers")
+  mt_reading_status_mt_reading_status_updated_byTousers                   mt_reading_status[]          @relation("mt_reading_status_updated_byTousers")
+  mt_receipt_type_mt_receipt_type_created_byTousers                       mt_receipt_type[]            @relation("mt_receipt_type_created_byTousers")
+  mt_receipt_type_mt_receipt_type_updated_byTousers                       mt_receipt_type[]            @relation("mt_receipt_type_updated_byTousers")
+  mt_service_type_mt_service_type_created_byTousers                       mt_service_type[]            @relation("mt_service_type_created_byTousers")
+  mt_service_type_mt_service_type_updated_byTousers                       mt_service_type[]            @relation("mt_service_type_updated_byTousers")
+  mt_system_settings_mt_system_settings_created_byTousers                 mt_system_settings[]         @relation("mt_system_settings_created_byTousers")
+  mt_system_settings_mt_system_settings_updated_byTousers                 mt_system_settings[]         @relation("mt_system_settings_updated_byTousers")
+  mt_unit_of_measure_mt_unit_of_measure_created_byTousers                 mt_unit_of_measure[]         @relation("mt_unit_of_measure_created_byTousers")
+  mt_unit_of_measure_mt_unit_of_measure_updated_byTousers                 mt_unit_of_measure[]         @relation("mt_unit_of_measure_updated_byTousers")
+  mt_water_rates_mt_water_rates_created_byTousers                         mt_water_rates[]             @relation("mt_water_rates_created_byTousers")
+  mt_water_rates_mt_water_rates_updated_byTousers                         mt_water_rates[]             @relation("mt_water_rates_updated_byTousers")
+  payments_payments_cashier_idTousers                                     payments[]                   @relation("payments_cashier_idTousers")
+  payments_payments_created_byTousers                                     payments[]                   @relation("payments_created_byTousers")
+  reconnection_orders_reconnection_orders_created_byTousers               reconnection_orders[]        @relation("reconnection_orders_created_byTousers")
+  reconnection_orders_reconnection_orders_performed_byTousers             reconnection_orders[]        @relation("reconnection_orders_performed_byTousers")
+  service_accounts_service_accounts_created_byTousers                     service_accounts[]           @relation("service_accounts_created_byTousers")
+  service_accounts_service_accounts_updated_byTousers                     service_accounts[]           @relation("service_accounts_updated_byTousers")
+  service_applications_service_applications_created_byTousers             service_applications[]       @relation("service_applications_created_byTousers")
+  service_applications_service_applications_updated_byTousers             service_applications[]       @relation("service_applications_updated_byTousers")
+  service_installations_service_installations_created_byTousers           service_installations[]      @relation("service_installations_created_byTousers")
+  service_installations_service_installations_inspector_idTousers         service_installations[]      @relation("service_installations_inspector_idTousers")
+  service_installations_service_installations_installer_idTousers         service_installations[]      @relation("service_installations_installer_idTousers")
+  service_installations_service_installations_updated_byTousers           service_installations[]      @relation("service_installations_updated_byTousers")
+  user_roles                                                              user_roles[]
+  user_sessions                                                           user_sessions[]
 }
 
 model user_sessions {
@@ -74,4 +175,950 @@ model user_sessions {
   users      users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@index([user_id])
+}
+
+model audit_logs {
+  audit_id    BigInt   @id @default(autoincrement())
+  user_id     BigInt?
+  action      String   @db.VarChar(50)
+  table_name  String?  @db.VarChar(150)
+  record_id   String?  @db.VarChar(100)
+  old_value   Json?
+  new_value   Json?
+  description String?
+  ip_address  String?  @db.Inet
+  created_at  DateTime @default(now()) @db.Timestamp(6)
+  users       users?   @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_audit_user")
+
+  @@index([created_at], map: "idx_audit_created_at")
+  @@index([table_name, record_id], map: "idx_audit_table_record")
+  @@index([user_id], map: "idx_audit_user")
+}
+
+model bill_adjustments {
+  adjustment_id                             BigInt    @id @default(autoincrement())
+  bill_id                                   BigInt
+  adjustment_type                           String    @db.VarChar(50)
+  amount                                    Decimal   @default(0) @db.Decimal(14, 2)
+  reason                                    String?
+  approved_by                               BigInt?
+  approved_at                               DateTime? @db.Timestamp(6)
+  created_by                                BigInt?
+  created_at                                DateTime  @default(now()) @db.Timestamp(6)
+  users_bill_adjustments_approved_byTousers users?    @relation("bill_adjustments_approved_byTousers", fields: [approved_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_adjustment_approved_by")
+  bills                                     bills     @relation(fields: [bill_id], references: [bill_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_bill_adjustment_bill")
+  users_bill_adjustments_created_byTousers  users?    @relation("bill_adjustments_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_adjustment_created_by")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model bill_details {
+  bill_detail_id BigInt          @id @default(autoincrement())
+  bill_id        BigInt
+  charge_type    String          @db.VarChar(50)
+  rate_id        BigInt?
+  description    String?
+  quantity       Decimal         @default(0) @db.Decimal(14, 3)
+  rate           Decimal         @default(0) @db.Decimal(14, 4)
+  amount         Decimal         @default(0) @db.Decimal(14, 2)
+  sequence_no    Int?
+  created_at     DateTime        @default(now()) @db.Timestamp(6)
+  bills          bills           @relation(fields: [bill_id], references: [bill_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_bill_detail_bill")
+  mt_water_rates mt_water_rates? @relation(fields: [rate_id], references: [rate_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_detail_rate")
+}
+
+model bill_penalties {
+  bill_penalty_id  BigInt           @id @default(autoincrement())
+  bill_id          BigInt
+  penalty_id       BigInt
+  base_amount      Decimal          @default(0) @db.Decimal(14, 2)
+  rate             Decimal          @default(0) @db.Decimal(10, 4)
+  amount           Decimal          @default(0) @db.Decimal(14, 2)
+  created_at       DateTime         @default(now()) @db.Timestamp(6)
+  bills            bills            @relation(fields: [bill_id], references: [bill_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_bill_penalty_bill")
+  mt_penalty_rates mt_penalty_rates @relation(fields: [penalty_id], references: [penalty_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_penalty_rate")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model bills {
+  bill_id                       BigInt                @id @default(autoincrement())
+  bill_no                       String                @unique @db.VarChar(50)
+  service_account_id            BigInt
+  billing_period_id             BigInt
+  reading_id                    BigInt?
+  bill_date                     DateTime              @default(dbgenerated("CURRENT_DATE")) @db.Date
+  due_date                      DateTime?             @db.Date
+  water_consumption_amount      Decimal               @default(0) @db.Decimal(14, 2)
+  previous_balance              Decimal               @default(0) @db.Decimal(14, 2)
+  penalty_amount                Decimal               @default(0) @db.Decimal(14, 2)
+  connection_fee_amount         Decimal               @default(0) @db.Decimal(14, 2)
+  adjustment_amount             Decimal               @default(0) @db.Decimal(14, 2)
+  total_amount_due              Decimal               @default(0) @db.Decimal(14, 2)
+  status                        String                @default("UNPAID") @db.VarChar(30)
+  remarks                       String?
+  created_by                    BigInt?
+  updated_by                    BigInt?
+  created_at                    DateTime              @default(now()) @db.Timestamp(6)
+  updated_at                    DateTime?             @db.Timestamp(6)
+  bill_adjustments              bill_adjustments[]
+  bill_details                  bill_details[]
+  bill_penalties                bill_penalties[]
+  mt_billing_period             mt_billing_period     @relation(fields: [billing_period_id], references: [billing_period_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_billing_period")
+  users_bills_created_byTousers users?                @relation("bills_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_created_by")
+  meter_readings                meter_readings?       @relation(fields: [reading_id], references: [reading_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_reading")
+  service_accounts              service_accounts      @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_service_account")
+  users_bills_updated_byTousers users?                @relation("bills_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_updated_by")
+  payment_allocations           payment_allocations[]
+
+  @@index([billing_period_id], map: "idx_bill_billing_period")
+  @@index([service_account_id], map: "idx_bill_service_account")
+  @@index([status], map: "idx_bill_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model connection_fees {
+  connection_fee_id                       BigInt           @id @default(autoincrement())
+  service_account_id                      BigInt
+  fee_id                                  BigInt
+  assessed_amount                         Decimal          @default(0) @db.Decimal(14, 2)
+  amount_paid                             Decimal          @default(0) @db.Decimal(14, 2)
+  balance_amount                          Decimal          @default(0) @db.Decimal(14, 2)
+  assessment_date                         DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Date
+  status                                  String           @default("UNPAID") @db.VarChar(30)
+  remarks                                 String?
+  created_by                              BigInt?
+  updated_by                              BigInt?
+  created_at                              DateTime         @default(now()) @db.Timestamp(6)
+  updated_at                              DateTime?        @db.Timestamp(6)
+  users_connection_fees_created_byTousers users?           @relation("connection_fees_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_created_by")
+  mt_fees                                 mt_fees          @relation(fields: [fee_id], references: [fee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_master")
+  service_accounts                        service_accounts @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_service")
+  users_connection_fees_updated_byTousers users?           @relation("connection_fees_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_updated_by")
+
+  @@index([service_account_id], map: "idx_connection_fee_service")
+}
+
+model disconnection_orders {
+  disconnection_id                               BigInt                  @id @default(autoincrement())
+  service_account_id                             BigInt
+  reason_id                                      BigInt
+  order_date                                     DateTime                @default(dbgenerated("CURRENT_DATE")) @db.Date
+  disconnection_date                             DateTime?               @db.Date
+  status                                         String                  @default("PENDING") @db.VarChar(30)
+  performed_by                                   BigInt?
+  remarks                                        String?
+  created_by                                     BigInt?
+  created_at                                     DateTime                @default(now()) @db.Timestamp(6)
+  updated_at                                     DateTime?               @db.Timestamp(6)
+  users_disconnection_orders_created_byTousers   users?                  @relation("disconnection_orders_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_created_by")
+  users_disconnection_orders_performed_byTousers users?                  @relation("disconnection_orders_performed_byTousers", fields: [performed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_performed_by")
+  mt_disconnection_reason                        mt_disconnection_reason @relation(fields: [reason_id], references: [reason_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_reason")
+  service_accounts                               service_accounts        @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_service")
+
+  @@index([service_account_id], map: "idx_disconnection_service")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model document_attachments {
+  attachment_id BigInt   @id @default(autoincrement())
+  document_type String   @db.VarChar(50)
+  record_id     String   @db.VarChar(100)
+  file_name     String   @db.VarChar(255)
+  file_path     String?
+  mime_type     String?  @db.VarChar(100)
+  file_size     BigInt?
+  uploaded_by   BigInt?
+  uploaded_at   DateTime @default(now()) @db.Timestamp(6)
+  description   String?
+  users         users?   @relation(fields: [uploaded_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_attachment_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model meter_installations {
+  installation_id    BigInt           @id @default(autoincrement())
+  service_account_id BigInt
+  meter_id           BigInt
+  installation_date  DateTime         @db.Date
+  removed_date       DateTime?        @db.Date
+  installation_type  String?          @db.VarChar(50)
+  reason             String?
+  remarks            String?
+  performed_by       BigInt?
+  created_at         DateTime         @default(now()) @db.Timestamp(6)
+  meters             meters           @relation(fields: [meter_id], references: [meter_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_meter")
+  service_accounts   service_accounts @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_service")
+  users              users?           @relation(fields: [performed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model meter_readings {
+  reading_id                             BigInt             @id @default(autoincrement())
+  service_account_id                     BigInt
+  meter_id                               BigInt
+  billing_period_id                      BigInt
+  reading_date                           DateTime           @db.Date
+  previous_reading                       Decimal            @default(0) @db.Decimal(14, 3)
+  present_reading                        Decimal            @default(0) @db.Decimal(14, 3)
+  consumption                            Decimal            @default(0) @db.Decimal(14, 3)
+  reading_status_id                      BigInt?
+  meter_reader_id                        BigInt?
+  remarks                                String?
+  created_by                             BigInt?
+  updated_by                             BigInt?
+  created_at                             DateTime           @default(now()) @db.Timestamp(6)
+  updated_at                             DateTime?          @db.Timestamp(6)
+  bills                                  bills[]
+  mt_billing_period                      mt_billing_period  @relation(fields: [billing_period_id], references: [billing_period_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_billing_period")
+  users_meter_readings_created_byTousers users?             @relation("meter_readings_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_created_by")
+  meters                                 meters             @relation(fields: [meter_id], references: [meter_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_meter")
+  mt_meter_reader                        mt_meter_reader?   @relation(fields: [meter_reader_id], references: [meter_reader_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_reader")
+  service_accounts                       service_accounts   @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_service_account")
+  mt_reading_status                      mt_reading_status? @relation(fields: [reading_status_id], references: [reading_status_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_status")
+  users_meter_readings_updated_byTousers users?             @relation("meter_readings_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_updated_by")
+
+  @@index([billing_period_id], map: "idx_reading_billing_period")
+  @@index([service_account_id], map: "idx_reading_service_account")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model meters {
+  meter_id                       BigInt                @id @default(autoincrement())
+  service_account_id             BigInt
+  meter_no                       String                @unique @db.VarChar(50)
+  meter_size_id                  BigInt
+  meter_type_id                  BigInt?
+  meter_brand_id                 BigInt?
+  serial_no                      String?               @db.VarChar(100)
+  installation_date              DateTime?             @db.Date
+  initial_reading                Decimal               @default(0) @db.Decimal(14, 3)
+  status                         String                @default("ACTIVE") @db.VarChar(30)
+  remarks                        String?
+  created_by                     BigInt?
+  updated_by                     BigInt?
+  created_at                     DateTime              @default(now()) @db.Timestamp(6)
+  updated_at                     DateTime?             @db.Timestamp(6)
+  meter_installations            meter_installations[]
+  meter_readings                 meter_readings[]
+  mt_meter_brand                 mt_meter_brand?       @relation(fields: [meter_brand_id], references: [meter_brand_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_brand")
+  users_meters_created_byTousers users?                @relation("meters_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_created_by")
+  service_accounts               service_accounts      @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_service_account")
+  mt_meter_size                  mt_meter_size         @relation(fields: [meter_size_id], references: [meter_size_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_size")
+  mt_meter_type                  mt_meter_type?        @relation(fields: [meter_type_id], references: [meter_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_type")
+  users_meters_updated_byTousers users?                @relation("meters_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_updated_by")
+
+  @@index([service_account_id], map: "idx_meter_service_account")
+}
+
+model mt_application_status {
+  application_status_id                         BigInt                 @id @default(autoincrement())
+  status_code                                   String                 @unique @db.VarChar(30)
+  status_name                                   String                 @db.VarChar(100)
+  description                                   String?
+  is_active                                     Boolean                @default(true)
+  created_by                                    BigInt?
+  updated_by                                    BigInt?
+  created_at                                    DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                                    DateTime?              @db.Timestamp(6)
+  users_mt_application_status_created_byTousers users?                 @relation("mt_application_status_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_status_created_by")
+  users_mt_application_status_updated_byTousers users?                 @relation("mt_application_status_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_status_updated_by")
+  service_applications                          service_applications[]
+}
+
+model mt_application_type {
+  application_type_id                         BigInt                 @id @default(autoincrement())
+  application_type_code                       String                 @unique @db.VarChar(30)
+  application_type_name                       String                 @db.VarChar(100)
+  description                                 String?
+  is_active                                   Boolean                @default(true)
+  created_by                                  BigInt?
+  updated_by                                  BigInt?
+  created_at                                  DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                                  DateTime?              @db.Timestamp(6)
+  users_mt_application_type_created_byTousers users?                 @relation("mt_application_type_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_type_created_by")
+  users_mt_application_type_updated_byTousers users?                 @relation("mt_application_type_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_type_updated_by")
+  service_applications                        service_applications[]
+}
+
+model mt_barangay {
+  barangay_id                         BigInt             @id @default(autoincrement())
+  barangay_code                       String             @unique @db.VarChar(20)
+  barangay_name                       String             @unique @db.VarChar(100)
+  description                         String?
+  is_active                           Boolean            @default(true)
+  created_by                          BigInt?
+  updated_by                          BigInt?
+  created_at                          DateTime           @default(now()) @db.Timestamp(6)
+  updated_at                          DateTime?          @db.Timestamp(6)
+  customers                           customers[]
+  users_mt_barangay_created_byTousers users?             @relation("mt_barangay_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_barangay_created_by")
+  users_mt_barangay_updated_byTousers users?             @relation("mt_barangay_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_barangay_updated_by")
+  mt_purok                            mt_purok[]
+  mt_reading_route                    mt_reading_route[]
+}
+
+model mt_billing_cycle {
+  billing_cycle_id                         BigInt    @id @default(autoincrement())
+  cycle_code                               String    @unique @db.VarChar(30)
+  cycle_name                               String    @db.VarChar(100)
+  number_of_days                           Int?
+  description                              String?
+  is_active                                Boolean   @default(true)
+  created_by                               BigInt?
+  updated_by                               BigInt?
+  created_at                               DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime? @db.Timestamp(6)
+  users_mt_billing_cycle_created_byTousers users?    @relation("mt_billing_cycle_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_billing_cycle_created_by")
+  users_mt_billing_cycle_updated_byTousers users?    @relation("mt_billing_cycle_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_billing_cycle_updated_by")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mt_billing_period {
+  billing_period_id                         BigInt           @id @default(autoincrement())
+  period_code                               String           @unique @db.VarChar(30)
+  period_name                               String?          @db.VarChar(100)
+  start_date                                DateTime         @db.Date
+  end_date                                  DateTime         @db.Date
+  due_date                                  DateTime?        @db.Date
+  disconnection_date                        DateTime?        @db.Date
+  status                                    String           @default("OPEN") @db.VarChar(30)
+  created_by                                BigInt?
+  updated_by                                BigInt?
+  created_at                                DateTime         @default(now()) @db.Timestamp(6)
+  updated_at                                DateTime?        @db.Timestamp(6)
+  bills                                     bills[]
+  meter_readings                            meter_readings[]
+  users_mt_billing_period_created_byTousers users?           @relation("mt_billing_period_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_billing_period_created_by")
+  users_mt_billing_period_updated_byTousers users?           @relation("mt_billing_period_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_billing_period_updated_by")
+}
+
+model mt_connection_status {
+  connection_status_id                         BigInt             @id @default(autoincrement())
+  status_code                                  String             @unique @db.VarChar(30)
+  status_name                                  String             @db.VarChar(100)
+  description                                  String?
+  is_active                                    Boolean            @default(true)
+  created_by                                   BigInt?
+  updated_by                                   BigInt?
+  created_at                                   DateTime           @default(now()) @db.Timestamp(6)
+  updated_at                                   DateTime?          @db.Timestamp(6)
+  users_mt_connection_status_created_byTousers users?             @relation("mt_connection_status_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_status_created_by")
+  users_mt_connection_status_updated_byTousers users?             @relation("mt_connection_status_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_status_updated_by")
+  service_accounts                             service_accounts[]
+}
+
+model mt_connection_type {
+  connection_type_id                         BigInt                 @id @default(autoincrement())
+  connection_type_code                       String                 @unique @db.VarChar(30)
+  connection_type_name                       String                 @db.VarChar(100)
+  description                                String?
+  is_active                                  Boolean                @default(true)
+  created_by                                 BigInt?
+  updated_by                                 BigInt?
+  created_at                                 DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                                 DateTime?              @db.Timestamp(6)
+  users_mt_connection_type_created_byTousers users?                 @relation("mt_connection_type_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_type_created_by")
+  users_mt_connection_type_updated_byTousers users?                 @relation("mt_connection_type_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_type_updated_by")
+  service_accounts                           service_accounts[]
+  service_applications                       service_applications[]
+}
+
+model mt_customer_classification {
+  classification_id                                  BigInt             @id @default(autoincrement())
+  classification_code                                String             @unique @db.VarChar(30)
+  classification_name                                String             @unique @db.VarChar(100)
+  description                                        String?
+  is_active                                          Boolean            @default(true)
+  created_by                                         BigInt?
+  updated_by                                         BigInt?
+  created_at                                         DateTime           @default(now()) @db.Timestamp(6)
+  updated_at                                         DateTime?          @db.Timestamp(6)
+  users_mt_customer_classification_created_byTousers users?             @relation("mt_customer_classification_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_classification_created_by")
+  users_mt_customer_classification_updated_byTousers users?             @relation("mt_customer_classification_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_classification_updated_by")
+  mt_water_rates                                     mt_water_rates[]
+  service_accounts                                   service_accounts[]
+}
+
+model mt_disconnection_reason {
+  reason_id                                       BigInt                 @id @default(autoincrement())
+  reason_code                                     String                 @unique @db.VarChar(30)
+  reason_name                                     String                 @db.VarChar(150)
+  description                                     String?
+  is_active                                       Boolean                @default(true)
+  created_by                                      BigInt?
+  updated_by                                      BigInt?
+  created_at                                      DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                                      DateTime?              @db.Timestamp(6)
+  disconnection_orders                            disconnection_orders[]
+  users_mt_disconnection_reason_created_byTousers users?                 @relation("mt_disconnection_reason_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnect_reason_created_by")
+  users_mt_disconnection_reason_updated_byTousers users?                 @relation("mt_disconnection_reason_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnect_reason_updated_by")
+}
+
+model mt_disconnection_rule {
+  rule_id                                       BigInt    @id @default(autoincrement())
+  rule_name                                     String    @db.VarChar(100)
+  unpaid_bill_count                             Int?
+  overdue_days                                  Int?
+  minimum_balance                               Decimal?  @db.Decimal(14, 2)
+  grace_period_days                             Int       @default(0)
+  description                                   String?
+  is_active                                     Boolean   @default(true)
+  created_by                                    BigInt?
+  updated_by                                    BigInt?
+  created_at                                    DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                                    DateTime? @db.Timestamp(6)
+  users_mt_disconnection_rule_created_byTousers users?    @relation("mt_disconnection_rule_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnect_rule_created_by")
+  users_mt_disconnection_rule_updated_byTousers users?    @relation("mt_disconnection_rule_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnect_rule_updated_by")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mt_document_series {
+  series_id                                  BigInt    @id @default(autoincrement())
+  document_type                              String    @db.VarChar(50)
+  prefix                                     String?   @db.VarChar(30)
+  year_value                                 Int?
+  month_value                                Int?
+  current_number                             BigInt    @default(0)
+  padding_length                             Int       @default(5)
+  is_active                                  Boolean   @default(true)
+  created_by                                 BigInt?
+  updated_by                                 BigInt?
+  created_at                                 DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                                 DateTime? @db.Timestamp(6)
+  users_mt_document_series_created_byTousers users?    @relation("mt_document_series_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_document_series_created_by")
+  users_mt_document_series_updated_byTousers users?    @relation("mt_document_series_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_document_series_updated_by")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mt_due_date_rule {
+  rule_id                                  BigInt    @id @default(autoincrement())
+  rule_name                                String    @db.VarChar(100)
+  rule_type                                String    @db.VarChar(30)
+  days_after_billing                       Int?
+  fixed_day                                Int?
+  description                              String?
+  is_active                                Boolean   @default(true)
+  created_by                               BigInt?
+  updated_by                               BigInt?
+  created_at                               DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime? @db.Timestamp(6)
+  users_mt_due_date_rule_created_byTousers users?    @relation("mt_due_date_rule_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_due_rule_created_by")
+  users_mt_due_date_rule_updated_byTousers users?    @relation("mt_due_date_rule_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_due_rule_updated_by")
+}
+
+model mt_employee {
+  employee_id                         BigInt            @id @default(autoincrement())
+  employee_code                       String            @unique @db.VarChar(30)
+  first_name                          String?           @db.VarChar(100)
+  middle_name                         String?           @db.VarChar(100)
+  last_name                           String?           @db.VarChar(100)
+  employee_name                       String            @db.VarChar(200)
+  position                            String?           @db.VarChar(100)
+  contact_no                          String?           @db.VarChar(50)
+  email                               String?           @db.VarChar(150)
+  is_active                           Boolean           @default(true)
+  created_by                          BigInt?
+  updated_by                          BigInt?
+  created_at                          DateTime          @default(now()) @db.Timestamp(6)
+  updated_at                          DateTime?         @db.Timestamp(6)
+  users_mt_employee_created_byTousers users?            @relation("mt_employee_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_created_by")
+  users_mt_employee_updated_byTousers users?            @relation("mt_employee_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_updated_by")
+  mt_meter_reader                     mt_meter_reader[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mt_fees {
+  fee_id                          BigInt            @id @default(autoincrement())
+  fee_code                        String            @unique @db.VarChar(30)
+  fee_name                        String            @db.VarChar(150)
+  fee_type                        String            @db.VarChar(50)
+  amount                          Decimal           @default(0) @db.Decimal(14, 2)
+  effective_date                  DateTime          @db.Date
+  expiration_date                 DateTime?         @db.Date
+  description                     String?
+  is_active                       Boolean           @default(true)
+  created_by                      BigInt?
+  updated_by                      BigInt?
+  created_at                      DateTime          @default(now()) @db.Timestamp(6)
+  updated_at                      DateTime?         @db.Timestamp(6)
+  connection_fees                 connection_fees[]
+  users_mt_fees_created_byTousers users?            @relation("mt_fees_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_fee_created_by")
+  users_mt_fees_updated_byTousers users?            @relation("mt_fees_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_fee_updated_by")
+}
+
+model mt_holiday {
+  holiday_id                         BigInt    @id @default(autoincrement())
+  holiday_date                       DateTime  @db.Date
+  holiday_name                       String    @db.VarChar(150)
+  holiday_type                       String?   @db.VarChar(30)
+  description                        String?
+  is_active                          Boolean   @default(true)
+  created_by                         BigInt?
+  updated_by                         BigInt?
+  created_at                         DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                         DateTime? @db.Timestamp(6)
+  users_mt_holiday_created_byTousers users?    @relation("mt_holiday_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_holiday_created_by")
+  users_mt_holiday_updated_byTousers users?    @relation("mt_holiday_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_holiday_updated_by")
+
+  @@unique([holiday_date, holiday_name], map: "uq_holiday_date_name")
+}
+
+model mt_material {
+  material_id                         BigInt                           @id @default(autoincrement())
+  material_code                       String                           @unique @db.VarChar(30)
+  material_name                       String                           @db.VarChar(150)
+  unit_id                             BigInt
+  description                         String?
+  is_active                           Boolean                          @default(true)
+  created_by                          BigInt?
+  updated_by                          BigInt?
+  created_at                          DateTime                         @default(now()) @db.Timestamp(6)
+  updated_at                          DateTime?                        @db.Timestamp(6)
+  users_mt_material_created_byTousers users?                           @relation("mt_material_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_material_created_by")
+  mt_unit_of_measure                  mt_unit_of_measure               @relation(fields: [unit_id], references: [unit_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_material_unit")
+  users_mt_material_updated_byTousers users?                           @relation("mt_material_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_material_updated_by")
+  service_installation_materials      service_installation_materials[]
+}
+
+model mt_meter_brand {
+  meter_brand_id                         BigInt    @id @default(autoincrement())
+  brand_code                             String?   @unique @db.VarChar(30)
+  brand_name                             String    @unique @db.VarChar(100)
+  description                            String?
+  is_active                              Boolean   @default(true)
+  created_by                             BigInt?
+  updated_by                             BigInt?
+  created_at                             DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                             DateTime? @db.Timestamp(6)
+  meters                                 meters[]
+  users_mt_meter_brand_created_byTousers users?    @relation("mt_meter_brand_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_brand_created_by")
+  users_mt_meter_brand_updated_byTousers users?    @relation("mt_meter_brand_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_brand_updated_by")
+}
+
+model mt_meter_reader {
+  meter_reader_id                         BigInt           @id @default(autoincrement())
+  employee_id                             BigInt
+  reader_code                             String           @unique @db.VarChar(30)
+  is_active                               Boolean          @default(true)
+  created_by                              BigInt?
+  updated_by                              BigInt?
+  created_at                              DateTime         @default(now()) @db.Timestamp(6)
+  updated_at                              DateTime?        @db.Timestamp(6)
+  meter_readings                          meter_readings[]
+  users_mt_meter_reader_created_byTousers users?           @relation("mt_meter_reader_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_reader_created_by")
+  mt_employee                             mt_employee      @relation(fields: [employee_id], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_reader_employee")
+  users_mt_meter_reader_updated_byTousers users?           @relation("mt_meter_reader_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_reader_updated_by")
+}
+
+model mt_meter_size {
+  meter_size_id                         BigInt                 @id @default(autoincrement())
+  meter_size                            String                 @unique @db.VarChar(30)
+  description                           String?
+  is_active                             Boolean                @default(true)
+  created_by                            BigInt?
+  updated_by                            BigInt?
+  created_at                            DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                            DateTime?              @db.Timestamp(6)
+  meters                                meters[]
+  users_mt_meter_size_created_byTousers users?                 @relation("mt_meter_size_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_size_created_by")
+  users_mt_meter_size_updated_byTousers users?                 @relation("mt_meter_size_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_size_updated_by")
+  mt_water_rates                        mt_water_rates[]
+  service_applications                  service_applications[]
+}
+
+model mt_meter_type {
+  meter_type_id                         BigInt    @id @default(autoincrement())
+  meter_type_code                       String    @unique @db.VarChar(30)
+  meter_type_name                       String    @db.VarChar(100)
+  description                           String?
+  is_active                             Boolean   @default(true)
+  created_by                            BigInt?
+  updated_by                            BigInt?
+  created_at                            DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                            DateTime? @db.Timestamp(6)
+  meters                                meters[]
+  users_mt_meter_type_created_byTousers users?    @relation("mt_meter_type_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_type_created_by")
+  users_mt_meter_type_updated_byTousers users?    @relation("mt_meter_type_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_type_updated_by")
+}
+
+model mt_payment_method {
+  payment_method_id                         BigInt     @id @default(autoincrement())
+  payment_method_code                       String     @unique @db.VarChar(30)
+  payment_method_name                       String     @db.VarChar(100)
+  description                               String?
+  is_active                                 Boolean    @default(true)
+  created_by                                BigInt?
+  updated_by                                BigInt?
+  created_at                                DateTime   @default(now()) @db.Timestamp(6)
+  updated_at                                DateTime?  @db.Timestamp(6)
+  users_mt_payment_method_created_byTousers users?     @relation("mt_payment_method_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_method_created_by")
+  users_mt_payment_method_updated_byTousers users?     @relation("mt_payment_method_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_method_updated_by")
+  payments                                  payments[]
+}
+
+model mt_payment_type {
+  payment_type_id                         BigInt     @id @default(autoincrement())
+  payment_type_code                       String     @unique @db.VarChar(30)
+  payment_type_name                       String     @db.VarChar(100)
+  description                             String?
+  is_active                               Boolean    @default(true)
+  created_by                              BigInt?
+  updated_by                              BigInt?
+  created_at                              DateTime   @default(now()) @db.Timestamp(6)
+  updated_at                              DateTime?  @db.Timestamp(6)
+  users_mt_payment_type_created_byTousers users?     @relation("mt_payment_type_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_type_created_by")
+  users_mt_payment_type_updated_byTousers users?     @relation("mt_payment_type_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_type_updated_by")
+  payments                                payments[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mt_penalty_rates {
+  penalty_id                               BigInt           @id @default(autoincrement())
+  penalty_code                             String           @unique @db.VarChar(30)
+  penalty_name                             String           @db.VarChar(100)
+  penalty_type                             String           @db.VarChar(30)
+  rate                                     Decimal          @default(0) @db.Decimal(10, 4)
+  grace_period_days                        Int              @default(0)
+  maximum_penalty                          Decimal?         @db.Decimal(14, 2)
+  effective_date                           DateTime         @db.Date
+  expiration_date                          DateTime?        @db.Date
+  description                              String?
+  is_active                                Boolean          @default(true)
+  created_by                               BigInt?
+  updated_by                               BigInt?
+  created_at                               DateTime         @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime?        @db.Timestamp(6)
+  bill_penalties                           bill_penalties[]
+  users_mt_penalty_rates_created_byTousers users?           @relation("mt_penalty_rates_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_penalty_created_by")
+  users_mt_penalty_rates_updated_byTousers users?           @relation("mt_penalty_rates_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_penalty_updated_by")
+}
+
+model mt_permission {
+  permission_id                         BigInt               @id @default(autoincrement())
+  permission_code                       String               @unique @db.VarChar(100)
+  permission_name                       String               @db.VarChar(150)
+  module_name                           String?              @db.VarChar(100)
+  description                           String?
+  is_active                             Boolean              @default(true)
+  created_by                            BigInt?
+  updated_by                            BigInt?
+  created_at                            DateTime             @default(now()) @db.Timestamp(6)
+  updated_at                            DateTime?            @db.Timestamp(6)
+  users_mt_permission_created_byTousers users?               @relation("mt_permission_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_permission_created_by")
+  users_mt_permission_updated_byTousers users?               @relation("mt_permission_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_permission_updated_by")
+  mt_role_permission                    mt_role_permission[]
+}
+
+model mt_purok {
+  purok_id                         BigInt      @id @default(autoincrement())
+  barangay_id                      BigInt
+  purok_code                       String?     @db.VarChar(20)
+  purok_name                       String      @db.VarChar(100)
+  description                      String?
+  is_active                        Boolean     @default(true)
+  created_by                       BigInt?
+  updated_by                       BigInt?
+  created_at                       DateTime    @default(now()) @db.Timestamp(6)
+  updated_at                       DateTime?   @db.Timestamp(6)
+  customers                        customers[]
+  mt_barangay                      mt_barangay @relation(fields: [barangay_id], references: [barangay_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_purok_barangay")
+  users_mt_purok_created_byTousers users?      @relation("mt_purok_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_purok_created_by")
+  users_mt_purok_updated_byTousers users?      @relation("mt_purok_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_purok_updated_by")
+
+  @@unique([barangay_id, purok_name], map: "uq_purok_barangay_name")
+  @@index([barangay_id], map: "idx_purok_barangay")
+}
+
+model mt_reading_route {
+  route_id                                 BigInt             @id @default(autoincrement())
+  route_code                               String             @unique @db.VarChar(30)
+  route_name                               String             @db.VarChar(100)
+  barangay_id                              BigInt?
+  sequence_no                              Int?
+  description                              String?
+  is_active                                Boolean            @default(true)
+  created_by                               BigInt?
+  updated_by                               BigInt?
+  created_at                               DateTime           @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime?          @db.Timestamp(6)
+  mt_barangay                              mt_barangay?       @relation(fields: [barangay_id], references: [barangay_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_route_barangay")
+  users_mt_reading_route_created_byTousers users?             @relation("mt_reading_route_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_route_created_by")
+  users_mt_reading_route_updated_byTousers users?             @relation("mt_reading_route_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_route_updated_by")
+  service_accounts                         service_accounts[]
+
+  @@index([barangay_id], map: "idx_route_barangay")
+}
+
+model mt_reading_status {
+  reading_status_id                         BigInt           @id @default(autoincrement())
+  status_code                               String           @unique @db.VarChar(30)
+  status_name                               String           @db.VarChar(100)
+  description                               String?
+  is_active                                 Boolean          @default(true)
+  created_by                                BigInt?
+  updated_by                                BigInt?
+  created_at                                DateTime         @default(now()) @db.Timestamp(6)
+  updated_at                                DateTime?        @db.Timestamp(6)
+  meter_readings                            meter_readings[]
+  users_mt_reading_status_created_byTousers users?           @relation("mt_reading_status_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_status_created_by")
+  users_mt_reading_status_updated_byTousers users?           @relation("mt_reading_status_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reading_status_updated_by")
+}
+
+model mt_receipt_type {
+  receipt_type_id                         BigInt     @id @default(autoincrement())
+  receipt_type_code                       String     @unique @db.VarChar(30)
+  receipt_type_name                       String     @db.VarChar(100)
+  description                             String?
+  is_active                               Boolean    @default(true)
+  created_by                              BigInt?
+  updated_by                              BigInt?
+  created_at                              DateTime   @default(now()) @db.Timestamp(6)
+  updated_at                              DateTime?  @db.Timestamp(6)
+  users_mt_receipt_type_created_byTousers users?     @relation("mt_receipt_type_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_type_created_by")
+  users_mt_receipt_type_updated_byTousers users?     @relation("mt_receipt_type_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_type_updated_by")
+  payments                                payments[]
+}
+
+model mt_role_permission {
+  role_id       BigInt
+  permission_id BigInt
+  created_at    DateTime      @default(now()) @db.Timestamp(6)
+  mt_permission mt_permission @relation(fields: [permission_id], references: [permission_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_role_permission_permission")
+  roles         roles         @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_role_permission_role")
+
+  @@id([role_id, permission_id])
+}
+
+model mt_service_type {
+  service_type_id                         BigInt             @id @default(autoincrement())
+  service_type_code                       String             @unique @db.VarChar(30)
+  service_type_name                       String             @db.VarChar(100)
+  description                             String?
+  is_active                               Boolean            @default(true)
+  created_by                              BigInt?
+  updated_by                              BigInt?
+  created_at                              DateTime           @default(now()) @db.Timestamp(6)
+  updated_at                              DateTime?          @db.Timestamp(6)
+  users_mt_service_type_created_byTousers users?             @relation("mt_service_type_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_type_created_by")
+  users_mt_service_type_updated_byTousers users?             @relation("mt_service_type_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_type_updated_by")
+  service_accounts                        service_accounts[]
+}
+
+model mt_system_settings {
+  setting_id                                 BigInt    @id @default(autoincrement())
+  setting_key                                String    @unique @db.VarChar(100)
+  setting_value                              String?
+  data_type                                  String    @default("TEXT") @db.VarChar(30)
+  description                                String?
+  is_active                                  Boolean   @default(true)
+  created_by                                 BigInt?
+  updated_by                                 BigInt?
+  created_at                                 DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                                 DateTime? @db.Timestamp(6)
+  users_mt_system_settings_created_byTousers users?    @relation("mt_system_settings_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_system_settings_created_by")
+  users_mt_system_settings_updated_byTousers users?    @relation("mt_system_settings_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_system_settings_updated_by")
+}
+
+model mt_unit_of_measure {
+  unit_id                                    BigInt        @id @default(autoincrement())
+  unit_code                                  String        @unique @db.VarChar(20)
+  unit_name                                  String        @db.VarChar(50)
+  description                                String?
+  is_active                                  Boolean       @default(true)
+  created_by                                 BigInt?
+  updated_by                                 BigInt?
+  created_at                                 DateTime      @default(now()) @db.Timestamp(6)
+  updated_at                                 DateTime?     @db.Timestamp(6)
+  mt_material                                mt_material[]
+  users_mt_unit_of_measure_created_byTousers users?        @relation("mt_unit_of_measure_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_unit_created_by")
+  users_mt_unit_of_measure_updated_byTousers users?        @relation("mt_unit_of_measure_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_unit_updated_by")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mt_water_rates {
+  rate_id                                BigInt                     @id @default(autoincrement())
+  classification_id                      BigInt
+  meter_size_id                          BigInt
+  minimum_cubic_meter                    Decimal                    @default(0) @db.Decimal(12, 3)
+  maximum_cubic_meter                    Decimal?                   @db.Decimal(12, 3)
+  rate_type                              String                     @default("PER_CU_M") @db.VarChar(30)
+  rate_amount                            Decimal                    @db.Decimal(14, 2)
+  effective_date                         DateTime                   @db.Date
+  expiration_date                        DateTime?                  @db.Date
+  description                            String?
+  is_active                              Boolean                    @default(true)
+  created_by                             BigInt?
+  updated_by                             BigInt?
+  created_at                             DateTime                   @default(now()) @db.Timestamp(6)
+  updated_at                             DateTime?                  @db.Timestamp(6)
+  bill_details                           bill_details[]
+  mt_customer_classification             mt_customer_classification @relation(fields: [classification_id], references: [classification_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_water_rate_classification")
+  users_mt_water_rates_created_byTousers users?                     @relation("mt_water_rates_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_water_rate_created_by")
+  mt_meter_size                          mt_meter_size              @relation(fields: [meter_size_id], references: [meter_size_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_water_rate_meter_size")
+  users_mt_water_rates_updated_byTousers users?                     @relation("mt_water_rates_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_water_rate_updated_by")
+
+  @@index([classification_id], map: "idx_water_rates_classification")
+  @@index([effective_date], map: "idx_water_rates_effective_date")
+  @@index([meter_size_id], map: "idx_water_rates_meter_size")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model payment_allocations {
+  allocation_id    BigInt   @id @default(autoincrement())
+  payment_id       BigInt
+  bill_id          BigInt
+  amount_allocated Decimal  @default(0) @db.Decimal(14, 2)
+  created_at       DateTime @default(now()) @db.Timestamp(6)
+  bills            bills    @relation(fields: [bill_id], references: [bill_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_allocation_bill")
+  payments         payments @relation(fields: [payment_id], references: [payment_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_allocation_payment")
+
+  @@index([bill_id], map: "idx_payment_bill")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model payments {
+  payment_id                       BigInt                @id @default(autoincrement())
+  receipt_no                       String                @unique @db.VarChar(50)
+  service_account_id               BigInt
+  payment_date                     DateTime              @default(now()) @db.Timestamp(6)
+  payment_type_id                  BigInt
+  payment_method_id                BigInt
+  receipt_type_id                  BigInt?
+  amount                           Decimal               @default(0) @db.Decimal(14, 2)
+  cashier_id                       BigInt?
+  status                           String                @default("POSTED") @db.VarChar(30)
+  reference_no                     String?               @db.VarChar(100)
+  remarks                          String?
+  created_by                       BigInt?
+  created_at                       DateTime              @default(now()) @db.Timestamp(6)
+  updated_at                       DateTime?             @db.Timestamp(6)
+  payment_allocations              payment_allocations[]
+  users_payments_cashier_idTousers users?                @relation("payments_cashier_idTousers", fields: [cashier_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_cashier")
+  users_payments_created_byTousers users?                @relation("payments_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_created_by")
+  mt_payment_method                mt_payment_method     @relation(fields: [payment_method_id], references: [payment_method_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_method")
+  mt_receipt_type                  mt_receipt_type?      @relation(fields: [receipt_type_id], references: [receipt_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_receipt_type")
+  service_accounts                 service_accounts      @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_service_account")
+  mt_payment_type                  mt_payment_type       @relation(fields: [payment_type_id], references: [payment_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_type")
+
+  @@index([payment_date], map: "idx_payment_date")
+  @@index([service_account_id], map: "idx_payment_service_account")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model reconnection_orders {
+  reconnection_id                               BigInt           @id @default(autoincrement())
+  service_account_id                            BigInt
+  order_date                                    DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Date
+  reconnection_date                             DateTime?        @db.Date
+  fee_amount                                    Decimal          @default(0) @db.Decimal(14, 2)
+  status                                        String           @default("PENDING") @db.VarChar(30)
+  performed_by                                  BigInt?
+  remarks                                       String?
+  created_by                                    BigInt?
+  created_at                                    DateTime         @default(now()) @db.Timestamp(6)
+  updated_at                                    DateTime?        @db.Timestamp(6)
+  users_reconnection_orders_created_byTousers   users?           @relation("reconnection_orders_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_created_by")
+  users_reconnection_orders_performed_byTousers users?           @relation("reconnection_orders_performed_byTousers", fields: [performed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_performed_by")
+  service_accounts                              service_accounts @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_service")
+
+  @@index([service_account_id], map: "idx_reconnection_service")
+}
+
+model service_accounts {
+  service_account_id                       BigInt                     @id @default(autoincrement())
+  customer_id                              BigInt
+  control_no                               String                     @unique @db.VarChar(50)
+  classification_id                        BigInt
+  connection_type_id                       BigInt?
+  connection_status_id                     BigInt?
+  service_type_id                          BigInt?
+  route_id                                 BigInt?
+  date_connected                           DateTime?                  @db.Date
+  address                                  String?
+  created_by                               BigInt?
+  updated_by                               BigInt?
+  created_at                               DateTime                   @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime?                  @db.Timestamp(6)
+  bills                                    bills[]
+  connection_fees                          connection_fees[]
+  disconnection_orders                     disconnection_orders[]
+  meter_installations                      meter_installations[]
+  meter_readings                           meter_readings[]
+  meters                                   meters[]
+  payments                                 payments[]
+  reconnection_orders                      reconnection_orders[]
+  mt_customer_classification               mt_customer_classification @relation(fields: [classification_id], references: [classification_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_classification")
+  mt_connection_status                     mt_connection_status?      @relation(fields: [connection_status_id], references: [connection_status_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_connection_status")
+  mt_connection_type                       mt_connection_type?        @relation(fields: [connection_type_id], references: [connection_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_connection_type")
+  users_service_accounts_created_byTousers users?                     @relation("service_accounts_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_created_by")
+  customers                                customers                  @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_customer")
+  mt_reading_route                         mt_reading_route?          @relation(fields: [route_id], references: [route_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_route")
+  mt_service_type                          mt_service_type?           @relation(fields: [service_type_id], references: [service_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_service_type")
+  users_service_accounts_updated_byTousers users?                     @relation("service_accounts_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_updated_by")
+  service_installations                    service_installations[]
+
+  @@index([classification_id], map: "idx_service_account_classification")
+  @@index([customer_id], map: "idx_service_account_customer")
+  @@index([route_id], map: "idx_service_account_route")
+}
+
+model service_applications {
+  application_id                               BigInt                @id @default(autoincrement())
+  application_no                               String                @unique @db.VarChar(50)
+  customer_id                                  BigInt
+  application_type_id                          BigInt
+  application_status_id                        BigInt
+  application_date                             DateTime              @default(dbgenerated("CURRENT_DATE")) @db.Date
+  connection_type_id                           BigInt?
+  requested_meter_size_id                      BigInt?
+  investigation_date                           DateTime?             @db.Date
+  investigation_result                         String?
+  inspection_date                              DateTime?             @db.Date
+  inspection_result                            String?
+  remarks                                      String?
+  created_by                                   BigInt?
+  updated_by                                   BigInt?
+  created_at                                   DateTime              @default(now()) @db.Timestamp(6)
+  updated_at                                   DateTime?             @db.Timestamp(6)
+  mt_connection_type                           mt_connection_type?   @relation(fields: [connection_type_id], references: [connection_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_connection_type")
+  users_service_applications_created_byTousers users?                @relation("service_applications_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_created_by")
+  customers                                    customers             @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_customer")
+  mt_meter_size                                mt_meter_size?        @relation(fields: [requested_meter_size_id], references: [meter_size_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_meter_size")
+  mt_application_status                        mt_application_status @relation(fields: [application_status_id], references: [application_status_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_status")
+  mt_application_type                          mt_application_type   @relation(fields: [application_type_id], references: [application_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_type")
+  users_service_applications_updated_byTousers users?                @relation("service_applications_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_updated_by")
+
+  @@index([customer_id], map: "idx_application_customer")
+  @@index([application_status_id], map: "idx_application_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model service_installation_materials {
+  installation_material_id BigInt                @id @default(autoincrement())
+  installation_id          BigInt
+  material_id              BigInt
+  quantity                 Decimal               @default(0) @db.Decimal(14, 3)
+  unit_cost                Decimal               @default(0) @db.Decimal(14, 2)
+  amount                   Decimal               @default(0) @db.Decimal(14, 2)
+  created_at               DateTime              @default(now()) @db.Timestamp(6)
+  service_installations    service_installations @relation(fields: [installation_id], references: [installation_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_install_material_installation")
+  mt_material              mt_material           @relation(fields: [material_id], references: [material_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_install_material_material")
+}
+
+model service_installations {
+  installation_id                                 BigInt                           @id @default(autoincrement())
+  service_account_id                              BigInt
+  installation_date                               DateTime                         @db.Date
+  inspector_id                                    BigInt?
+  installer_id                                    BigInt?
+  installation_status                             String                           @default("COMPLETED") @db.VarChar(30)
+  remarks                                         String?
+  created_by                                      BigInt?
+  updated_by                                      BigInt?
+  created_at                                      DateTime                         @default(now()) @db.Timestamp(6)
+  updated_at                                      DateTime?                        @db.Timestamp(6)
+  service_installation_materials                  service_installation_materials[]
+  service_accounts                                service_accounts                 @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_account")
+  users_service_installations_created_byTousers   users?                           @relation("service_installations_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_created_by")
+  users_service_installations_inspector_idTousers users?                           @relation("service_installations_inspector_idTousers", fields: [inspector_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_inspector")
+  users_service_installations_installer_idTousers users?                           @relation("service_installations_installer_idTousers", fields: [installer_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_installer")
+  users_service_installations_updated_byTousers   users?                           @relation("service_installations_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_updated_by")
 }
