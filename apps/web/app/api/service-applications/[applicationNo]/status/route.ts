@@ -1,12 +1,13 @@
 import { db } from "@/lib/db";
-import { getSessionUser } from "@/lib/server-session";
+import { requireSessionUser } from "@/lib/server-session";
 import { clean, findWorkflowStatus } from "@/modules/service-applications/server";
 
 export const runtime = "nodejs";
 type Context = { params: Promise<{ applicationNo: string }> };
 
 export async function POST(request: Request, context: Context) {
-  const user = await getSessionUser();
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const applicationNo = decodeURIComponent((await context.params).applicationNo);
   let action = "";
   try {
@@ -44,13 +45,13 @@ export async function POST(request: Request, context: Context) {
       `UPDATE service_applications
           SET application_status_id = $1, updated_by = $2, updated_at = NOW()
         WHERE application_id = $3`,
-      [target.application_status_id, user?.userId ?? null, current.rows[0].application_id],
+      [target.application_status_id, auth.user.userId, current.rows[0].application_id],
     );
     await client.query(
       `INSERT INTO audit_logs (user_id, action, table_name, record_id, old_value, new_value, description)
        VALUES ($1, $2, 'service_applications', $3, $4::jsonb, $5::jsonb, $6)`,
       [
-        user?.userId ?? null,
+        auth.user.userId,
         action === "approve" ? "APPROVE" : "REJECT",
         applicationNo,
         JSON.stringify({ statusCode: current.rows[0].status_code, status: current.rows[0].status_name }),

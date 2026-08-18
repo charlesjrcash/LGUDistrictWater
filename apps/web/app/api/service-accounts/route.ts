@@ -1,11 +1,13 @@
 import { db } from "@/lib/db";
-import { getSessionUser } from "@/lib/server-session";
+import { requireSessionUser } from "@/lib/server-session";
 import { clean } from "@/modules/service-applications/server";
 import { findInitialAccountStatus, nextControlNumber } from "@/modules/service-accounts/server";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const params = new URL(request.url).searchParams;
   const search = clean(params.get("search"), 100);
   const status = clean(params.get("status"), 30);
@@ -62,7 +64,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const user = await getSessionUser();
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return Response.json({ success: false, message: "Invalid request." }, { status: 400 }); }
   const applicationNo = clean(body.applicationNo, 50);
@@ -95,12 +98,12 @@ export async function POST(request: Request) {
     if (!connectionType.rows[0]) throw new Error("INVALID_CONNECTION_TYPE");
     const initialStatus = await findInitialAccountStatus(client);
     if (!initialStatus) throw new Error("INITIAL_STATUS_NOT_FOUND");
-    const controlNo = await nextControlNumber(client, user?.userId ?? null);
+    const controlNo = await nextControlNumber(client, auth.user.userId);
     await client.query(
       `INSERT INTO service_accounts
          (application_id, customer_id, control_no, classification_id, connection_type_id, connection_status_id, date_connected, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, NULL, $7)`,
-      [application.rows[0].application_id, application.rows[0].customer_id, controlNo, classification.rows[0].classification_id, connectionType.rows[0].connection_type_id, initialStatus.connection_status_id, user?.userId ?? null],
+      [application.rows[0].application_id, application.rows[0].customer_id, controlNo, classification.rows[0].classification_id, connectionType.rows[0].connection_type_id, initialStatus.connection_status_id, auth.user.userId],
     );
     await client.query("COMMIT");
     return Response.json({ success: true, data: { controlNo }, message: `Service account ${controlNo} was created successfully.` }, { status: 201 });

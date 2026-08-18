@@ -1,10 +1,12 @@
 import { db } from "@/lib/db";
-import { getSessionUser } from "@/lib/server-session";
+import { requireSessionUser } from "@/lib/server-session";
 import { clean, findWorkflowStatus, isIsoDate, nextApplicationNumber } from "@/modules/service-applications/server";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const params = new URL(request.url).searchParams;
   const search = clean(params.get("search"), 100);
   const status = clean(params.get("status"), 30);
@@ -93,7 +95,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const user = await getSessionUser();
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
 
   let body: Record<string, unknown>;
   try {
@@ -127,12 +130,12 @@ export async function POST(request: Request) {
     if (!type.rows[0]) throw Object.assign(new Error("TYPE_NOT_FOUND"), { status: 400 });
     if (!initialStatus) throw Object.assign(new Error("INITIAL_STATUS_NOT_FOUND"), { status: 409 });
 
-    const applicationNo = await nextApplicationNumber(client, user?.userId ?? null);
+    const applicationNo = await nextApplicationNumber(client, auth.user.userId);
     await client.query(
       `INSERT INTO service_applications
          (application_no, customer_id, application_type_id, application_status_id, application_date, remarks, created_by)
        VALUES ($1, $2, $3, $4, $5::date, $6, $7)`,
-      [applicationNo, customer.rows[0].customer_id, type.rows[0].application_type_id, initialStatus.application_status_id, applicationDate, remarks, user?.userId ?? null],
+      [applicationNo, customer.rows[0].customer_id, type.rows[0].application_type_id, initialStatus.application_status_id, applicationDate, remarks, auth.user.userId],
     );
     await client.query("COMMIT");
     return Response.json({ success: true, data: { applicationNo }, message: `Service application ${applicationNo} was created successfully.` }, { status: 201 });

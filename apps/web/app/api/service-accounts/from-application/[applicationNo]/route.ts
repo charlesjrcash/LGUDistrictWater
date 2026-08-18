@@ -1,9 +1,12 @@
 import { db } from "@/lib/db";
+import { requireSessionUser } from "@/lib/server-session";
 
 export const runtime = "nodejs";
 type Context = { params: Promise<{ applicationNo: string }> };
 
 export async function GET(_request: Request, context: Context) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const applicationNo = decodeURIComponent((await context.params).applicationNo);
   try {
     const result = await db.query(

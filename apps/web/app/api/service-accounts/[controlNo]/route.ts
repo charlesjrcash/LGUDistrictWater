@@ -1,11 +1,13 @@
 import { db } from "@/lib/db";
-import { getSessionUser } from "@/lib/server-session";
+import { requireSessionUser } from "@/lib/server-session";
 import { clean } from "@/modules/service-applications/server";
 
 export const runtime = "nodejs";
 type Context = { params: Promise<{ controlNo: string }> };
 
 export async function GET(_request: Request, context: Context) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const controlNo = decodeURIComponent((await context.params).controlNo);
   try {
     const result = await db.query(
@@ -41,7 +43,8 @@ export async function GET(_request: Request, context: Context) {
 }
 
 export async function PUT(request: Request, context: Context) {
-  const user = await getSessionUser();
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
   const controlNo = decodeURIComponent((await context.params).controlNo);
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return Response.json({ success: false, message: "Invalid request." }, { status: 400 }); }
@@ -63,7 +66,7 @@ export async function PUT(request: Request, context: Context) {
     if (!connectionType.rows[0]) throw new Error("INVALID_CONNECTION_TYPE");
     await client.query(
       `UPDATE service_accounts SET classification_id = $1, connection_type_id = $2, updated_by = $3, updated_at = NOW() WHERE service_account_id = $4`,
-      [classification.rows[0].classification_id, connectionType.rows[0].connection_type_id, user?.userId ?? null, current.rows[0].service_account_id],
+      [classification.rows[0].classification_id, connectionType.rows[0].connection_type_id, auth.user.userId, current.rows[0].service_account_id],
     );
     await client.query("COMMIT");
     return Response.json({ success: true, message: `Service account ${controlNo} was updated successfully.` });
