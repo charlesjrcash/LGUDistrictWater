@@ -1024,6 +1024,7 @@ model reconnection_orders {
 
 model service_accounts {
   service_account_id                       BigInt                     @id @default(autoincrement())
+  application_id                           BigInt?                    @unique(map: "uq_service_account_application")
   customer_id                              BigInt
   control_no                               String                     @unique @db.VarChar(50)
   classification_id                        BigInt
@@ -1045,6 +1046,7 @@ model service_accounts {
   meters                                   meters[]
   payments                                 payments[]
   reconnection_orders                      reconnection_orders[]
+  service_applications                     service_applications?      @relation(fields: [application_id], references: [application_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_application")
   mt_customer_classification               mt_customer_classification @relation(fields: [classification_id], references: [classification_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_classification")
   mt_connection_status                     mt_connection_status?      @relation(fields: [connection_status_id], references: [connection_status_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_connection_status")
   mt_connection_type                       mt_connection_type?        @relation(fields: [connection_type_id], references: [connection_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_account_connection_type")
@@ -1085,6 +1087,7 @@ model service_applications {
   mt_application_status                        mt_application_status @relation(fields: [application_status_id], references: [application_status_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_status")
   mt_application_type                          mt_application_type   @relation(fields: [application_type_id], references: [application_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_type")
   users_service_applications_updated_byTousers users?                @relation("service_applications_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_application_updated_by")
+  service_accounts                             service_accounts?
 
   @@index([customer_id], map: "idx_application_customer")
   @@index([application_status_id], map: "idx_application_status")

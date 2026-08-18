@@ -16,6 +16,7 @@ export async function GET(_request: Request, context: Context) {
                 c.customer_no AS "customerNo", t.application_type_name AS "applicationType",
                 t.application_type_code AS "applicationTypeCode", sa.application_date::text AS "applicationDate",
                 s.status_name AS status, s.status_code AS "statusCode", sa.remarks,
+                acc.control_no AS "serviceAccountControlNo",
                 sa.created_at::text AS "createdAt", sa.updated_at::text AS "updatedAt",
                 json_build_object(
                   'customerNo', c.customer_no, 'name', c.customer_name, 'address', c.address,
@@ -26,6 +27,7 @@ export async function GET(_request: Request, context: Context) {
            LEFT JOIN mt_barangay b ON b.barangay_id = c.barangay_id
            JOIN mt_application_type t ON t.application_type_id = sa.application_type_id
            JOIN mt_application_status s ON s.application_status_id = sa.application_status_id
+           LEFT JOIN service_accounts acc ON acc.application_id = sa.application_id
           WHERE sa.application_no = $1
           LIMIT 1`,
         [applicationNo],
