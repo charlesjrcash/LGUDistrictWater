@@ -8,7 +8,6 @@ const globalForDb = globalThis as unknown as {
   userPool?: Pool;
 };
 
-// Reuse one PostgreSQL connection pool during local hot reloads.
 const pool =
   globalForDb.userPool ??
   new Pool({
@@ -19,38 +18,58 @@ if (process.env.NODE_ENV !== "production") {
   globalForDb.userPool = pool;
 }
 
-/** Converts an unknown request value into a trimmed string before validation. */
+/**
+ * Converts an unknown value into a trimmed string.
+ */
 function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
 /**
- * Handles POST /api/users from the registration form.
+ * Handles POST /api/users
  *
- * PostgreSQL function fn_create_user() is responsible for:
- * - duplicate username checking
- * - duplicate email checking
+ * The registration form sends:
+ *
+ * - employeeId
+ * - username
+ * - role
+ * - password
+ * - confirmPassword
+ *
+ * The API gets the employee's:
+ *
+ * - first_name
+ * - middle_name
+ * - last_name
+ * - email
+ *
+ * directly from mt_employee.
+ *
+ * PostgreSQL function fn_create_user() then handles:
+ *
+ * - duplicate username
+ * - duplicate email
+ * - employee validation
  * - active role validation
  * - users INSERT
  * - user_roles INSERT
- *
- * The API remains responsible for:
- * - request validation
- * - password hashing
- * - transaction handling
- * - sending the temporary credentials email
  */
 export async function POST(request: Request) {
   try {
-    // Parse request body.
+    // ---------------------------------------------------------
+    // 1. Read request body
+    // ---------------------------------------------------------
+
     const body = await request.json();
 
-    // Normalize form fields.
+    // ---------------------------------------------------------
+    // 2. Read values submitted by registration form
+    // ---------------------------------------------------------
+
     const username = clean(body.username);
-    const firstName = clean(body.firstName);
-    const middleName = clean(body.middleName) || null;
-    const lastName = clean(body.lastName);
-    const email = clean(body.email).toLowerCase();
+
+    const employeeId = Number(body.employeeId);
+
     const role = clean(body.role);
 
     const password =
@@ -63,14 +82,31 @@ export async function POST(request: Request) {
         ? body.confirmPassword
         : "";
 
-    // Required fields.
+    // ---------------------------------------------------------
+    // 3. Validate employee ID
+    // ---------------------------------------------------------
+
+    if (
+      !Number.isInteger(employeeId) ||
+      employeeId <= 0
+    ) {
+      return Response.json(
+        {
+          message: "Please select an employee.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // ---------------------------------------------------------
+    // 4. Validate required fields
+    // ---------------------------------------------------------
+
     if (
       !username ||
-      !firstName ||
-      !lastName ||
-      !email ||
+      !role ||
       !password ||
-      !role
+      !confirmPassword
     ) {
       return Response.json(
         {
@@ -80,35 +116,27 @@ export async function POST(request: Request) {
       );
     }
 
-    // Length validation.
+    // ---------------------------------------------------------
+    // 5. Username validation
+    // ---------------------------------------------------------
+
     if (
       username.length < 3 ||
-      username.length > 50 ||
-      firstName.length > 50 ||
-      (middleName?.length ?? 0) > 50 ||
-      lastName.length > 50 ||
-      email.length > 150
+      username.length > 50
     ) {
       return Response.json(
         {
           message:
-            "One or more fields have an invalid length.",
+            "Username must contain between 3 and 50 characters.",
         },
         { status: 400 }
       );
     }
 
-    // Email validation.
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return Response.json(
-        {
-          message: "Enter a valid email address.",
-        },
-        { status: 400 }
-      );
-    }
+    // ---------------------------------------------------------
+    // 6. Password validation
+    // ---------------------------------------------------------
 
-    // Password validation.
     if (password.length < 8) {
       return Response.json(
         {
@@ -119,7 +147,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Confirm password.
+    // ---------------------------------------------------------
+    // 7. Confirm password
+    // ---------------------------------------------------------
+
     if (password !== confirmPassword) {
       return Response.json(
         {
@@ -129,32 +160,175 @@ export async function POST(request: Request) {
       );
     }
 
-    // Temporary password expires after 24 hours.
+    // ---------------------------------------------------------
+    // 8. Temporary password expiration
+    // ---------------------------------------------------------
+
     const temporaryPasswordExpiresAt = new Date(
       Date.now() + 24 * 60 * 60 * 1000
     );
 
-    // Hash password before storing it.
+    // ---------------------------------------------------------
+    // 9. Hash password
+    // ---------------------------------------------------------
+
     const passwordHash = await hashPassword(password);
 
-    // Get one PostgreSQL client for the transaction.
+    // ---------------------------------------------------------
+    // 10. Get PostgreSQL connection
+    // ---------------------------------------------------------
+
     const client = await pool.connect();
 
     try {
       await client.query("BEGIN");
 
-      /*
-       * PostgreSQL handles:
-       *
-       * 1. Duplicate username
-       * 2. Duplicate email
-       * 3. Active role validation
-       * 4. users INSERT
-       * 5. user_roles INSERT
-       *
-       * The function returns the newly created user_id.
-       */
-      const userResult = await client.query<{ user_id: string }>(
+      // -------------------------------------------------------
+      // 11. Get employee information
+      // -------------------------------------------------------
+
+      const employeeResult = await client.query<{
+        employee_id: number;
+        first_name: string | null;
+        middle_name: string | null;
+        last_name: string | null;
+        email: string | null;
+        is_active: boolean;
+      }>(
+        `
+        SELECT
+          employee_id,
+          first_name,
+          middle_name,
+          last_name,
+          email,
+          is_active
+        FROM public.mt_employee
+        WHERE employee_id = $1
+        LIMIT 1
+        `,
+        [employeeId]
+      );
+
+      // -------------------------------------------------------
+      // 12. Employee does not exist
+      // -------------------------------------------------------
+
+      if (employeeResult.rowCount === 0) {
+        await client.query("ROLLBACK");
+
+        return Response.json(
+          {
+            message: "The selected employee was not found.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const employee = employeeResult.rows[0];
+
+      // -------------------------------------------------------
+      // 13. Employee must be active
+      // -------------------------------------------------------
+
+      if (!employee.is_active) {
+        await client.query("ROLLBACK");
+
+        return Response.json(
+          {
+            message:
+              "The selected employee is inactive.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // -------------------------------------------------------
+      // 14. Get employee information
+      // -------------------------------------------------------
+
+      const firstName = clean(employee.first_name);
+
+      const middleName =
+        clean(employee.middle_name) || null;
+
+      const lastName = clean(employee.last_name);
+
+      const email =
+        clean(employee.email).toLowerCase();
+
+      // -------------------------------------------------------
+      // 15. Validate employee information
+      // -------------------------------------------------------
+
+      if (!firstName || !lastName) {
+        await client.query("ROLLBACK");
+
+        return Response.json(
+          {
+            message:
+              "The selected employee does not have complete name information.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // -------------------------------------------------------
+      // 16. Employee email is required because credentials
+      //     will be sent through email.
+      // -------------------------------------------------------
+
+      if (!email) {
+        await client.query("ROLLBACK");
+
+        return Response.json(
+          {
+            message:
+              "The selected employee does not have an email address.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // -------------------------------------------------------
+      // 17. Validate employee email
+      // -------------------------------------------------------
+
+      if (
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ) {
+        await client.query("ROLLBACK");
+
+        return Response.json(
+          {
+            message:
+              "The selected employee has an invalid email address.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // -------------------------------------------------------
+      // 18. Call PostgreSQL fn_create_user()
+      //
+      // Function signature:
+      //
+      // fn_create_user(
+      //   p_username,
+      //   p_password_hash,
+      //   p_employee_id,
+      //   p_first_name,
+      //   p_middle_name,
+      //   p_last_name,
+      //   p_email,
+      //   p_role_name,
+      //   p_temporary_password_expires_at
+      // )
+      // -------------------------------------------------------
+
+      const userResult = await client.query<{
+        user_id: string;
+      }>(
         `
         SELECT public.fn_create_user(
           $1,
@@ -164,12 +338,14 @@ export async function POST(request: Request) {
           $5,
           $6,
           $7,
-          $8
+          $8,
+          $9
         ) AS user_id
         `,
         [
           username,
           passwordHash,
+          employeeId,
           firstName,
           middleName,
           lastName,
@@ -179,16 +355,39 @@ export async function POST(request: Request) {
         ]
       );
 
-      const userId = userResult.rows[0].user_id;
+      // -------------------------------------------------------
+      // 19. Get newly created user ID
+      // -------------------------------------------------------
 
-      console.log("User created:", userId);
+      const userId =
+        userResult.rows[0]?.user_id;
 
-      // Everything related to the user was successful.
+      if (!userId) {
+        throw new Error(
+          "User creation did not return a user ID."
+        );
+      }
+
+      console.log(
+        "User created:",
+        userId,
+        "Employee:",
+        employeeId
+      );
+
+      // -------------------------------------------------------
+      // 20. Commit database transaction
+      // -------------------------------------------------------
+
       await client.query("COMMIT");
 
-      /*
-       * Send email only AFTER the database transaction succeeds.
-       */
+      // -------------------------------------------------------
+      // 21. Send temporary credentials email
+      //
+      // IMPORTANT:
+      // Email is sent only after COMMIT succeeds.
+      // -------------------------------------------------------
+
       try {
         await sendTemporaryCredentialsEmail({
           to: email,
@@ -219,7 +418,10 @@ export async function POST(request: Request) {
         );
       }
     } catch (error) {
-      // Undo the transaction if the database operation fails.
+      // -------------------------------------------------------
+      // 22. Roll back database changes
+      // -------------------------------------------------------
+
       await client.query("ROLLBACK");
 
       const message =
@@ -227,9 +429,15 @@ export async function POST(request: Request) {
           ? error.message
           : "";
 
-      /*
-       * Handle errors raised by fn_create_user().
-       */
+      console.error(
+        "fn_create_user error:",
+        error
+      );
+
+      // -------------------------------------------------------
+      // 23. Handle known PostgreSQL function errors
+      // -------------------------------------------------------
+
       if (message.includes("USERNAME_EXISTS")) {
         return Response.json(
           {
@@ -250,6 +458,16 @@ export async function POST(request: Request) {
         );
       }
 
+      if (message.includes("INVALID_EMPLOYEE")) {
+        return Response.json(
+          {
+            message:
+              "The selected employee is invalid or inactive.",
+          },
+          { status: 400 }
+        );
+      }
+
       if (message.includes("INVALID_ROLE")) {
         return Response.json(
           {
@@ -260,10 +478,16 @@ export async function POST(request: Request) {
         );
       }
 
-      // Unknown database error.
+      // -------------------------------------------------------
+      // 24. Unknown database error
+      // -------------------------------------------------------
+
       throw error;
     } finally {
-      // Return the client to the pool.
+      // -------------------------------------------------------
+      // 25. Return connection to PostgreSQL pool
+      // -------------------------------------------------------
+
       client.release();
     }
   } catch (error) {
