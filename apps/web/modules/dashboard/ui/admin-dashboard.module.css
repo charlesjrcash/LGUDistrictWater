@@ -2893,12 +2893,12 @@
 
 /* Larger primary product mark. */
 .adminTitle {
-  gap: 14px;
+  gap: 5px;
   padding-top: 3px;
   padding-bottom: 30px;
 }
 .adminMark {
-  width: 52px;
+  width: 44px;
   height: 52px;
   flex: none;
   display: grid;
@@ -2920,7 +2920,8 @@
   letter-spacing: -0.035em;
 }
 .adminTitle > div:last-child:after {
-  font-size: 7px;
+  font-size: 8px;
+  letter-spacing: 0.2em;
   margin-top: 5px;
   color: #0874e8;
 }
