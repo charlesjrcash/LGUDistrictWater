@@ -36,6 +36,7 @@ export const transactionModules: readonly TransactionModule[] = [
   },
   { slug: "bills", label: "Bills", category: "billing" },
   { slug: "bill-details", label: "Bill details", category: "billing" },
+  { slug: "bill-penalties", label: "Bill penalties", category: "billing" },
 ] as const;
 
 export function transactionsByCategory(category: TransactionCategory) {
