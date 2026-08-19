@@ -18,6 +18,8 @@ export type ServiceAccountRow = {
   classificationCode: string;
   connectionType: string;
   connectionTypeCode: string;
+  serviceType?: string | null;
+  readingRoute?: string | null;
   dateConnected: string | null;
   status: string;
   statusCode: string;
@@ -28,6 +30,9 @@ export type ServiceAccountDetail = ServiceAccountRow & {
   application: ApplicationReference | null;
   createdAt: string;
   updatedAt: string | null;
+  serviceTypeCode: string | null;
+  routeCode: string | null;
+  serviceAddress: string | null;
 };
 
 export type CreateAccountContext = {
