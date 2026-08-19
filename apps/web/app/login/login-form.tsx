@@ -9,7 +9,7 @@ function FieldIcon({ type }: { type: "user" | "lock" }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{type === "user" ? <><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></> : <><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></>}</svg>;
 }
 
-export default function LoginForm({ initialError, initialSuccess, nextPath = "/" }: { initialError?: string; initialSuccess?: string; nextPath?: string }) {
+export default function LoginForm({ initialError, initialSuccess, nextPath }: { initialError?: string; initialSuccess?: string; nextPath?: string }) {
   const router = useRouter();
   const [status, setStatus] = useState<{ type: "error" | "success"; message: string } | null>(initialError ? { type: "error", message: initialError } : initialSuccess ? { type: "success", message: initialSuccess } : null);
   const [submitting, setSubmitting] = useState(false);
@@ -18,9 +18,9 @@ export default function LoginForm({ initialError, initialSuccess, nextPath = "/"
     event.preventDefault(); setStatus(null); setSubmitting(true);
     try {
       const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget))) });
-      const result = (await response.json()) as { message?: string; mustChangePassword?: boolean };
+      const result = (await response.json()) as { message?: string; mustChangePassword?: boolean; redirectTo?: string };
       if (!response.ok) throw new Error(result.message || "Unable to sign in.");
-      if (result.mustChangePassword) router.push("/change-password"); else { setStatus({ type: "success", message: result.message || "Signed in successfully." }); router.push(nextPath); router.refresh(); }
+      if (result.mustChangePassword) router.push("/change-password"); else { setStatus({ type: "success", message: result.message || "Signed in successfully." }); router.push(nextPath || result.redirectTo || "/"); router.refresh(); }
     } catch (error) { setStatus({ type: "error", message: error instanceof Error ? error.message : "Unable to sign in." }); }
     finally { setSubmitting(false); }
   }
