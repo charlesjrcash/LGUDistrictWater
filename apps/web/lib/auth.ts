@@ -5,6 +5,8 @@ const scrypt = promisify(scryptCallback);
 
 export const SESSION_COOKIE_NAME = "lgu_session";
 export const SESSION_DURATION_SECONDS = 8 * 60 * 60;
+export const PASSWORD_RESET_COOKIE_NAME = "lgu_password_reset";
+export const PASSWORD_RESET_DURATION_SECONDS = 10 * 60;
 
 /** Hashes a password with a random salt before it is written to PostgreSQL. */
 export async function hashPassword(password: string) {
