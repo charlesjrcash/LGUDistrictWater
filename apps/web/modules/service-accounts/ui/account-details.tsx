@@ -13,7 +13,7 @@ function formatDate(value: string | null, long = false) {
   return new Intl.DateTimeFormat("en-PH", { month: long ? "long" : "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value.slice(0,10)}T00:00:00Z`));
 }
 
-export function AccountDetails({ controlNo }: { controlNo: string }) {
+export function AccountDetails({ controlNo, canEdit }: { controlNo: string; canEdit: boolean }) {
   const [account, setAccount] = useState<ServiceAccountDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,7 +33,7 @@ export function AccountDetails({ controlNo }: { controlNo: string }) {
   const accountFields = [["Control No.",account.controlNo],["Classification",account.classification],["Connection Type",account.connectionType],["Connection Status",account.status],["Service Type",account.serviceType || "â€”"],["Reading Route",account.readingRoute || "â€”"],["Date Connected",formatDate(account.dateConnected,true)],["Service Address",account.serviceAddress || "â€”"],["Created At",formatDate(account.createdAt,true)],["Updated At",account.updatedAt ? formatDate(account.updatedAt,true) : "â€”"]];
   return <ModuleShell active="service-accounts">
     <Link className={styles.backLink} href="/service-accounts">← Service Accounts</Link>{notice && <div className={styles.successNotice}>{notice}</div>}{error && <div className={styles.notice}>{error}</div>}
-    <header className={styles.detailHeader}><div><div className={styles.applicationNumber}><h1>{account.controlNo}</h1><AccountStatusBadge code={account.statusCode} name={account.status} /></div><p className={styles.detailCustomer}>{account.customer.name}<span>Customer No. {account.customer.customerNo}</span></p></div><Link className={styles.secondaryButton} href={`/service-accounts/${encodeURIComponent(account.controlNo)}/edit`}>Edit Service Account</Link></header>
+    <header className={styles.detailHeader}><div><div className={styles.applicationNumber}><h1>{account.controlNo}</h1><AccountStatusBadge code={account.statusCode} name={account.status} /></div><p className={styles.detailCustomer}>{account.customer.name}<span>Customer No. {account.customer.customerNo}</span></p></div>{canEdit && <Link className={styles.secondaryButton} href={`/service-accounts/${encodeURIComponent(account.controlNo)}/edit`}>Edit Service Account</Link>}</header>
     <div className={styles.panel} style={{ marginBottom: 18, padding: "0 20px" }}><div style={{ display: "flex", gap: 24, overflowX: "auto" }}><span style={{ padding: "15px 2px 12px", borderBottom: "3px solid #0874e8", color: "#075fc5", fontWeight: 750 }}>Overview</span>{["Meter","Billing","Payments","History"].map((tab) => <span key={tab} title="Available in a future module" style={{ padding: "15px 2px", color: "#9aa7b8", whiteSpace: "nowrap" }}>{tab}</span>)}</div></div>
     <div className={styles.detailGrid}><div>
       <section className={styles.detailCard}><div className={styles.cardHeading}><h2>Customer Information</h2><Link className={styles.viewLink} href={`/customers/${encodeURIComponent(account.customer.customerNo)}`}>View Customer Profile →</Link></div><div className={styles.detailItems}>{customerFields.map(([label,value]) => <div className={styles.detailItem} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div></section>
