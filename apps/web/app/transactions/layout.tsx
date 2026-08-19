@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/server-session";
+import { hasPermission } from "@/lib/permissions";
 import { MaintenanceAdminShell } from "@/app/maintenance/maintenance-admin-shell";
 
 export default async function TransactionsLayout({
@@ -11,7 +12,8 @@ export default async function TransactionsLayout({
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/transactions/service-applications");
-  if (!user.roles.some((role) => role.toLowerCase().includes("admin")))
+  const canViewBills = await hasPermission("BILL_VIEW");
+  if (!user.roles.some((role) => role.toLowerCase().includes("admin")) && !canViewBills)
     redirect("/");
 
   return (
