@@ -650,6 +650,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               title="Operational Overview"
               copy="Current customer, application, account, and metering activity."
             />
+            <TransactionLinks transactions={operationalTransactions} />
             <MetricGrid
               items={[
                 { label: "Customers", value: m.customers },
@@ -663,7 +664,6 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                 { label: "Activities Today", value: m.activities_today },
               ]}
             />
-            <TransactionLinks transactions={operationalTransactions} />
           </>
         )}
         {section === "billing" && (
@@ -671,17 +671,6 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <SectionHeader
               title="Billing & Collection"
               copy="Meaningful billing output, receivables, and posted collections."
-            />
-            <MetricGrid
-              items={[
-                { label: "Bills Generated", value: m.bills_generated },
-                { label: "Unpaid Bills", value: m.unpaid_bills },
-                { label: "Payments Today", value: m.payments_today },
-                {
-                  label: "Amount Collected Today",
-                  value: money.format(m.collected_today),
-                },
-              ]}
             />
             <div className={styles.quickLinks}>
               {billingTransactions.map((transaction) => (
@@ -696,6 +685,17 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               <Link href="/maintenance/water-rates">Water rates →</Link>
               <Link href="/maintenance/fees">Fees →</Link>
             </div>
+            <MetricGrid
+              items={[
+                { label: "Bills Generated", value: m.bills_generated },
+                { label: "Unpaid Bills", value: m.unpaid_bills },
+                { label: "Payments Today", value: m.payments_today },
+                {
+                  label: "Amount Collected Today",
+                  value: money.format(m.collected_today),
+                },
+              ]}
+            />
           </>
         )}
         {section === "service" && (
@@ -704,6 +704,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               title="Service Operations"
               copy="Application, meter, reading, installation, and field-order workload."
             />
+            <TransactionLinks transactions={operationalTransactions} />
             <MetricGrid
               items={[
                 {
@@ -724,7 +725,6 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                 },
               ]}
             />
-            <TransactionLinks transactions={operationalTransactions} />
           </>
         )}
         {section === "health" && (
