@@ -146,6 +146,40 @@
   gap: 13px;
   margin-bottom: 18px;
 }
+.metricMeta {
+  grid-column: 1 / -1;
+  min-height: 34px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #f5f7f9;
+  border-bottom: 1px solid #dfe5eb;
+  color: #687789;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+}
+.metricMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #435970;
+  text-transform: uppercase;
+}
+.metricMeta i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #23845c;
+  box-shadow: 0 0 0 3px #dfeee7;
+}
+.metricMeta time {
+  color: #7b8794;
+  font: inherit;
+  letter-spacing: 0;
+}
 .metric,
 .panel,
 .healthCard,
@@ -2924,6 +2958,103 @@
   letter-spacing: 0.2em;
   margin-top: 5px;
   color: #0874e8;
+}
+
+/* Institutional statistics strip: compact, flat, and information-first. */
+.metrics {
+  gap: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #d9e0e8;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(28, 45, 65, 0.035);
+}
+.metric,
+.metric:nth-child(4n + 1),
+.metric:nth-child(4n + 2),
+.metric:nth-child(4n + 3),
+.metric:nth-child(4n + 4) {
+  min-height: 112px;
+  position: relative;
+  padding: 20px 22px;
+  background: #fff;
+  border: 0;
+  border-right: 1px solid #e2e7ed;
+  border-radius: 0;
+  box-shadow: none;
+}
+.metric:last-of-type {
+  border-right: 0;
+}
+.metric:first-of-type {
+  background: #123b63;
+}
+.metricIcon {
+  position: absolute;
+  top: 18px;
+  right: 19px;
+  width: 20px;
+  height: 20px;
+  color: #718398;
+}
+.metricIcon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.metric span,
+.metric:first-of-type span {
+  color: #647385;
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+.metric strong,
+.metric:first-of-type strong {
+  color: #163b61;
+  font-size: 27px;
+  font-weight: 720;
+  letter-spacing: -0.025em;
+}
+.metric small,
+.metric:first-of-type small {
+  color: #7d8996;
+}
+.metric:first-of-type span,
+.metric:first-of-type small {
+  color: #c8d8e7;
+}
+.metric:first-of-type strong {
+  color: #fff;
+}
+.metric:first-of-type .metricIcon {
+  color: #bcd0e1;
+}
+.metric:after {
+  display: none;
+}
+@media (max-width: 1050px) {
+  .metrics {
+    gap: 1px;
+    background: #dfe5eb;
+  }
+  .metric,
+  .metric:last-of-type {
+    border-right: 0;
+  }
+}
+@media (max-width: 520px) {
+  .metrics {
+    display: grid;
+    border-radius: 6px;
+  }
+  .metricMeta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+    padding: 9px 12px;
+  }
 }
 
 /* Keep the administrator navigation fixed while content scrolls. */

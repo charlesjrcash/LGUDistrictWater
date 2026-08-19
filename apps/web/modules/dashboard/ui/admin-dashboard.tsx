@@ -123,10 +123,44 @@ function MetricGrid({
 }: {
   items: { label: string; value: number | string; hint?: string }[];
 }) {
+  function metricIcon(label: string): Parameters<typeof Icon>[0]["name"] {
+    const value = label.toLowerCase();
+    if (value.includes("user") || value.includes("employee")) return "users";
+    if (
+      value.includes("bill") ||
+      value.includes("payment") ||
+      value.includes("collect")
+    )
+      return "billing";
+    if (value.includes("activit")) return "activity";
+    if (
+      value.includes("application") ||
+      value.includes("account") ||
+      value.includes("customer")
+    )
+      return "data";
+    return "service";
+  }
+
   return (
     <div className={styles.metrics}>
+      <div className={styles.metricMeta}>
+        <span>
+          <i /> Live system totals
+        </span>
+        <time suppressHydrationWarning>
+          Updated{" "}
+          {new Intl.DateTimeFormat("en-PH", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }).format(new Date())}
+        </time>
+      </div>
       {items.map((item) => (
         <article className={styles.metric} key={item.label}>
+          <div className={styles.metricIcon}>
+            <Icon name={metricIcon(item.label)} />
+          </div>
           <span>{item.label}</span>
           <strong>
             {typeof item.value === "number"
