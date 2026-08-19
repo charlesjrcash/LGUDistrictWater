@@ -169,7 +169,7 @@ export default function SystemModulesPage() {
           </div>
         )}
         <div className="overflow-hidden rounded-xl border bg-white">
-          <div className="flex gap-3 border-b p-5">
+          <div className="flex gap-3 border-b border-gray-200 p-5">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -204,7 +204,7 @@ export default function SystemModulesPage() {
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-gray-200">
                   {filtered.map((m) => (
                     <tr key={m.module_id}>
                       <td className="px-6 py-4 font-medium">{m.module_code}</td>
@@ -242,7 +242,7 @@ export default function SystemModulesPage() {
             onSubmit={save}
             className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl bg-white"
           >
-            <div className="border-b p-5 text-xl font-semibold">
+            <div className="border-b border-gray-200 p-5 text-xl font-semibold">
               {id ? "Edit Module" : "Add Module"}
             </div>
             <div className="space-y-4 p-6">

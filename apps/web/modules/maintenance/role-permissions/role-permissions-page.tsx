@@ -157,7 +157,7 @@ export default function RolePermissionsPage() {
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           {modules.map((m) => (
             <section key={m.module_id} className="rounded-xl border bg-white">
-              <div className="flex items-center justify-between border-b p-4">
+              <div className="flex items-center justify-between border-b border-gray-200 p-4">
                 <div>
                   <h2 className="font-semibold">{m.module_name}</h2>
                   <p className="text-xs text-gray-500">{m.module_code}</p>

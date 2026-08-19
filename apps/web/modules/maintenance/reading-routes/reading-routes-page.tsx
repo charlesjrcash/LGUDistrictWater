@@ -161,7 +161,7 @@ export default function ReadingRoutesPage() {
           </button>
         </div>
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="flex gap-3 border-b p-5">
+          <div className="flex gap-3 border-b border-gray-200 p-5">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -204,7 +204,7 @@ export default function ReadingRoutesPage() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-gray-200">
                   {filtered.map((r) => (
                     <tr key={r.route_id}>
                       <td className="px-6 py-4 font-medium">{r.route_code}</td>
@@ -246,7 +246,7 @@ export default function ReadingRoutesPage() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl bg-white">
-            <div className="border-b px-6 py-5">
+            <div className="border-b border-gray-200 px-6 py-5">
               <h2 className="text-xl font-semibold">
                 {editing ? "Edit Reading Route" : "Add Reading Route"}
               </h2>
