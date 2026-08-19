@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/server-session";
-import { ModuleShell } from "@/modules/service-applications/ui/module-shell";
 import { AdminDashboard, type DashboardData } from "@/modules/dashboard/ui/admin-dashboard";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +10,7 @@ export default async function DashboardPage() {
   if (!user) redirect("/login?next=/dashboard");
   if (!user.roles.some((role)=>role.toLowerCase().includes("admin"))) redirect("/");
 
-  const [metricsResult, masterResult, auditResult] = await Promise.all([
+  const [metricsResult, masterResult, auditResult, reportResult] = await Promise.all([
     db.query<Record<string, string>>(`SELECT
       (SELECT COUNT(*) FROM users WHERE is_active=TRUE)::text AS active_users,
       (SELECT COUNT(*) FROM users)::text AS total_users,
@@ -74,6 +73,11 @@ export default async function DashboardPage() {
       ('Personnel','Meter Readers',(SELECT COUNT(*)::text FROM mt_meter_reader),'/maintenance/MeterReaders')
     ) AS data(category,label,count,href)`),
     db.query<{ id: string; action: string; description: string | null; username: string | null; created_at: Date }>(`SELECT a.audit_id::text AS id,a.action,a.description,u.username,a.created_at FROM audit_logs a LEFT JOIN users u ON u.user_id=a.user_id ORDER BY a.created_at DESC LIMIT 10`),
+    db.query<{ report_date: Date; collections: string; bills: string; applications: string }>(`SELECT day AS report_date,
+      COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.payment_date::date=day::date AND p.status='POSTED'),0)::text AS collections,
+      (SELECT COUNT(*) FROM bills b WHERE b.created_at::date=day::date)::text AS bills,
+      (SELECT COUNT(*) FROM service_applications a WHERE a.created_at::date=day::date)::text AS applications
+      FROM generate_series(CURRENT_DATE-6,CURRENT_DATE,INTERVAL '1 day') day ORDER BY day`),
   ]);
 
   const raw = metricsResult.rows[0];
@@ -83,7 +87,8 @@ export default async function DashboardPage() {
     metrics: Object.fromEntries(Object.keys(raw).map((key)=>[key,number(key)])),
     masterData: masterResult.rows.map((item)=>({...item,count:Number(item.count)})),
     activity: auditResult.rows.map((item)=>({...item,createdAt:item.created_at.toISOString()})),
+    report: reportResult.rows.map((item)=>({date:item.report_date.toISOString(),collections:Number(item.collections),bills:Number(item.bills),applications:Number(item.applications)})),
   };
 
-  return <ModuleShell active="dashboard"><AdminDashboard data={data}/></ModuleShell>;
+  return <AdminDashboard data={data}/>;
 }
