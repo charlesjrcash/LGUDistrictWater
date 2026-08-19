@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import {
   createSessionToken,
   hashSessionToken,
+  isSecureRequest,
   PASSWORD_RESET_COOKIE_NAME,
   PASSWORD_RESET_DURATION_SECONDS,
 } from "@/lib/auth";
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     cookieStore.set(PASSWORD_RESET_COOKIE_NAME, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecureRequest(request),
       sameSite: "lax",
       path: "/",
       maxAge: PASSWORD_RESET_DURATION_SECONDS,

@@ -10,6 +10,7 @@ import {
   loginErrorUrl,
   randomOAuthValue,
 } from "@/lib/google-auth";
+import { isSecureRequest } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
   const state = randomOAuthValue();
   const nonce = randomOAuthValue();
   const verifier = randomOAuthValue(48);
-  const secure = process.env.NODE_ENV === "production";
+  const secure = isSecureRequest(request);
   const cookieStore = await cookies();
   const options = {
     httpOnly: true,

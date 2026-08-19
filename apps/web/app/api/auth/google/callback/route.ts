@@ -5,6 +5,7 @@ import { Pool } from "pg";
 import {
   createSessionToken,
   hashSessionToken,
+  isSecureRequest,
   SESSION_COOKIE_NAME,
   SESSION_DURATION_SECONDS,
 } from "@/lib/auth";
@@ -129,7 +130,7 @@ export async function GET(request: Request) {
     );
     response.cookies.set(SESSION_COOKIE_NAME, sessionToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecureRequest(request),
       sameSite: "lax",
       path: "/",
       maxAge: SESSION_DURATION_SECONDS,

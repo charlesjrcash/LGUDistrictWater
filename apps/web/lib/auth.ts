@@ -13,6 +13,18 @@ export const SESSION_DURATION_SECONDS = 8 * 60 * 60;
 export const PASSWORD_RESET_COOKIE_NAME = "lgu_password_reset";
 export const PASSWORD_RESET_DURATION_SECONDS = 10 * 60;
 
+/** Uses HTTPS cookies behind a trusted proxy while allowing plain-HTTP LAN development. */
+export function isSecureRequest(request: Request) {
+  const forwardedProtocol = request.headers
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim();
+
+  return forwardedProtocol
+    ? forwardedProtocol === "https"
+    : new URL(request.url).protocol === "https:";
+}
+
 /** Hashes a password with a random salt before it is written to PostgreSQL. */
 export async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
