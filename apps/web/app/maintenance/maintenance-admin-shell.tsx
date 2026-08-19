@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AdminBrandMark } from "@/modules/dashboard/ui/admin-brand-mark";
 import styles from "@/modules/dashboard/ui/admin-dashboard.module.css";
 
 const groups = [
@@ -74,7 +75,9 @@ export function MaintenanceAdminShell({
     <div className={styles.adminFormShell}>
       <aside className={`${styles.subnav} ${styles.formSidebar}`}>
         <div className={styles.adminTitle}>
-          <div className={styles.adminMark}>BW</div>
+          <div className={styles.adminMark}>
+            <AdminBrandMark />
+          </div>
           <div>
             <span>System Administrator</span>
             <strong>Bagamanoc</strong>
