@@ -1,6 +1,8 @@
 export type ReferenceOption = { code: string; name: string };
 
-export type ApplicationStatus = ReferenceOption & { description?: string | null };
+export type ApplicationStatus = ReferenceOption & {
+  description?: string | null;
+};
 
 export type CustomerSummary = {
   customerNo: string;

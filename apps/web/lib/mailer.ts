@@ -15,7 +15,13 @@ type PasswordResetCode = {
 
 /** Escapes dynamic values before inserting them into the HTML email template. */
 function escapeHtml(value: string) {
-  return value.replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character] ?? character);
+  return value.replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[
+        character
+      ] ?? character,
+  );
 }
 
 /**
@@ -29,7 +35,9 @@ function createTransporter() {
   const pass = process.env.SMTP_PASSWORD;
 
   if (!host || !user || !pass || !Number.isInteger(port)) {
-    throw new Error("Email delivery is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASSWORD.");
+    throw new Error(
+      "Email delivery is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASSWORD.",
+    );
   }
 
   return nodemailer.createTransport({
@@ -41,11 +49,23 @@ function createTransporter() {
 }
 
 /** Sends a time-limited temporary password after a new user account is created. */
-export async function sendTemporaryCredentialsEmail({ to, username, temporaryPassword, expiresAt }: TemporaryCredentials) {
+export async function sendTemporaryCredentialsEmail({
+  to,
+  username,
+  temporaryPassword,
+  expiresAt,
+}: TemporaryCredentials) {
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
-  if (!from) throw new Error("Email delivery is not configured. Set SMTP_FROM or SMTP_USER.");
+  if (!from)
+    throw new Error(
+      "Email delivery is not configured. Set SMTP_FROM or SMTP_USER.",
+    );
 
-  const expiresAtLabel = new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Manila" }).format(expiresAt);
+  const expiresAtLabel = new Intl.DateTimeFormat("en-PH", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Manila",
+  }).format(expiresAt);
   const safeUsername = escapeHtml(username);
   const safePassword = escapeHtml(temporaryPassword);
   const safeExpiry = escapeHtml(expiresAtLabel);
@@ -60,11 +80,22 @@ export async function sendTemporaryCredentialsEmail({ to, username, temporaryPas
 }
 
 /** Sends a short-lived verification code without exposing account details. */
-export async function sendPasswordResetCodeEmail({ to, code, expiresAt }: PasswordResetCode) {
+export async function sendPasswordResetCodeEmail({
+  to,
+  code,
+  expiresAt,
+}: PasswordResetCode) {
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
-  if (!from) throw new Error("Email delivery is not configured. Set SMTP_FROM or SMTP_USER.");
+  if (!from)
+    throw new Error(
+      "Email delivery is not configured. Set SMTP_FROM or SMTP_USER.",
+    );
 
-  const expiresAtLabel = new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Manila" }).format(expiresAt);
+  const expiresAtLabel = new Intl.DateTimeFormat("en-PH", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Manila",
+  }).format(expiresAt);
   await createTransporter().sendMail({
     from,
     to,

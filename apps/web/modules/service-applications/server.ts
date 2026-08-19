@@ -7,21 +7,37 @@ export function clean(value: unknown, maxLength = 200) {
 export function isIsoDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00Z`);
-  return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value;
+  return (
+    !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value
+  );
 }
 
 export function classifyStatus(code: string, name = "") {
   const value = `${code} ${name}`.toUpperCase();
   if (value.includes("APPROV")) return "approved";
   if (value.includes("REJECT") || value.includes("DENIED")) return "rejected";
-  if (value.includes("PROCESS") || value.includes("INSPECT") || value.includes("REVIEW")) return "processing";
-  if (value.includes("PENDING") || value.includes("SUBMIT") || value.includes("NEW")) return "pending";
+  if (
+    value.includes("PROCESS") ||
+    value.includes("INSPECT") ||
+    value.includes("REVIEW")
+  )
+    return "processing";
+  if (
+    value.includes("PENDING") ||
+    value.includes("SUBMIT") ||
+    value.includes("NEW")
+  )
+    return "pending";
   return "neutral";
 }
 
-export type WorkflowAction = "initial" | "inspect" | "approve" | "reject" | "complete";
+export type WorkflowAction =
+  "initial" | "inspect" | "approve" | "reject" | "complete";
 
-export async function findWorkflowStatus(client: PoolClient, action: WorkflowAction) {
+export async function findWorkflowStatus(
+  client: PoolClient,
+  action: WorkflowAction,
+) {
   const patterns = {
     initial: ["PENDING", "SUBMITTED", "NEW"],
     inspect: ["INSPECT", "FOR INSPECTION", "INSPECTION"],
@@ -30,7 +46,11 @@ export async function findWorkflowStatus(client: PoolClient, action: WorkflowAct
     complete: ["COMPLETED", "COMPLETE"],
   }[action];
 
-  const result = await client.query<{ application_status_id: string; status_code: string; status_name: string }>(
+  const result = await client.query<{
+    application_status_id: string;
+    status_code: string;
+    status_name: string;
+  }>(
     `SELECT application_status_id, status_code, status_name
        FROM mt_application_status
       WHERE is_active = TRUE
@@ -42,7 +62,10 @@ export async function findWorkflowStatus(client: PoolClient, action: WorkflowAct
   return result.rows[0] ?? null;
 }
 
-export function allowedWorkflowActions(statusCode: string, statusName = ""): Exclude<WorkflowAction, "initial">[] {
+export function allowedWorkflowActions(
+  statusCode: string,
+  statusName = "",
+): Exclude<WorkflowAction, "initial">[] {
   const status = `${statusCode} ${statusName}`.toUpperCase();
   if (/(PENDING|SUBMIT|NEW)/.test(status)) return ["inspect", "reject"];
   if (/(PROCESS|INSPECT|REVIEW)/.test(status)) return ["approve", "reject"];
@@ -50,7 +73,10 @@ export function allowedWorkflowActions(statusCode: string, statusName = ""): Exc
   return [];
 }
 
-export async function nextApplicationNumber(client: PoolClient, userId: string | null) {
+export async function nextApplicationNumber(
+  client: PoolClient,
+  userId: string | null,
+) {
   const seriesResult = await client.query<{
     series_id: string;
     prefix: string | null;
@@ -76,7 +102,9 @@ export async function nextApplicationNumber(client: PoolClient, userId: string |
     return `${series.prefix || "APP-"}${next.toString().padStart(series.padding_length || 6, "0")}`;
   }
 
-  await client.query("SELECT pg_advisory_xact_lock(hashtext('service_applications.application_no'))");
+  await client.query(
+    "SELECT pg_advisory_xact_lock(hashtext('service_applications.application_no'))",
+  );
   const maxResult = await client.query<{ next_number: string }>(
     `SELECT COALESCE(MAX((regexp_match(application_no, '^APP-([0-9]+)$'))[1]::bigint), 0) + 1 AS next_number
        FROM service_applications`,

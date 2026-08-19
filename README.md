@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LGU District Water Billing System
 
-## Getting Started
+Web-based billing and customer-service system for the Municipality of Bagamanoc.
 
-First, run the development server:
+## Repository layout
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```text
+LGUDistrictWater/
+├── apps/
+│   └── web/                 # Next.js application
+│       ├── app/             # Route entries and API endpoints
+│       ├── modules/         # Feature UI, types, and server helpers
+│       ├── lib/             # Shared infrastructure and authentication
+│       ├── public/          # Static files
+│       └── proxy.ts         # Compatibility redirects
+├── prisma/                  # Database schema and migrations
+└── prisma.config.ts         # Prisma configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Route files in `apps/web/app` should stay small. Feature implementations belong in
+`apps/web/modules`, grouped by business area.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Main routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Area | Route |
+| --- | --- |
+| Public landing page | `/` |
+| Billing inquiry | `/billing-inquiry` |
+| Login | `/login` |
+| Password recovery | `/login/forgot-password` |
+| Dashboard | `/dashboard` |
+| Customers | `/transactions/customers` |
+| Service applications | `/transactions/service-applications` |
+| Service accounts | `/transactions/service-accounts` |
+| Maintenance | `/maintenance/<feature-name>` |
 
-## Learn More
+Maintenance routes use lowercase kebab-case. Legacy PascalCase maintenance URLs are
+redirected by `apps/web/proxy.ts` so saved links continue to work.
 
-To learn more about Next.js, take a look at the following resources:
+## Code organization
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/api/<resource>/route.ts` owns HTTP endpoints.
+- `app/<route>/page.tsx` connects a URL to a feature module.
+- `modules/<feature>` owns feature-specific UI, types, and server utilities.
+- `modules/transactions` owns UI shared by all transaction features.
+- `modules/maintenance/<feature>` owns each maintenance screen.
+- `lib` contains cross-feature infrastructure such as database and session helpers.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+New route and feature folders should use lowercase kebab-case. React components and
+exported TypeScript types should use PascalCase.
 
-## Deploy on Vercel
+## Local development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+From `apps/web`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm install
+npm run dev
+```
+
+Open <http://localhost:3000>.
+
+Useful checks:
+
+```bash
+npm run format:check
+npm run lint
+npm run build
+```
+
+Use `npm run format` after editing compressed or inconsistently formatted source.
+
+## Environment and database
+
+Copy the documented variables from `apps/web/.env.example` into the appropriate local
+environment file. Prisma configuration and migrations are stored at the repository root.
+Never commit credentials or production secrets.

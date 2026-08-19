@@ -1,11 +1,155 @@
 import { db } from "@/lib/db";
 import { requireSessionUser } from "@/lib/server-session";
 export const runtime = "nodejs";
-function text(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
-function fail(message: string, status: number) { return Response.json({ success: false, message }, { status }); }
-function duplicateError(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "23505"; }
-function parseRole(body: Record<string, unknown>): { role: { name: string; description: string | null } } | { error: string } { const name = text(body.role_name); if (!name) return { error: "Please provide the required role information." }; if (name.length > 50) return { error: "Role name must be 50 characters or fewer." }; const description = text(body.description) || null; if (description && description.length > 255) return { error: "Description must be 255 characters or fewer." }; return { role: { name, description } }; }
-export async function GET() { const auth = await requireSessionUser(); if (auth.response) return auth.response; try { const result = await db.query("SELECT role_id, role_name, description, is_active, created_at FROM public.roles ORDER BY role_name ASC"); return Response.json({ success: true, data: result.rows }); } catch (error) { console.error("Unable to load roles:", error); return fail("Unable to load system roles.", 500); } }
-export async function POST(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; let body: Record<string, unknown>; try { body = await request.json(); } catch { return fail("Please provide the required role information.", 400); } const parsed = parseRole(body); if ("error" in parsed) return fail(parsed.error, 400); try { const duplicate = await db.query("SELECT role_id FROM public.roles WHERE role_name = $1 LIMIT 1", [parsed.role.name]); if (duplicate.rows[0]) return fail("That role name already exists.", 409); const result = await db.query("INSERT INTO public.roles (role_name, description, is_active) VALUES ($1, $2, TRUE) RETURNING role_id, role_name, description, is_active, created_at", [parsed.role.name, parsed.role.description]); return Response.json({ success: true, message: "Role created successfully.", data: result.rows[0] }, { status: 201 }); } catch (error) { console.error("Unable to create role:", error); return fail(duplicateError(error) ? "That role name already exists." : "The role could not be saved. Please try again.", duplicateError(error) ? 409 : 500); } }
-export async function PUT(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; let body: Record<string, unknown>; try { body = await request.json(); } catch { return fail("Please provide the required role information.", 400); } const id = text(body.role_id); const parsed = parseRole(body); if (!/^\d+$/.test(id)) return fail("Please provide the required role information.", 400); if ("error" in parsed) return fail(parsed.error, 400); if (typeof body.is_active !== "boolean") return fail("Please provide the required role information.", 400); try { const existing = await db.query("SELECT role_id FROM public.roles WHERE role_id = $1 LIMIT 1", [id]); if (!existing.rows[0]) return fail("Role not found.", 404); const duplicate = await db.query("SELECT role_id FROM public.roles WHERE role_name = $1 AND role_id <> $2 LIMIT 1", [parsed.role.name, id]); if (duplicate.rows[0]) return fail("That role name already exists.", 409); const result = await db.query("UPDATE public.roles SET role_name = $1, description = $2, is_active = $3 WHERE role_id = $4 RETURNING role_id, role_name, description, is_active, created_at", [parsed.role.name, parsed.role.description, body.is_active, id]); return Response.json({ success: true, message: "Role updated successfully.", data: result.rows[0] }); } catch (error) { console.error("Unable to update role:", error); return fail(duplicateError(error) ? "That role name already exists." : "The role could not be saved. Please try again.", duplicateError(error) ? 409 : 500); } }
-export async function PATCH(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; let body: Record<string, unknown>; try { body = await request.json(); } catch { return fail("Please provide the required role information.", 400); } const id = text(body.role_id); if (!/^\d+$/.test(id) || typeof body.is_active !== "boolean") return fail("Please provide the required role information.", 400); try { const result = await db.query("UPDATE public.roles SET is_active = $1 WHERE role_id = $2 RETURNING role_id, role_name, description, is_active, created_at", [body.is_active, id]); if (!result.rows[0]) return fail("Role not found.", 404); return Response.json({ success: true, message: "Role status updated successfully.", data: result.rows[0] }); } catch (error) { console.error("Unable to update role status:", error); return fail("The role could not be saved. Please try again.", 500); } }
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+function fail(message: string, status: number) {
+  return Response.json({ success: false, message }, { status });
+}
+function duplicateError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
+}
+function parseRole(
+  body: Record<string, unknown>,
+): { role: { name: string; description: string | null } } | { error: string } {
+  const name = text(body.role_name);
+  if (!name) return { error: "Please provide the required role information." };
+  if (name.length > 50)
+    return { error: "Role name must be 50 characters or fewer." };
+  const description = text(body.description) || null;
+  if (description && description.length > 255)
+    return { error: "Description must be 255 characters or fewer." };
+  return { role: { name, description } };
+}
+export async function GET() {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  try {
+    const result = await db.query(
+      "SELECT role_id, role_name, description, is_active, created_at FROM public.roles ORDER BY role_name ASC",
+    );
+    return Response.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Unable to load roles:", error);
+    return fail("Unable to load system roles.", 500);
+  }
+}
+export async function POST(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return fail("Please provide the required role information.", 400);
+  }
+  const parsed = parseRole(body);
+  if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+  try {
+    const duplicate = await db.query(
+      "SELECT role_id FROM public.roles WHERE role_name = $1 LIMIT 1",
+      [parsed.role.name],
+    );
+    if (duplicate.rows[0]) return fail("That role name already exists.", 409);
+    const result = await db.query(
+      "INSERT INTO public.roles (role_name, description, is_active) VALUES ($1, $2, TRUE) RETURNING role_id, role_name, description, is_active, created_at",
+      [parsed.role.name, parsed.role.description],
+    );
+    return Response.json(
+      {
+        success: true,
+        message: "Role created successfully.",
+        data: result.rows[0],
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("Unable to create role:", error);
+    return fail(
+      duplicateError(error)
+        ? "That role name already exists."
+        : "The role could not be saved. Please try again.",
+      duplicateError(error) ? 409 : 500,
+    );
+  }
+}
+export async function PUT(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return fail("Please provide the required role information.", 400);
+  }
+  const id = text(body.role_id);
+  const parsed = parseRole(body);
+  if (!/^\d+$/.test(id))
+    return fail("Please provide the required role information.", 400);
+  if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+  if (typeof body.is_active !== "boolean")
+    return fail("Please provide the required role information.", 400);
+  try {
+    const existing = await db.query(
+      "SELECT role_id FROM public.roles WHERE role_id = $1 LIMIT 1",
+      [id],
+    );
+    if (!existing.rows[0]) return fail("Role not found.", 404);
+    const duplicate = await db.query(
+      "SELECT role_id FROM public.roles WHERE role_name = $1 AND role_id <> $2 LIMIT 1",
+      [parsed.role.name, id],
+    );
+    if (duplicate.rows[0]) return fail("That role name already exists.", 409);
+    const result = await db.query(
+      "UPDATE public.roles SET role_name = $1, description = $2, is_active = $3 WHERE role_id = $4 RETURNING role_id, role_name, description, is_active, created_at",
+      [parsed.role.name, parsed.role.description, body.is_active, id],
+    );
+    return Response.json({
+      success: true,
+      message: "Role updated successfully.",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Unable to update role:", error);
+    return fail(
+      duplicateError(error)
+        ? "That role name already exists."
+        : "The role could not be saved. Please try again.",
+      duplicateError(error) ? 409 : 500,
+    );
+  }
+}
+export async function PATCH(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return fail("Please provide the required role information.", 400);
+  }
+  const id = text(body.role_id);
+  if (!/^\d+$/.test(id) || typeof body.is_active !== "boolean")
+    return fail("Please provide the required role information.", 400);
+  try {
+    const result = await db.query(
+      "UPDATE public.roles SET is_active = $1 WHERE role_id = $2 RETURNING role_id, role_name, description, is_active, created_at",
+      [body.is_active, id],
+    );
+    if (!result.rows[0]) return fail("Role not found.", 404);
+    return Response.json({
+      success: true,
+      message: "Role status updated successfully.",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Unable to update role status:", error);
+    return fail("The role could not be saved. Please try again.", 500);
+  }
+}

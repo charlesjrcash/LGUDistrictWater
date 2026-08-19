@@ -39,10 +39,12 @@ function getOptionalString(value: unknown) {
 }
 
 function isDuplicatePenaltyCodeError(error: unknown) {
-  return typeof error === "object" &&
+  return (
+    typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    error.code === "23505";
+    error.code === "23505"
+  );
 }
 
 function isValidDate(value: string) {
@@ -52,24 +54,21 @@ function isValidDate(value: string) {
 
   const date = new Date(`${value}T00:00:00.000Z`);
 
-  return !Number.isNaN(date.getTime()) &&
-    date.toISOString().slice(0, 10) === value;
+  return (
+    !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  );
 }
 
-function isValidDecimal(
-  value: string,
-  scale: number,
-  maximum: number
-) {
-  const decimalPattern = new RegExp(
-    `^\\d+(?:\\.\\d{1,${scale}})?$`
-  );
+function isValidDecimal(value: string, scale: number, maximum: number) {
+  const decimalPattern = new RegExp(`^\\d+(?:\\.\\d{1,${scale}})?$`);
   const numberValue = Number(value);
 
-  return decimalPattern.test(value) &&
+  return (
+    decimalPattern.test(value) &&
     Number.isFinite(numberValue) &&
     numberValue >= 0 &&
-    numberValue <= maximum;
+    numberValue <= maximum
+  );
 }
 
 function parsePenaltyRate(body: Record<string, unknown>) {
@@ -83,9 +82,7 @@ function parsePenaltyRate(body: Record<string, unknown>) {
     effectiveDate: getString(body.effective_date),
     expirationDate: getOptionalString(body.expiration_date),
     description: getOptionalString(body.description),
-    isActive: typeof body.is_active === "boolean"
-      ? body.is_active
-      : true,
+    isActive: typeof body.is_active === "boolean" ? body.is_active : true,
   };
 
   if (
@@ -113,38 +110,44 @@ function parsePenaltyRate(body: Record<string, unknown>) {
 
   if (!isValidDecimal(penaltyRate.rate, 4, 999999.9999)) {
     return {
-      error: "Rate must be a valid number from 0 to 999999.9999 with up to 4 decimal places.",
+      error:
+        "Rate must be a valid number from 0 to 999999.9999 with up to 4 decimal places.",
     };
   }
 
-  if (!/^\d+$/.test(penaltyRate.gracePeriodDays) ||
-    Number(penaltyRate.gracePeriodDays) > 2147483647) {
+  if (
+    !/^\d+$/.test(penaltyRate.gracePeriodDays) ||
+    Number(penaltyRate.gracePeriodDays) > 2147483647
+  ) {
     return {
-      error: "Grace period days must be a whole number greater than or equal to zero.",
+      error:
+        "Grace period days must be a whole number greater than or equal to zero.",
     };
   }
 
-  if (penaltyRate.maximumPenalty &&
-    !isValidDecimal(
-      penaltyRate.maximumPenalty,
-      2,
-      999999999999.99
-    )) {
+  if (
+    penaltyRate.maximumPenalty &&
+    !isValidDecimal(penaltyRate.maximumPenalty, 2, 999999999999.99)
+  ) {
     return {
-      error: "Maximum penalty must be a valid number from 0 to 999999999999.99 with up to 2 decimal places.",
+      error:
+        "Maximum penalty must be a valid number from 0 to 999999999999.99 with up to 2 decimal places.",
     };
   }
 
-  if (!isValidDate(penaltyRate.effectiveDate) ||
-    (penaltyRate.expirationDate &&
-      !isValidDate(penaltyRate.expirationDate))) {
+  if (
+    !isValidDate(penaltyRate.effectiveDate) ||
+    (penaltyRate.expirationDate && !isValidDate(penaltyRate.expirationDate))
+  ) {
     return {
       error: "Please enter valid effective and expiration dates.",
     };
   }
 
-  if (penaltyRate.expirationDate &&
-    penaltyRate.expirationDate < penaltyRate.effectiveDate) {
+  if (
+    penaltyRate.expirationDate &&
+    penaltyRate.expirationDate < penaltyRate.effectiveDate
+  ) {
     return {
       error: "Expiration date cannot be earlier than the effective date.",
     };
@@ -178,7 +181,7 @@ export async function GET() {
 
     return Response.json(
       { success: false, message: "Unable to load penalty rates." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -191,7 +194,7 @@ export async function POST(request: Request) {
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -202,7 +205,7 @@ export async function POST(request: Request) {
 
       const duplicateResult = await client.query(
         `SELECT penalty_id FROM mt_penalty_rates WHERE penalty_code = $1 LIMIT 1`,
-        [parsed.penaltyRate.penaltyCode]
+        [parsed.penaltyRate.penaltyCode],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -213,7 +216,7 @@ export async function POST(request: Request) {
             success: false,
             message: "That penalty code is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -243,7 +246,7 @@ export async function POST(request: Request) {
           parsed.penaltyRate.expirationDate,
           parsed.penaltyRate.description,
           parsed.penaltyRate.isActive,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -254,7 +257,7 @@ export async function POST(request: Request) {
           message: "Penalty rate saved successfully.",
           data: result.rows[0],
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       await client.query("ROLLBACK");
@@ -271,13 +274,13 @@ export async function POST(request: Request) {
           success: false,
           message: "That penalty code is already registered.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return Response.json(
       { success: false, message: "The penalty rate could not be saved." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -291,14 +294,14 @@ export async function PUT(request: Request) {
     if (!/^\d+$/.test(penaltyId)) {
       return Response.json(
         { success: false, message: "Penalty rate ID is required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -309,7 +312,7 @@ export async function PUT(request: Request) {
 
       const existingResult = await client.query(
         `SELECT penalty_id FROM mt_penalty_rates WHERE penalty_id = $1 LIMIT 1`,
-        [penaltyId]
+        [penaltyId],
       );
 
       if ((existingResult.rowCount ?? 0) === 0) {
@@ -317,7 +320,7 @@ export async function PUT(request: Request) {
 
         return Response.json(
           { success: false, message: "Penalty rate record was not found." },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -328,7 +331,7 @@ export async function PUT(request: Request) {
           WHERE penalty_code = $1 AND penalty_id <> $2
           LIMIT 1
         `,
-        [parsed.penaltyRate.penaltyCode, penaltyId]
+        [parsed.penaltyRate.penaltyCode, penaltyId],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -337,9 +340,10 @@ export async function PUT(request: Request) {
         return Response.json(
           {
             success: false,
-            message: "That penalty code is already registered to another penalty rate.",
+            message:
+              "That penalty code is already registered to another penalty rate.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -378,7 +382,7 @@ export async function PUT(request: Request) {
           parsed.penaltyRate.description,
           parsed.penaltyRate.isActive,
           penaltyId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -401,15 +405,16 @@ export async function PUT(request: Request) {
       return Response.json(
         {
           success: false,
-          message: "That penalty code is already registered to another penalty rate.",
+          message:
+            "That penalty code is already registered to another penalty rate.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return Response.json(
       { success: false, message: "The penalty rate could not be updated." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

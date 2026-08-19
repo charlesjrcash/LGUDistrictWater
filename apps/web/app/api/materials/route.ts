@@ -20,10 +20,17 @@ function fail(message: string, status: number) {
 }
 
 function isDuplicateError(error: unknown) {
-  return typeof error === "object" && error !== null && "code" in error && error.code === "23505";
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
 }
 
-function parseMaterial(body: Record<string, unknown>): { material: MaterialInput } | { error: string } {
+function parseMaterial(
+  body: Record<string, unknown>,
+): { material: MaterialInput } | { error: string } {
   const material: MaterialInput = {
     materialCode: text(body.material_code).toUpperCase(),
     materialName: text(body.material_name),
@@ -88,7 +95,7 @@ export async function POST(request: Request) {
   }
 
   const parsed = parseMaterial(body);
-  if ("error" in parsed) return fail(parsed.error, 400);
+  if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
 
   const client = await db.connect();
   try {
@@ -106,26 +113,41 @@ export async function POST(request: Request) {
       return fail("Selected unit of measure is invalid.", 400);
     }
 
-    const result = await client.query(`
+    const result = await client.query(
+      `
       INSERT INTO public.mt_material (
         material_code, material_name, unit_id, description, is_active, created_by
       )
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING material_id, material_code, material_name, unit_id, description, is_active
-    `, [
-      parsed.material.materialCode,
-      parsed.material.materialName,
-      parsed.material.unitId,
-      parsed.material.description,
-      parsed.material.isActive,
-      auth.user.userId,
-    ]);
+    `,
+      [
+        parsed.material.materialCode,
+        parsed.material.materialName,
+        parsed.material.unitId,
+        parsed.material.description,
+        parsed.material.isActive,
+        auth.user.userId,
+      ],
+    );
     await client.query("COMMIT");
-    return Response.json({ success: true, message: "Material saved successfully.", data: result.rows[0] }, { status: 201 });
+    return Response.json(
+      {
+        success: true,
+        message: "Material saved successfully.",
+        data: result.rows[0],
+      },
+      { status: 201 },
+    );
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Failed to save material:", error);
-    return fail(isDuplicateError(error) ? "That material code is already registered." : "The material could not be saved.", isDuplicateError(error) ? 409 : 500);
+    return fail(
+      isDuplicateError(error)
+        ? "That material code is already registered."
+        : "The material could not be saved.",
+      isDuplicateError(error) ? 409 : 500,
+    );
   } finally {
     client.release();
   }
@@ -145,7 +167,7 @@ export async function PUT(request: Request) {
   const materialId = text(body.material_id);
   const parsed = parseMaterial(body);
   if (!/^\d+$/.test(materialId)) return fail("Material ID is required.", 400);
-  if ("error" in parsed) return fail(parsed.error, 400);
+  if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
 
   const client = await db.connect();
   try {
@@ -171,7 +193,8 @@ export async function PUT(request: Request) {
       return fail("Selected unit of measure is invalid.", 400);
     }
 
-    const result = await client.query(`
+    const result = await client.query(
+      `
       UPDATE public.mt_material
       SET material_code = $1,
           material_name = $2,
@@ -182,21 +205,32 @@ export async function PUT(request: Request) {
           updated_at = CURRENT_TIMESTAMP
       WHERE material_id = $7
       RETURNING material_id, material_code, material_name, unit_id, description, is_active
-    `, [
-      parsed.material.materialCode,
-      parsed.material.materialName,
-      parsed.material.unitId,
-      parsed.material.description,
-      parsed.material.isActive,
-      auth.user.userId,
-      materialId,
-    ]);
+    `,
+      [
+        parsed.material.materialCode,
+        parsed.material.materialName,
+        parsed.material.unitId,
+        parsed.material.description,
+        parsed.material.isActive,
+        auth.user.userId,
+        materialId,
+      ],
+    );
     await client.query("COMMIT");
-    return Response.json({ success: true, message: "Material updated successfully.", data: result.rows[0] });
+    return Response.json({
+      success: true,
+      message: "Material updated successfully.",
+      data: result.rows[0],
+    });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Failed to update material:", error);
-    return fail(isDuplicateError(error) ? "That material code is already registered." : "The material could not be updated.", isDuplicateError(error) ? 409 : 500);
+    return fail(
+      isDuplicateError(error)
+        ? "That material code is already registered."
+        : "The material could not be updated.",
+      isDuplicateError(error) ? 409 : 500,
+    );
   } finally {
     client.release();
   }

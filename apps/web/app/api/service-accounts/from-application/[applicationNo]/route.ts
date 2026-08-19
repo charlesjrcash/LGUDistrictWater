@@ -7,7 +7,9 @@ type Context = { params: Promise<{ applicationNo: string }> };
 export async function GET(_request: Request, context: Context) {
   const auth = await requireSessionUser();
   if (auth.response) return auth.response;
-  const applicationNo = decodeURIComponent((await context.params).applicationNo);
+  const applicationNo = decodeURIComponent(
+    (await context.params).applicationNo,
+  );
   try {
     const result = await db.query(
       `SELECT json_build_object(
@@ -29,10 +31,17 @@ export async function GET(_request: Request, context: Context) {
         LIMIT 1`,
       [applicationNo],
     );
-    if (!result.rows[0]) return Response.json({ success: false, message: "Service application not found." }, { status: 404 });
+    if (!result.rows[0])
+      return Response.json(
+        { success: false, message: "Service application not found." },
+        { status: 404 },
+      );
     return Response.json({ success: true, data: result.rows[0] });
   } catch (error) {
     console.error("Unable to load approved application context:", error);
-    return Response.json({ success: false, message: "Unable to load the approved application." }, { status: 500 });
+    return Response.json(
+      { success: false, message: "Unable to load the approved application." },
+      { status: 500 },
+    );
   }
 }

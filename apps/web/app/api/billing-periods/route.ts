@@ -6,9 +6,11 @@ const globalForDb = globalThis as unknown as {
   billingPeriodsPool?: Pool;
 };
 
-const pool = globalForDb.billingPeriodsPool ?? new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const pool =
+  globalForDb.billingPeriodsPool ??
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForDb.billingPeriodsPool = pool;
@@ -39,15 +41,18 @@ function isValidDate(value: string) {
 
   const date = new Date(`${value}T00:00:00.000Z`);
 
-  return !Number.isNaN(date.getTime()) &&
-    date.toISOString().slice(0, 10) === value;
+  return (
+    !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  );
 }
 
 function isDuplicatePeriodCodeError(error: unknown) {
-  return typeof error === "object" &&
+  return (
+    typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    error.code === "23505";
+    error.code === "23505"
+  );
 }
 
 function parseBillingPeriod(body: Record<string, unknown>) {
@@ -61,16 +66,22 @@ function parseBillingPeriod(body: Record<string, unknown>) {
     status: getString(body.status).toUpperCase(),
   };
 
-  if (!billingPeriod.periodCode || !billingPeriod.startDate ||
-    !billingPeriod.endDate || !billingPeriod.status) {
+  if (
+    !billingPeriod.periodCode ||
+    !billingPeriod.startDate ||
+    !billingPeriod.endDate ||
+    !billingPeriod.status
+  ) {
     return { error: "Please complete all required fields." };
   }
 
-  if (!isValidDate(billingPeriod.startDate) ||
+  if (
+    !isValidDate(billingPeriod.startDate) ||
     !isValidDate(billingPeriod.endDate) ||
     (billingPeriod.dueDate && !isValidDate(billingPeriod.dueDate)) ||
     (billingPeriod.disconnectionDate &&
-      !isValidDate(billingPeriod.disconnectionDate))) {
+      !isValidDate(billingPeriod.disconnectionDate))
+  ) {
     return { error: "Please enter valid dates." };
   }
 
@@ -107,7 +118,7 @@ export async function GET() {
 
     return Response.json(
       { success: false, message: "Unable to load billing periods." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -120,7 +131,7 @@ export async function POST(request: Request) {
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -131,15 +142,18 @@ export async function POST(request: Request) {
 
       const duplicateResult = await client.query(
         `SELECT billing_period_id FROM mt_billing_period WHERE period_code = $1 LIMIT 1`,
-        [parsed.billingPeriod.periodCode]
+        [parsed.billingPeriod.periodCode],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
         await client.query("ROLLBACK");
 
         return Response.json(
-          { success: false, message: "That period code is already registered." },
-          { status: 409 }
+          {
+            success: false,
+            message: "That period code is already registered.",
+          },
+          { status: 409 },
         );
       }
 
@@ -166,7 +180,7 @@ export async function POST(request: Request) {
           parsed.billingPeriod.dueDate,
           parsed.billingPeriod.disconnectionDate,
           parsed.billingPeriod.status,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -177,7 +191,7 @@ export async function POST(request: Request) {
           message: "Billing period created successfully.",
           data: result.rows[0],
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       await client.query("ROLLBACK");
@@ -191,13 +205,13 @@ export async function POST(request: Request) {
     if (isDuplicatePeriodCodeError(error)) {
       return Response.json(
         { success: false, message: "That period code is already registered." },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return Response.json(
       { success: false, message: "The billing period could not be saved." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -211,14 +225,14 @@ export async function PUT(request: Request) {
     if (!/^\d+$/.test(billingPeriodId)) {
       return Response.json(
         { success: false, message: "Billing period ID is required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -229,7 +243,7 @@ export async function PUT(request: Request) {
 
       const existingResult = await client.query(
         `SELECT billing_period_id FROM mt_billing_period WHERE billing_period_id = $1 LIMIT 1`,
-        [billingPeriodId]
+        [billingPeriodId],
       );
 
       if ((existingResult.rowCount ?? 0) === 0) {
@@ -237,7 +251,7 @@ export async function PUT(request: Request) {
 
         return Response.json(
           { success: false, message: "Billing period record was not found." },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -249,7 +263,7 @@ export async function PUT(request: Request) {
             AND billing_period_id <> $2
           LIMIT 1
         `,
-        [parsed.billingPeriod.periodCode, billingPeriodId]
+        [parsed.billingPeriod.periodCode, billingPeriodId],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -258,9 +272,10 @@ export async function PUT(request: Request) {
         return Response.json(
           {
             success: false,
-            message: "That period code is already registered to another billing period.",
+            message:
+              "That period code is already registered to another billing period.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -294,7 +309,7 @@ export async function PUT(request: Request) {
           parsed.billingPeriod.disconnectionDate,
           parsed.billingPeriod.status,
           billingPeriodId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -317,15 +332,16 @@ export async function PUT(request: Request) {
       return Response.json(
         {
           success: false,
-          message: "That period code is already registered to another billing period.",
+          message:
+            "That period code is already registered to another billing period.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return Response.json(
       { success: false, message: "The billing period could not be updated." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

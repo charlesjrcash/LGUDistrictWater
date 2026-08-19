@@ -66,7 +66,11 @@ export async function getCurrentUserPermissions(): Promise<CurrentUserPermission
     };
   } catch (error) {
     console.error("Unable to load current user permissions:", error);
-    return { user: auth.user, permissions: [], response: permissionsErrorResponse() };
+    return {
+      user: auth.user,
+      permissions: [],
+      response: permissionsErrorResponse(),
+    };
   }
 }
 
@@ -83,22 +87,36 @@ export async function hasPermission(permissionCode: string): Promise<boolean> {
  * Produces the same shape as requireSessionUser(), with a 403 response for an
  * authenticated user who lacks the requested permission.
  */
-export async function requirePermission(permissionCode: string): Promise<CurrentUserPermissions> {
+export async function requirePermission(
+  permissionCode: string,
+): Promise<CurrentUserPermissions> {
   const auth = await getCurrentUserPermissions();
   if (auth.response) return auth;
 
   return auth.permissions.includes(permissionCode.trim())
     ? auth
-    : { user: auth.user, permissions: auth.permissions, response: forbiddenResponse() };
+    : {
+        user: auth.user,
+        permissions: auth.permissions,
+        response: forbiddenResponse(),
+      };
 }
 
 /** Requires at least one permission, for operations shared by multiple roles. */
-export async function requireAnyPermission(permissionCodes: readonly string[]): Promise<CurrentUserPermissions> {
+export async function requireAnyPermission(
+  permissionCodes: readonly string[],
+): Promise<CurrentUserPermissions> {
   const auth = await getCurrentUserPermissions();
   if (auth.response) return auth;
 
-  const allowed = permissionCodes.some((permissionCode) => auth.permissions.includes(permissionCode.trim()));
+  const allowed = permissionCodes.some((permissionCode) =>
+    auth.permissions.includes(permissionCode.trim()),
+  );
   return allowed
     ? auth
-    : { user: auth.user, permissions: auth.permissions, response: forbiddenResponse() };
+    : {
+        user: auth.user,
+        permissions: auth.permissions,
+        response: forbiddenResponse(),
+      };
 }

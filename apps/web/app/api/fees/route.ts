@@ -39,23 +39,17 @@ export async function GET() {
       success: true,
       data: result.rows,
     });
-
   } catch (error) {
-
-    console.error(
-      "Failed to load fees:",
-      error
-    );
+    console.error("Failed to load fees:", error);
 
     return Response.json(
       {
         success: false,
-        message:
-          "Unable to load fees.",
+        message: "Unable to load fees.",
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
@@ -70,9 +64,7 @@ export async function POST(request: Request) {
         : "";
 
     const feeName =
-      typeof body.fee_name === "string"
-        ? body.fee_name.trim()
-        : "";
+      typeof body.fee_name === "string" ? body.fee_name.trim() : "";
 
     const feeType =
       typeof body.fee_type === "string"
@@ -82,9 +74,7 @@ export async function POST(request: Request) {
     const amount = body.amount;
 
     const effectiveDate =
-      typeof body.effective_date === "string"
-        ? body.effective_date
-        : "";
+      typeof body.effective_date === "string" ? body.effective_date : "";
 
     const expirationDate =
       typeof body.expiration_date === "string" &&
@@ -98,9 +88,7 @@ export async function POST(request: Request) {
         : null;
 
     const isActive =
-      typeof body.is_active === "boolean"
-        ? body.is_active
-        : true;
+      typeof body.is_active === "boolean" ? body.is_active : true;
 
     // Required fields
     if (
@@ -114,42 +102,34 @@ export async function POST(request: Request) {
       return Response.json(
         {
           success: false,
-          message:
-            "Please complete all required fields.",
+          message: "Please complete all required fields.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate amount
     const numericAmount = Number(amount);
 
-    if (
-      !Number.isFinite(numericAmount) ||
-      numericAmount < 0
-    ) {
+    if (!Number.isFinite(numericAmount) || numericAmount < 0) {
       return Response.json(
         {
           success: false,
           message:
             "Amount must be a valid number greater than or equal to zero.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate expiration date
-    if (
-      expirationDate &&
-      expirationDate < effectiveDate
-    ) {
+    if (expirationDate && expirationDate < effectiveDate) {
       return Response.json(
         {
           success: false,
-          message:
-            "Expiration date cannot be earlier than the effective date.",
+          message: "Expiration date cannot be earlier than the effective date.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -166,7 +146,7 @@ export async function POST(request: Request) {
         WHERE fee_code = $1
         LIMIT 1
         `,
-        [feeCode]
+        [feeCode],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -175,10 +155,9 @@ export async function POST(request: Request) {
         return Response.json(
           {
             success: false,
-            message:
-              "That fee code is already registered.",
+            message: "That fee code is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -225,7 +204,7 @@ export async function POST(request: Request) {
           expirationDate,
           description,
           isActive,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -236,30 +215,23 @@ export async function POST(request: Request) {
           message: "Fee saved successfully.",
           data: result.rows[0],
         },
-        { status: 201 }
+        { status: 201 },
       );
-
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
-
     } finally {
       client.release();
     }
-
   } catch (error) {
-    console.error(
-      "Failed to save fee:",
-      error
-    );
+    console.error("Failed to save fee:", error);
 
     return Response.json(
       {
         success: false,
-        message:
-          "The fee could not be saved.",
+        message: "The fee could not be saved.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -268,10 +240,7 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
 
-    const feeId =
-      typeof body.fee_id === "string"
-        ? body.fee_id.trim()
-        : "";
+    const feeId = typeof body.fee_id === "string" ? body.fee_id.trim() : "";
 
     const feeCode =
       typeof body.fee_code === "string"
@@ -279,9 +248,7 @@ export async function PUT(request: Request) {
         : "";
 
     const feeName =
-      typeof body.fee_name === "string"
-        ? body.fee_name.trim()
-        : "";
+      typeof body.fee_name === "string" ? body.fee_name.trim() : "";
 
     const feeType =
       typeof body.fee_type === "string"
@@ -291,9 +258,7 @@ export async function PUT(request: Request) {
     const amount = body.amount;
 
     const effectiveDate =
-      typeof body.effective_date === "string"
-        ? body.effective_date
-        : "";
+      typeof body.effective_date === "string" ? body.effective_date : "";
 
     const expirationDate =
       typeof body.expiration_date === "string" &&
@@ -307,9 +272,7 @@ export async function PUT(request: Request) {
         : null;
 
     const isActive =
-      typeof body.is_active === "boolean"
-        ? body.is_active
-        : true;
+      typeof body.is_active === "boolean" ? body.is_active : true;
 
     // Required fields
     if (
@@ -324,42 +287,34 @@ export async function PUT(request: Request) {
       return Response.json(
         {
           success: false,
-          message:
-            "Please complete all required fields.",
+          message: "Please complete all required fields.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate amount
     const numericAmount = Number(amount);
 
-    if (
-      !Number.isFinite(numericAmount) ||
-      numericAmount < 0
-    ) {
+    if (!Number.isFinite(numericAmount) || numericAmount < 0) {
       return Response.json(
         {
           success: false,
           message:
             "Amount must be a valid number greater than or equal to zero.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate dates
-    if (
-      expirationDate &&
-      expirationDate < effectiveDate
-    ) {
+    if (expirationDate && expirationDate < effectiveDate) {
       return Response.json(
         {
           success: false,
-          message:
-            "Expiration date cannot be earlier than the effective date.",
+          message: "Expiration date cannot be earlier than the effective date.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -376,7 +331,7 @@ export async function PUT(request: Request) {
         WHERE fee_id = $1
         LIMIT 1
         `,
-        [feeId]
+        [feeId],
       );
 
       if ((existingFee.rowCount ?? 0) === 0) {
@@ -387,7 +342,7 @@ export async function PUT(request: Request) {
             success: false,
             message: "Fee record was not found.",
           },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -400,7 +355,7 @@ export async function PUT(request: Request) {
           AND fee_id <> $2
         LIMIT 1
         `,
-        [feeCode, feeId]
+        [feeCode, feeId],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -409,10 +364,9 @@ export async function PUT(request: Request) {
         return Response.json(
           {
             success: false,
-            message:
-              "That fee code is already registered to another fee.",
+            message: "That fee code is already registered to another fee.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -452,7 +406,7 @@ export async function PUT(request: Request) {
           description,
           isActive,
           feeId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -463,31 +417,23 @@ export async function PUT(request: Request) {
           message: "Fee updated successfully.",
           data: result.rows[0],
         },
-        { status: 200 }
+        { status: 200 },
       );
-
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
-
     } finally {
       client.release();
     }
-
   } catch (error) {
-    console.error(
-      "Failed to update fee:",
-      error
-    );
+    console.error("Failed to update fee:", error);
 
     return Response.json(
       {
         success: false,
-        message:
-          "The fee could not be updated.",
+        message: "The fee could not be updated.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

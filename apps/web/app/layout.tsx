@@ -14,8 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Bagamanoc Water Billing System", template: "%s | Bagamanoc Water" },
-  description: "Efficient, accurate, and transparent water billing for Bagamanoc.",
+  title: {
+    default: "Bagamanoc Water Billing System",
+    template: "%s | Bagamanoc Water",
+  },
+  description:
+    "Efficient, accurate, and transparent water billing for Bagamanoc.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

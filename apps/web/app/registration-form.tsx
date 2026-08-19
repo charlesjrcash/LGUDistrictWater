@@ -38,31 +38,23 @@ export default function RegistrationForm({
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [selectedEmployeeId, setSelectedEmployeeId] =
-    useState("");
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
 
   useEffect(() => {
     if (!status) return;
 
-    const dismissTimer = window.setTimeout(
-      () => setStatus(null),
-      15000
-    );
+    const dismissTimer = window.setTimeout(() => setStatus(null), 15000);
 
     return () => window.clearTimeout(dismissTimer);
   }, [status]);
 
   const selectedEmployee = initialEmployees.find(
-    (employee) =>
-      String(employee.employee_id) === selectedEmployeeId
+    (employee) => String(employee.employee_id) === selectedEmployeeId,
   );
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setStatus(null);
@@ -78,9 +70,7 @@ export default function RegistrationForm({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(
-          Object.fromEntries(formData)
-        ),
+        body: JSON.stringify(Object.fromEntries(formData)),
       });
 
       const result = (await response.json()) as {
@@ -88,10 +78,7 @@ export default function RegistrationForm({
       };
 
       if (!response.ok) {
-        throw new Error(
-          result.message ||
-            "Unable to create user."
-        );
+        throw new Error(result.message || "Unable to create user.");
       }
 
       form.reset();
@@ -104,17 +91,13 @@ export default function RegistrationForm({
 
       setStatus({
         type: "success",
-        message:
-          result.message ||
-          "User created successfully.",
+        message: result.message || "User created successfully.",
       });
     } catch (error) {
       setStatus({
         type: "error",
         message:
-          error instanceof Error
-            ? error.message
-            : "Unable to create user.",
+          error instanceof Error ? error.message : "Unable to create user.",
       });
     } finally {
       setSubmitting(false);
@@ -126,11 +109,9 @@ export default function RegistrationForm({
       onSubmit={handleSubmit}
       className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
     >
-
       {/* HEADER */}
       <div className="border-b border-slate-200 bg-slate-50/80 px-6 py-5 sm:px-8">
         <div className="flex items-start gap-3">
-
           <div
             className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-700 text-white shadow-sm"
             aria-hidden="true"
@@ -142,11 +123,7 @@ export default function RegistrationForm({
               strokeWidth="1.8"
               className="size-5"
             >
-              <circle
-                cx="12"
-                cy="8"
-                r="3.25"
-              />
+              <circle cx="12" cy="8" r="3.25" />
 
               <path
                 strokeLinecap="round"
@@ -165,15 +142,12 @@ export default function RegistrationForm({
               Create a system account for an existing employee.
             </p>
           </div>
-
         </div>
       </div>
 
       <div className="space-y-8 px-6 py-7 sm:px-8 sm:py-8">
-
         {/* EMPLOYEE SECTION */}
         <section aria-labelledby="employee-heading">
-
           <div className="mb-5">
             <h3
               id="employee-heading"
@@ -188,51 +162,37 @@ export default function RegistrationForm({
           </div>
 
           <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
-
             {/* Employee */}
             <label className={labelClass}>
-              Employee{" "}
-              <span className="text-red-600">*</span>
-
+              Employee <span className="text-red-600">*</span>
               <select
                 className={inputClass}
                 name="employeeId"
                 required
                 value={selectedEmployeeId}
-                onChange={(event) =>
-                  setSelectedEmployeeId(
-                    event.target.value
-                  )
-                }
+                onChange={(event) => setSelectedEmployeeId(event.target.value)}
               >
                 <option value="" disabled>
                   Select an employee
                 </option>
 
-                {initialEmployees.map(
-                  (employee) => (
-                    <option
-                      key={employee.employee_id}
-                      value={employee.employee_id}
-                    >
-                      {employee.employee_code} —{" "}
-                      {employee.employee_name}
-                    </option>
-                  )
-                )}
+                {initialEmployees.map((employee) => (
+                  <option
+                    key={employee.employee_id}
+                    value={employee.employee_id}
+                  >
+                    {employee.employee_code} — {employee.employee_name}
+                  </option>
+                ))}
               </select>
             </label>
 
             {/* Employee Code */}
             <label className={labelClass}>
               Employee Code
-
               <input
                 className={inputClass}
-                value={
-                  selectedEmployee?.employee_code ||
-                  ""
-                }
+                value={selectedEmployee?.employee_code || ""}
                 readOnly
                 tabIndex={-1}
                 placeholder="Employee code"
@@ -242,13 +202,9 @@ export default function RegistrationForm({
             {/* Position */}
             <label className={labelClass}>
               Position
-
               <input
                 className={inputClass}
-                value={
-                  selectedEmployee?.position ||
-                  ""
-                }
+                value={selectedEmployee?.position || ""}
                 readOnly
                 tabIndex={-1}
                 placeholder="Employee position"
@@ -258,13 +214,9 @@ export default function RegistrationForm({
             {/* Email */}
             <label className={labelClass}>
               Employee Email
-
               <input
                 className={inputClass}
-                value={
-                  selectedEmployee?.email ||
-                  ""
-                }
+                value={selectedEmployee?.email || ""}
                 readOnly
                 tabIndex={-1}
                 placeholder="Employee email"
@@ -274,19 +226,14 @@ export default function RegistrationForm({
             {/* Contact */}
             <label className={labelClass}>
               Contact Number
-
               <input
                 className={inputClass}
-                value={
-                  selectedEmployee?.contact_no ||
-                  ""
-                }
+                value={selectedEmployee?.contact_no || ""}
                 readOnly
                 tabIndex={-1}
                 placeholder="Contact number"
               />
             </label>
-
           </div>
         </section>
 
@@ -295,7 +242,6 @@ export default function RegistrationForm({
           aria-labelledby="identity-heading"
           className="border-t border-slate-200 pt-7"
         >
-
           <div className="mb-5">
             <h3
               id="identity-heading"
@@ -305,17 +251,14 @@ export default function RegistrationForm({
             </h3>
 
             <p className="mt-1 text-sm text-slate-500">
-              Assign the employee's username and system access role.
+              Assign the employee&apos;s username and system access role.
             </p>
           </div>
 
           <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
-
             {/* Username */}
             <label className={labelClass}>
-              Username{" "}
-              <span className="text-red-600">*</span>
-
+              Username <span className="text-red-600">*</span>
               <input
                 className={inputClass}
                 name="username"
@@ -329,9 +272,7 @@ export default function RegistrationForm({
 
             {/* Role */}
             <label className={labelClass}>
-              System role{" "}
-              <span className="text-red-600">*</span>
-
+              System role <span className="text-red-600">*</span>
               <select
                 className={inputClass}
                 name="role"
@@ -342,23 +283,16 @@ export default function RegistrationForm({
                   Select a role
                 </option>
 
-                {initialRoles.map(
-                  (role) => (
-                    <option
-                      key={role}
-                      value={role}
-                    >
-                      {role}
-                    </option>
-                  )
-                )}
+                {initialRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
               </select>
-
               <span className="mt-1.5 block text-xs font-normal text-slate-500">
-                Sets this user's access level.
+                Sets this user&apos;s access level.
               </span>
             </label>
-
           </div>
         </section>
 
@@ -367,7 +301,6 @@ export default function RegistrationForm({
           aria-labelledby="access-heading"
           className="border-t border-slate-200 pt-7"
         >
-
           <div className="mb-5">
             <h3
               id="access-heading"
@@ -377,28 +310,20 @@ export default function RegistrationForm({
             </h3>
 
             <p className="mt-1 text-sm text-slate-500">
-              Create a temporary password that expires in
-              24 hours and must be changed at first sign-in.
+              Create a temporary password that expires in 24 hours and must be
+              changed at first sign-in.
             </p>
           </div>
 
           <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
-
             {/* Password */}
             <label className={labelClass}>
-              Temporary password{" "}
-              <span className="text-red-600">*</span>
-
+              Temporary password <span className="text-red-600">*</span>
               <span className="relative mt-2 block">
-
                 <input
                   className={`${inputClass} mt-0 pr-11`}
                   name="password"
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
+                  type={showPassword ? "text" : "password"}
                   required
                   minLength={8}
                   autoComplete="new-password"
@@ -406,24 +331,14 @@ export default function RegistrationForm({
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword(
-                      (visible) => !visible
-                    )
-                  }
+                  onClick={() => setShowPassword((visible) => !visible)}
                   className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600"
-                  aria-label={
-                    showPassword
-                      ? "Hide password"
-                      : "Show password"
-                  }
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
                 >
                   {showPassword ? "◉" : "○"}
                 </button>
-
               </span>
-
               <span className="mt-1.5 block text-xs font-normal text-slate-500">
                 Use 8 or more characters. It will expire after 24 hours.
               </span>
@@ -431,19 +346,12 @@ export default function RegistrationForm({
 
             {/* Confirm Password */}
             <label className={labelClass}>
-              Confirm temporary password{" "}
-              <span className="text-red-600">*</span>
-
+              Confirm temporary password <span className="text-red-600">*</span>
               <span className="relative mt-2 block">
-
                 <input
                   className={`${inputClass} mt-0 pr-11`}
                   name="confirmPassword"
-                  type={
-                    showConfirmPassword
-                      ? "text"
-                      : "password"
-                  }
+                  type={showConfirmPassword ? "text" : "password"}
                   required
                   minLength={8}
                   autoComplete="new-password"
@@ -451,37 +359,26 @@ export default function RegistrationForm({
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowConfirmPassword(
-                      (visible) => !visible
-                    )
-                  }
+                  onClick={() => setShowConfirmPassword((visible) => !visible)}
                   className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600"
                   aria-label={
                     showConfirmPassword
                       ? "Hide confirm password"
                       : "Show confirm password"
                   }
-                  aria-pressed={
-                    showConfirmPassword
-                  }
+                  aria-pressed={showConfirmPassword}
                 >
                   {showConfirmPassword ? "◉" : "○"}
                 </button>
-
               </span>
             </label>
-
           </div>
         </section>
-
       </div>
 
       {/* FOOTER */}
       <div className="flex flex-col-reverse gap-4 border-t border-slate-200 bg-slate-50 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-
         <p className="flex items-center gap-2 text-xs leading-5 text-slate-500">
-
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -490,22 +387,11 @@ export default function RegistrationForm({
             className="size-4 shrink-0"
             aria-hidden="true"
           >
-            <rect
-              x="5"
-              y="10"
-              width="14"
-              height="10"
-              rx="2"
-            />
+            <rect x="5" y="10" width="14" height="10" rx="2" />
 
-            <path
-              strokeLinecap="round"
-              d="M8 10V7a4 4 0 0 1 8 0v3"
-            />
+            <path strokeLinecap="round" d="M8 10V7a4 4 0 0 1 8 0v3" />
           </svg>
-
           Account details are securely stored.
-
         </p>
 
         <button
@@ -520,40 +406,26 @@ export default function RegistrationForm({
             />
           )}
 
-          {submitting
-            ? "Creating user..."
-            : "Create user"}
+          {submitting ? "Creating user..." : "Create user"}
         </button>
-
       </div>
 
       {/* STATUS MESSAGE */}
       {status && (
         <div
-          role={
-            status.type === "error"
-              ? "alert"
-              : "status"
-          }
-          aria-live={
-            status.type === "error"
-              ? "assertive"
-              : "polite"
-          }
+          role={status.type === "error" ? "alert" : "status"}
+          aria-live={status.type === "error" ? "assertive" : "polite"}
           className={`fixed right-4 top-4 z-50 flex w-[calc(100%-2rem)] max-w-sm items-start gap-3 rounded-xl border p-4 shadow-lg sm:right-6 sm:top-6 ${
             status.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-900"
               : "border-red-200 bg-red-50 text-red-900"
           }`}
         >
-
           <span
             className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-current/10 text-sm font-bold"
             aria-hidden="true"
           >
-            {status.type === "success"
-              ? "✓"
-              : "!"}
+            {status.type === "success" ? "✓" : "!"}
           </span>
 
           <p className="min-w-0 flex-1 text-sm font-medium leading-6">
@@ -574,16 +446,11 @@ export default function RegistrationForm({
               className="size-4"
               aria-hidden="true"
             >
-              <path
-                strokeLinecap="round"
-                d="m6 6 12 12M18 6 6 18"
-              />
+              <path strokeLinecap="round" d="m6 6 12 12M18 6 6 18" />
             </svg>
           </button>
-
         </div>
       )}
-
     </form>
   );
 }

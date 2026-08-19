@@ -6,7 +6,10 @@ export async function POST() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   try {
-    if (token) await db.query("DELETE FROM user_sessions WHERE token_hash=$1", [hashSessionToken(token)]);
+    if (token)
+      await db.query("DELETE FROM user_sessions WHERE token_hash=$1", [
+        hashSessionToken(token),
+      ]);
   } catch (error) {
     console.error("Logout session cleanup failed:", error);
   }

@@ -1,1 +1,102 @@
-.billResult{margin-top:28px;padding-top:25px;border-top:1px solid #e0e7ef}.accountBar{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:24px}.accountBar span,.billDetails>div,.billHero>div{display:flex;flex-direction:column;gap:6px}.billResult small{color:#8290a3;font-size:10px}.billResult b{font-size:13px}.billHero{padding:25px 27px;display:grid;grid-template-columns:1.3fr 1fr;gap:30px;border-radius:13px;background:linear-gradient(120deg,#075fcf,#1686ee);color:#fff}.billHero small{color:#cde5ff}.billHero strong{margin:3px 0 7px;font-size:32px;letter-spacing:-1px}.billHero>div:last-child{display:grid;grid-template-columns:1fr;gap:5px;border-left:1px solid #ffffff38;padding-left:28px}.billHero>div:last-child b{margin-bottom:7px;font-size:14px}.billStatus{width:max-content;padding:4px 9px;border-radius:20px;background:#ffdfd3;color:#a94224;font-size:9px;font-weight:850}.billStatus.paid{background:#d9f7e7;color:#08764b}.billDetails{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding:24px 5px 2px}.noBill{margin:0;padding:16px;border-radius:9px;background:#edf5ff;color:#536a86;font-size:12px}@media(max-width:720px){.accountBar{grid-template-columns:1fr 1fr}.billHero{grid-template-columns:1fr}.billHero>div:last-child{border-left:0;border-top:1px solid #ffffff38;padding:18px 0 0}.billDetails{grid-template-columns:1fr 1fr}}@media(max-width:420px){.accountBar,.billDetails{grid-template-columns:1fr}}
+.billResult {
+  margin-top: 28px;
+  padding-top: 25px;
+  border-top: 1px solid #e0e7ef;
+}
+.accountBar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding-bottom: 24px;
+}
+.accountBar span,
+.billDetails > div,
+.billHero > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.billResult small {
+  color: #8290a3;
+  font-size: 10px;
+}
+.billResult b {
+  font-size: 13px;
+}
+.billHero {
+  padding: 25px 27px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 30px;
+  border-radius: 13px;
+  background: linear-gradient(120deg, #075fcf, #1686ee);
+  color: #fff;
+}
+.billHero small {
+  color: #cde5ff;
+}
+.billHero strong {
+  margin: 3px 0 7px;
+  font-size: 32px;
+  letter-spacing: -1px;
+}
+.billHero > div:last-child {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  border-left: 1px solid #ffffff38;
+  padding-left: 28px;
+}
+.billHero > div:last-child b {
+  margin-bottom: 7px;
+  font-size: 14px;
+}
+.billStatus {
+  width: max-content;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: #ffdfd3;
+  color: #a94224;
+  font-size: 9px;
+  font-weight: 850;
+}
+.billStatus.paid {
+  background: #d9f7e7;
+  color: #08764b;
+}
+.billDetails {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  padding: 24px 5px 2px;
+}
+.noBill {
+  margin: 0;
+  padding: 16px;
+  border-radius: 9px;
+  background: #edf5ff;
+  color: #536a86;
+  font-size: 12px;
+}
+@media (max-width: 720px) {
+  .accountBar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .billHero {
+    grid-template-columns: 1fr;
+  }
+  .billHero > div:last-child {
+    border-left: 0;
+    border-top: 1px solid #ffffff38;
+    padding: 18px 0 0;
+  }
+  .billDetails {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 420px) {
+  .accountBar,
+  .billDetails {
+    grid-template-columns: 1fr;
+  }
+}

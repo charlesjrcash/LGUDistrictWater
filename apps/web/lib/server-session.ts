@@ -37,7 +37,12 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 
   const user = result.rows[0];
   return user
-    ? { userId: user.user_id, username: user.username, name: user.name, roles: user.roles ?? [] }
+    ? {
+        userId: user.user_id,
+        username: user.username,
+        name: user.name,
+        roles: user.roles ?? [],
+      }
     : null;
 }
 
@@ -46,7 +51,13 @@ export async function requireSessionUser() {
   if (!user) {
     return {
       user: null,
-      response: Response.json({ success: false, message: "Your session has expired. Please sign in again." }, { status: 401 }),
+      response: Response.json(
+        {
+          success: false,
+          message: "Your session has expired. Please sign in again.",
+        },
+        { status: 401 },
+      ),
     } as const;
   }
   return { user, response: null } as const;
