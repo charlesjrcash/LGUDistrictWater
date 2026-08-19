@@ -72,29 +72,21 @@ export async function POST(request: Request) {
 
     const role = clean(body.role);
 
-    const password =
-      typeof body.password === "string"
-        ? body.password
-        : "";
+    const password = typeof body.password === "string" ? body.password : "";
 
     const confirmPassword =
-      typeof body.confirmPassword === "string"
-        ? body.confirmPassword
-        : "";
+      typeof body.confirmPassword === "string" ? body.confirmPassword : "";
 
     // ---------------------------------------------------------
     // 3. Validate employee ID
     // ---------------------------------------------------------
 
-    if (
-      !Number.isInteger(employeeId) ||
-      employeeId <= 0
-    ) {
+    if (!Number.isInteger(employeeId) || employeeId <= 0) {
       return Response.json(
         {
           message: "Please select an employee.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -102,17 +94,12 @@ export async function POST(request: Request) {
     // 4. Validate required fields
     // ---------------------------------------------------------
 
-    if (
-      !username ||
-      !role ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!username || !role || !password || !confirmPassword) {
       return Response.json(
         {
           message: "Please complete all required fields.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -120,16 +107,12 @@ export async function POST(request: Request) {
     // 5. Username validation
     // ---------------------------------------------------------
 
-    if (
-      username.length < 3 ||
-      username.length > 50
-    ) {
+    if (username.length < 3 || username.length > 50) {
       return Response.json(
         {
-          message:
-            "Username must contain between 3 and 50 characters.",
+          message: "Username must contain between 3 and 50 characters.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -140,10 +123,9 @@ export async function POST(request: Request) {
     if (password.length < 8) {
       return Response.json(
         {
-          message:
-            "Password must contain at least 8 characters.",
+          message: "Password must contain at least 8 characters.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -156,7 +138,7 @@ export async function POST(request: Request) {
         {
           message: "Passwords do not match.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -165,7 +147,7 @@ export async function POST(request: Request) {
     // ---------------------------------------------------------
 
     const temporaryPasswordExpiresAt = new Date(
-      Date.now() + 24 * 60 * 60 * 1000
+      Date.now() + 24 * 60 * 60 * 1000,
     );
 
     // ---------------------------------------------------------
@@ -207,7 +189,7 @@ export async function POST(request: Request) {
         WHERE employee_id = $1
         LIMIT 1
         `,
-        [employeeId]
+        [employeeId],
       );
 
       // -------------------------------------------------------
@@ -221,7 +203,7 @@ export async function POST(request: Request) {
           {
             message: "The selected employee was not found.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -236,10 +218,9 @@ export async function POST(request: Request) {
 
         return Response.json(
           {
-            message:
-              "The selected employee is inactive.",
+            message: "The selected employee is inactive.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -249,13 +230,11 @@ export async function POST(request: Request) {
 
       const firstName = clean(employee.first_name);
 
-      const middleName =
-        clean(employee.middle_name) || null;
+      const middleName = clean(employee.middle_name) || null;
 
       const lastName = clean(employee.last_name);
 
-      const email =
-        clean(employee.email).toLowerCase();
+      const email = clean(employee.email).toLowerCase();
 
       // -------------------------------------------------------
       // 15. Validate employee information
@@ -269,7 +248,7 @@ export async function POST(request: Request) {
             message:
               "The selected employee does not have complete name information.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -283,10 +262,9 @@ export async function POST(request: Request) {
 
         return Response.json(
           {
-            message:
-              "The selected employee does not have an email address.",
+            message: "The selected employee does not have an email address.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -294,17 +272,14 @@ export async function POST(request: Request) {
       // 17. Validate employee email
       // -------------------------------------------------------
 
-      if (
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      ) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         await client.query("ROLLBACK");
 
         return Response.json(
           {
-            message:
-              "The selected employee has an invalid email address.",
+            message: "The selected employee has an invalid email address.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -352,28 +327,20 @@ export async function POST(request: Request) {
           email,
           role,
           temporaryPasswordExpiresAt,
-        ]
+        ],
       );
 
       // -------------------------------------------------------
       // 19. Get newly created user ID
       // -------------------------------------------------------
 
-      const userId =
-        userResult.rows[0]?.user_id;
+      const userId = userResult.rows[0]?.user_id;
 
       if (!userId) {
-        throw new Error(
-          "User creation did not return a user ID."
-        );
+        throw new Error("User creation did not return a user ID.");
       }
 
-      console.log(
-        "User created:",
-        userId,
-        "Employee:",
-        employeeId
-      );
+      console.log("User created:", userId, "Employee:", employeeId);
 
       // -------------------------------------------------------
       // 20. Commit database transaction
@@ -398,23 +365,19 @@ export async function POST(request: Request) {
 
         return Response.json(
           {
-            message:
-              "User created and temporary credentials were emailed.",
+            message: "User created and temporary credentials were emailed.",
           },
-          { status: 201 }
+          { status: 201 },
         );
       } catch (error) {
-        console.error(
-          "Temporary credential email failed:",
-          error
-        );
+        console.error("Temporary credential email failed:", error);
 
         return Response.json(
           {
             message:
               "User created, but the credential email could not be sent. Check the SMTP configuration before retrying delivery.",
           },
-          { status: 201 }
+          { status: 201 },
         );
       }
     } catch (error) {
@@ -424,15 +387,9 @@ export async function POST(request: Request) {
 
       await client.query("ROLLBACK");
 
-      const message =
-        error instanceof Error
-          ? error.message
-          : "";
+      const message = error instanceof Error ? error.message : "";
 
-      console.error(
-        "fn_create_user error:",
-        error
-      );
+      console.error("fn_create_user error:", error);
 
       // -------------------------------------------------------
       // 23. Handle known PostgreSQL function errors
@@ -441,40 +398,36 @@ export async function POST(request: Request) {
       if (message.includes("USERNAME_EXISTS")) {
         return Response.json(
           {
-            message:
-              "That username is already registered.",
+            message: "That username is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
       if (message.includes("EMAIL_EXISTS")) {
         return Response.json(
           {
-            message:
-              "That email address is already registered.",
+            message: "That email address is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
       if (message.includes("INVALID_EMPLOYEE")) {
         return Response.json(
           {
-            message:
-              "The selected employee is invalid or inactive.",
+            message: "The selected employee is invalid or inactive.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       if (message.includes("INVALID_ROLE")) {
         return Response.json(
           {
-            message:
-              "Select an active role from the list.",
+            message: "Select an active role from the list.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -491,17 +444,14 @@ export async function POST(request: Request) {
       client.release();
     }
   } catch (error) {
-    console.error(
-      "User registration failed:",
-      error
-    );
+    console.error("User registration failed:", error);
 
     return Response.json(
       {
         message:
           "The user could not be saved. Check the database connection and try again.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -48,18 +48,14 @@ export async function GET() {
       meterSizes: meterSizeResult.rows,
     });
   } catch (error) {
-    console.error(
-      "Water rate options fetch failed:",
-      error
-    );
+    console.error("Water rate options fetch failed:", error);
 
     return Response.json(
       {
         success: false,
-        message:
-          "Unable to load classifications and meter sizes.",
+        message: "Unable to load classifications and meter sizes.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

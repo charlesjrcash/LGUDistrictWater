@@ -1,21 +1,190 @@
 import { db } from "@/lib/db";
 import { requirePermission } from "@/lib/permissions";
 import { clean } from "@/modules/service-applications/server";
-import { findSimilarCustomers, nextCustomerNumber, normalizeCustomerPayload, validateCustomer } from "@/modules/customers/server";
+import {
+  findSimilarCustomers,
+  nextCustomerNumber,
+  normalizeCustomerPayload,
+  validateCustomer,
+} from "@/modules/customers/server";
 
 export const runtime = "nodejs";
 export async function GET(request: Request) {
-  const auth=await requirePermission("CUSTOMER_VIEW"); if(auth.response)return auth.response;
-  const params=new URL(request.url).searchParams; const search=clean(params.get("search"),100); const status=clean(params.get("status"),30).toUpperCase(); const page=Math.max(1,Number(params.get("page"))||1); const pageSize=Math.min(50,Math.max(5,Number(params.get("pageSize"))||10));
-  const values:unknown[]=[]; const where:string[]=[];
-  if(search){values.push(`%${search}%`);where.push(`(c.customer_no ILIKE $${values.length} OR c.customer_name ILIKE $${values.length} OR COALESCE(c.first_name,'') ILIKE $${values.length} OR COALESCE(c.last_name,'') ILIKE $${values.length} OR COALESCE(c.contact_no,'') ILIKE $${values.length} OR COALESCE(c.address,'') ILIKE $${values.length})`);} if(status){values.push(status);where.push(`UPPER(c.status)=$${values.length}`);} const whereSql=where.length?`WHERE ${where.join(" AND ")}`:"";
+  const auth = await requirePermission("CUSTOMER_VIEW");
+  if (auth.response) return auth.response;
+  const params = new URL(request.url).searchParams;
+  const search = clean(params.get("search"), 100);
+  const status = clean(params.get("status"), 30).toUpperCase();
+  const page = Math.max(1, Number(params.get("page")) || 1);
+  const pageSize = Math.min(
+    50,
+    Math.max(5, Number(params.get("pageSize")) || 10),
+  );
+  const values: unknown[] = [];
+  const where: string[] = [];
+  if (search) {
+    values.push(`%${search}%`);
+    where.push(
+      `(c.customer_no ILIKE $${values.length} OR c.customer_name ILIKE $${values.length} OR COALESCE(c.first_name,'') ILIKE $${values.length} OR COALESCE(c.last_name,'') ILIKE $${values.length} OR COALESCE(c.contact_no,'') ILIKE $${values.length} OR COALESCE(c.address,'') ILIKE $${values.length})`,
+    );
+  }
+  if (status) {
+    values.push(status);
+    where.push(`UPPER(c.status)=$${values.length}`);
+  }
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
   try {
-    const count=await db.query<{count:string}>(`SELECT COUNT(*)::text AS count FROM customers c ${whereSql}`,values);
-    const rowValues=[...values,pageSize,(page-1)*pageSize];
-    const rows=await db.query(`SELECT c.customer_no AS "customerNo", c.customer_name AS "customerName", c.first_name AS "firstName", c.middle_name AS "middleName", c.last_name AS "lastName", c.address, b.barangay_name AS barangay, b.barangay_code AS "barangayCode", p.purok_name AS purok, p.purok_code AS "purokCode", c.contact_no AS "contactNo", c.email, c.status, COUNT(DISTINCT sa.application_id)::int AS "applicationCount", COUNT(DISTINCT acc.service_account_id)::int AS "serviceAccountCount" FROM customers c LEFT JOIN mt_barangay b ON b.barangay_id=c.barangay_id LEFT JOIN mt_purok p ON p.purok_id=c.purok_id LEFT JOIN service_applications sa ON sa.customer_id=c.customer_id LEFT JOIN service_accounts acc ON acc.customer_id=c.customer_id ${whereSql} GROUP BY c.customer_id,b.barangay_name,b.barangay_code,p.purok_name,p.purok_code ORDER BY c.created_at DESC,c.customer_id DESC LIMIT $${rowValues.length-1} OFFSET $${rowValues.length}`,rowValues);
-    const summary=await db.query<{total:string;active:string;with_accounts:string;pending_applications:string}>(`SELECT COUNT(*)::text AS total, COUNT(*) FILTER(WHERE UPPER(c.status)='ACTIVE')::text AS active, COUNT(*) FILTER(WHERE EXISTS(SELECT 1 FROM service_accounts acc WHERE acc.customer_id=c.customer_id))::text AS with_accounts, COUNT(*) FILTER(WHERE EXISTS(SELECT 1 FROM service_applications sa JOIN mt_application_status s ON s.application_status_id=sa.application_status_id WHERE sa.customer_id=c.customer_id AND UPPER(s.status_code||' '||s.status_name) ~ 'PENDING|SUBMIT|NEW|INSPECT|PROCESS|REVIEW'))::text AS pending_applications FROM customers c`);
-    const total=Number(count.rows[0].count); return Response.json({success:true,data:rows.rows,pagination:{page,pageSize,total,totalPages:Math.max(1,Math.ceil(total/pageSize))},summary:Object.fromEntries(Object.entries(summary.rows[0]).map(([key,value])=>[key,Number(value)]))});
-  } catch(error){console.error("Unable to load customers:",error);return Response.json({success:false,message:"Unable to load customer records."},{status:500});}
+    const count = await db.query<{ count: string }>(
+      `SELECT COUNT(*)::text AS count FROM customers c ${whereSql}`,
+      values,
+    );
+    const rowValues = [...values, pageSize, (page - 1) * pageSize];
+    const rows = await db.query(
+      `SELECT c.customer_no AS "customerNo", c.customer_name AS "customerName", c.first_name AS "firstName", c.middle_name AS "middleName", c.last_name AS "lastName", c.address, b.barangay_name AS barangay, b.barangay_code AS "barangayCode", p.purok_name AS purok, p.purok_code AS "purokCode", c.contact_no AS "contactNo", c.email, c.status, COUNT(DISTINCT sa.application_id)::int AS "applicationCount", COUNT(DISTINCT acc.service_account_id)::int AS "serviceAccountCount" FROM customers c LEFT JOIN mt_barangay b ON b.barangay_id=c.barangay_id LEFT JOIN mt_purok p ON p.purok_id=c.purok_id LEFT JOIN service_applications sa ON sa.customer_id=c.customer_id LEFT JOIN service_accounts acc ON acc.customer_id=c.customer_id ${whereSql} GROUP BY c.customer_id,b.barangay_name,b.barangay_code,p.purok_name,p.purok_code ORDER BY c.created_at DESC,c.customer_id DESC LIMIT $${rowValues.length - 1} OFFSET $${rowValues.length}`,
+      rowValues,
+    );
+    const summary = await db.query<{
+      total: string;
+      active: string;
+      with_accounts: string;
+      pending_applications: string;
+    }>(
+      `SELECT COUNT(*)::text AS total, COUNT(*) FILTER(WHERE UPPER(c.status)='ACTIVE')::text AS active, COUNT(*) FILTER(WHERE EXISTS(SELECT 1 FROM service_accounts acc WHERE acc.customer_id=c.customer_id))::text AS with_accounts, COUNT(*) FILTER(WHERE EXISTS(SELECT 1 FROM service_applications sa JOIN mt_application_status s ON s.application_status_id=sa.application_status_id WHERE sa.customer_id=c.customer_id AND UPPER(s.status_code||' '||s.status_name) ~ 'PENDING|SUBMIT|NEW|INSPECT|PROCESS|REVIEW'))::text AS pending_applications FROM customers c`,
+    );
+    const total = Number(count.rows[0].count);
+    return Response.json({
+      success: true,
+      data: rows.rows,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / pageSize)),
+      },
+      summary: Object.fromEntries(
+        Object.entries(summary.rows[0]).map(([key, value]) => [
+          key,
+          Number(value),
+        ]),
+      ),
+    });
+  } catch (error) {
+    console.error("Unable to load customers:", error);
+    return Response.json(
+      { success: false, message: "Unable to load customer records." },
+      { status: 500 },
+    );
+  }
 }
 
-export async function POST(request:Request){const auth=await requirePermission("CUSTOMER_CREATE");if(auth.response)return auth.response;let body:Record<string,unknown>;try{body=await request.json();}catch{return Response.json({success:false,message:"Invalid request."},{status:400});}const payload=normalizeCustomerPayload(body);const errors=validateCustomer(payload);if(Object.keys(errors).length)return Response.json({success:false,message:"Please complete all required fields.",errors},{status:400});const client=await db.connect();try{await client.query("BEGIN");const similar=await findSimilarCustomers(client,payload);if(similar.length&&!body.allowDuplicate){await client.query("ROLLBACK");return Response.json({success:false,code:"LIKELY_DUPLICATE",message:"A similar customer record already exists.",matches:similar},{status:409});}let barangayId:string|null=null,purokId:string|null=null;if(payload.barangayCode){const result=await client.query<{barangay_id:string}>("SELECT barangay_id FROM mt_barangay WHERE barangay_code=$1 AND is_active=TRUE",[payload.barangayCode]);if(!result.rows[0])throw new Error("INVALID_BARANGAY");barangayId=result.rows[0].barangay_id;}if(payload.purokCode){const result=await client.query<{purok_id:string}>("SELECT p.purok_id FROM mt_purok p JOIN mt_barangay b ON b.barangay_id=p.barangay_id WHERE COALESCE(p.purok_code,p.purok_name)=$1 AND b.barangay_code=$2 AND p.is_active=TRUE",[payload.purokCode,payload.barangayCode]);if(!result.rows[0])throw new Error("INVALID_PUROK");purokId=result.rows[0].purok_id;}const customerNo=await nextCustomerNumber(client,auth.user.userId);await client.query(`INSERT INTO customers(customer_no,customer_name,first_name,middle_name,last_name,address,barangay_id,purok_id,contact_no,email,status,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,[customerNo,payload.customerName,payload.firstName,payload.middleName,payload.lastName,payload.address,barangayId,purokId,payload.contactNo,payload.email,payload.status,auth.user.userId]);await client.query("COMMIT");return Response.json({success:true,data:{customerNo},message:`Customer ${customerNo} was created successfully.`},{status:201});}catch(error){await client.query("ROLLBACK");const code=error instanceof Error?error.message:"";if(code==="INVALID_BARANGAY"||code==="INVALID_PUROK")return Response.json({success:false,message:"The selected location is unavailable."},{status:400});if(typeof error==="object"&&error!==null&&"code" in error&&error.code==="23505")return Response.json({success:false,message:"Customer No. already exists."},{status:409});console.error("Unable to create customer:",error);return Response.json({success:false,message:"Unable to save customer. Please try again."},{status:500});}finally{client.release();}}
+export async function POST(request: Request) {
+  const auth = await requirePermission("CUSTOMER_CREATE");
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json(
+      { success: false, message: "Invalid request." },
+      { status: 400 },
+    );
+  }
+  const payload = normalizeCustomerPayload(body);
+  const errors = validateCustomer(payload);
+  if (Object.keys(errors).length)
+    return Response.json(
+      {
+        success: false,
+        message: "Please complete all required fields.",
+        errors,
+      },
+      { status: 400 },
+    );
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const similar = await findSimilarCustomers(client, payload);
+    if (similar.length && !body.allowDuplicate) {
+      await client.query("ROLLBACK");
+      return Response.json(
+        {
+          success: false,
+          code: "LIKELY_DUPLICATE",
+          message: "A similar customer record already exists.",
+          matches: similar,
+        },
+        { status: 409 },
+      );
+    }
+    let barangayId: string | null = null,
+      purokId: string | null = null;
+    if (payload.barangayCode) {
+      const result = await client.query<{ barangay_id: string }>(
+        "SELECT barangay_id FROM mt_barangay WHERE barangay_code=$1 AND is_active=TRUE",
+        [payload.barangayCode],
+      );
+      if (!result.rows[0]) throw new Error("INVALID_BARANGAY");
+      barangayId = result.rows[0].barangay_id;
+    }
+    if (payload.purokCode) {
+      const result = await client.query<{ purok_id: string }>(
+        "SELECT p.purok_id FROM mt_purok p JOIN mt_barangay b ON b.barangay_id=p.barangay_id WHERE COALESCE(p.purok_code,p.purok_name)=$1 AND b.barangay_code=$2 AND p.is_active=TRUE",
+        [payload.purokCode, payload.barangayCode],
+      );
+      if (!result.rows[0]) throw new Error("INVALID_PUROK");
+      purokId = result.rows[0].purok_id;
+    }
+    const customerNo = await nextCustomerNumber(client, auth.user.userId);
+    await client.query(
+      `INSERT INTO customers(customer_no,customer_name,first_name,middle_name,last_name,address,barangay_id,purok_id,contact_no,email,status,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [
+        customerNo,
+        payload.customerName,
+        payload.firstName,
+        payload.middleName,
+        payload.lastName,
+        payload.address,
+        barangayId,
+        purokId,
+        payload.contactNo,
+        payload.email,
+        payload.status,
+        auth.user.userId,
+      ],
+    );
+    await client.query("COMMIT");
+    return Response.json(
+      {
+        success: true,
+        data: { customerNo },
+        message: `Customer ${customerNo} was created successfully.`,
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    await client.query("ROLLBACK");
+    const code = error instanceof Error ? error.message : "";
+    if (code === "INVALID_BARANGAY" || code === "INVALID_PUROK")
+      return Response.json(
+        { success: false, message: "The selected location is unavailable." },
+        { status: 400 },
+      );
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "23505"
+    )
+      return Response.json(
+        { success: false, message: "Customer No. already exists." },
+        { status: 409 },
+      );
+    console.error("Unable to create customer:", error);
+    return Response.json(
+      { success: false, message: "Unable to save customer. Please try again." },
+      { status: 500 },
+    );
+  } finally {
+    client.release();
+  }
+}

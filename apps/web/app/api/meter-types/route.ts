@@ -2,12 +2,150 @@ import { Pool } from "pg";
 
 export const runtime = "nodejs";
 const globalForDb = globalThis as unknown as { meterTypesPool?: Pool };
-const pool = globalForDb.meterTypesPool ?? new Pool({ connectionString: process.env.DATABASE_URL });
+const pool =
+  globalForDb.meterTypesPool ??
+  new Pool({ connectionString: process.env.DATABASE_URL });
 if (process.env.NODE_ENV !== "production") globalForDb.meterTypesPool = pool;
-function text(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
-function fail(message: string, status: number) { return Response.json({ success: false, message }, { status }); }
-function duplicateError(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "23505"; }
-function parse(body: Record<string, unknown>) { const meterType = { code: text(body.meter_type_code).toUpperCase(), name: text(body.meter_type_name), description: text(body.description) || null, isActive: typeof body.is_active === "boolean" ? body.is_active : true }; return meterType.code && meterType.name ? { meterType } : { error: "Please complete all required fields." }; }
-export async function GET() { try { const result = await pool.query(`SELECT meter_type_id, meter_type_code, meter_type_name, description, is_active FROM mt_meter_type ORDER BY meter_type_code;`); return Response.json({ success: true, data: result.rows }); } catch (error) { console.error("Failed to load meter types:", error); return fail("Unable to load meter types.", 500); } }
-export async function POST(request: Request) { try { const parsed = parse(await request.json()); if ("error" in parsed) return fail(parsed.error, 400); const client = await pool.connect(); try { await client.query("BEGIN"); const duplicate = await client.query(`SELECT meter_type_id FROM mt_meter_type WHERE meter_type_code = $1 LIMIT 1`, [parsed.meterType.code]); if ((duplicate.rowCount ?? 0) > 0) { await client.query("ROLLBACK"); return fail("That meter type code is already registered.", 409); } const result = await client.query(`INSERT INTO mt_meter_type (meter_type_code, meter_type_name, description, is_active) VALUES ($1, $2, $3, $4) RETURNING meter_type_id, meter_type_code, meter_type_name, description, is_active`, [parsed.meterType.code, parsed.meterType.name, parsed.meterType.description, parsed.meterType.isActive]); await client.query("COMMIT"); return Response.json({ success: true, message: "Meter type saved successfully.", data: result.rows[0] }, { status: 201 }); } catch (error) { await client.query("ROLLBACK"); throw error; } finally { client.release(); } } catch (error) { console.error("Failed to save meter type:", error); return fail(duplicateError(error) ? "That meter type code is already registered." : "The meter type could not be saved.", duplicateError(error) ? 409 : 500); } }
-export async function PUT(request: Request) { try { const body = await request.json(); const id = text(body.meter_type_id); const parsed = parse(body); if (!/^\d+$/.test(id)) return fail("Meter type ID is required.", 400); if ("error" in parsed) return fail(parsed.error, 400); const client = await pool.connect(); try { await client.query("BEGIN"); const existing = await client.query(`SELECT meter_type_id FROM mt_meter_type WHERE meter_type_id = $1 LIMIT 1`, [id]); if ((existing.rowCount ?? 0) === 0) { await client.query("ROLLBACK"); return fail("Meter type not found.", 404); } const duplicate = await client.query(`SELECT meter_type_id FROM mt_meter_type WHERE meter_type_code = $1 AND meter_type_id <> $2 LIMIT 1`, [parsed.meterType.code, id]); if ((duplicate.rowCount ?? 0) > 0) { await client.query("ROLLBACK"); return fail("That meter type code is already registered.", 409); } const result = await client.query(`UPDATE mt_meter_type SET meter_type_code = $1, meter_type_name = $2, description = $3, is_active = $4, updated_at = CURRENT_TIMESTAMP WHERE meter_type_id = $5 RETURNING meter_type_id, meter_type_code, meter_type_name, description, is_active`, [parsed.meterType.code, parsed.meterType.name, parsed.meterType.description, parsed.meterType.isActive, id]); await client.query("COMMIT"); return Response.json({ success: true, message: "Meter type updated successfully.", data: result.rows[0] }); } catch (error) { await client.query("ROLLBACK"); throw error; } finally { client.release(); } } catch (error) { console.error("Failed to update meter type:", error); return fail(duplicateError(error) ? "That meter type code is already registered." : "The meter type could not be updated.", duplicateError(error) ? 409 : 500); } }
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+function fail(message: string, status: number) {
+  return Response.json({ success: false, message }, { status });
+}
+function duplicateError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
+}
+function parse(body: Record<string, unknown>) {
+  const meterType = {
+    code: text(body.meter_type_code).toUpperCase(),
+    name: text(body.meter_type_name),
+    description: text(body.description) || null,
+    isActive: typeof body.is_active === "boolean" ? body.is_active : true,
+  };
+  return meterType.code && meterType.name
+    ? { meterType }
+    : { error: "Please complete all required fields." };
+}
+export async function GET() {
+  try {
+    const result = await pool.query(
+      `SELECT meter_type_id, meter_type_code, meter_type_name, description, is_active FROM mt_meter_type ORDER BY meter_type_code;`,
+    );
+    return Response.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Failed to load meter types:", error);
+    return fail("Unable to load meter types.", 500);
+  }
+}
+export async function POST(request: Request) {
+  try {
+    const parsed = parse(await request.json());
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const duplicate = await client.query(
+        `SELECT meter_type_id FROM mt_meter_type WHERE meter_type_code = $1 LIMIT 1`,
+        [parsed.meterType.code],
+      );
+      if ((duplicate.rowCount ?? 0) > 0) {
+        await client.query("ROLLBACK");
+        return fail("That meter type code is already registered.", 409);
+      }
+      const result = await client.query(
+        `INSERT INTO mt_meter_type (meter_type_code, meter_type_name, description, is_active) VALUES ($1, $2, $3, $4) RETURNING meter_type_id, meter_type_code, meter_type_name, description, is_active`,
+        [
+          parsed.meterType.code,
+          parsed.meterType.name,
+          parsed.meterType.description,
+          parsed.meterType.isActive,
+        ],
+      );
+      await client.query("COMMIT");
+      return Response.json(
+        {
+          success: true,
+          message: "Meter type saved successfully.",
+          data: result.rows[0],
+        },
+        { status: 201 },
+      );
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Failed to save meter type:", error);
+    return fail(
+      duplicateError(error)
+        ? "That meter type code is already registered."
+        : "The meter type could not be saved.",
+      duplicateError(error) ? 409 : 500,
+    );
+  }
+}
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const id = text(body.meter_type_id);
+    const parsed = parse(body);
+    if (!/^\d+$/.test(id)) return fail("Meter type ID is required.", 400);
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const existing = await client.query(
+        `SELECT meter_type_id FROM mt_meter_type WHERE meter_type_id = $1 LIMIT 1`,
+        [id],
+      );
+      if ((existing.rowCount ?? 0) === 0) {
+        await client.query("ROLLBACK");
+        return fail("Meter type not found.", 404);
+      }
+      const duplicate = await client.query(
+        `SELECT meter_type_id FROM mt_meter_type WHERE meter_type_code = $1 AND meter_type_id <> $2 LIMIT 1`,
+        [parsed.meterType.code, id],
+      );
+      if ((duplicate.rowCount ?? 0) > 0) {
+        await client.query("ROLLBACK");
+        return fail("That meter type code is already registered.", 409);
+      }
+      const result = await client.query(
+        `UPDATE mt_meter_type SET meter_type_code = $1, meter_type_name = $2, description = $3, is_active = $4, updated_at = CURRENT_TIMESTAMP WHERE meter_type_id = $5 RETURNING meter_type_id, meter_type_code, meter_type_name, description, is_active`,
+        [
+          parsed.meterType.code,
+          parsed.meterType.name,
+          parsed.meterType.description,
+          parsed.meterType.isActive,
+          id,
+        ],
+      );
+      await client.query("COMMIT");
+      return Response.json({
+        success: true,
+        message: "Meter type updated successfully.",
+        data: result.rows[0],
+      });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Failed to update meter type:", error);
+    return fail(
+      duplicateError(error)
+        ? "That meter type code is already registered."
+        : "The meter type could not be updated.",
+      duplicateError(error) ? 409 : 500,
+    );
+  }
+}

@@ -4,19 +4,202 @@ import { SiteHeader } from "@/modules/navigation";
 import { Icon, Logo } from "./icons";
 import "./landing.css";
 
-function FeatureVisual({ type }: { type: (typeof features)[number]["visual"] }) {
-  if (type === "account") return <div className="customer-visual"><div className="avatar-stack"><i>JD</i><i>MS</i><i>PR</i></div><span><b>1,248</b><small>Active customers</small></span></div>;
-  if (type === "trend") return <div className="billing-visual"><span>₱240k</span><svg aria-hidden="true" viewBox="0 0 280 100" preserveAspectRatio="none"><defs><linearGradient id="billFill" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#2780ff" stopOpacity=".3"/><stop offset="1" stopColor="#2780ff" stopOpacity="0"/></linearGradient></defs><path className="area" d="M0 87 C30 82 42 91 66 68 S107 50 132 55 S170 46 184 31 S220 20 280 5 V100 H0Z"/><path className="line" d="M0 87 C30 82 42 91 66 68 S107 50 132 55 S170 46 184 31 S220 20 280 5"/><circle cx="170" cy="43" r="5"/></svg></div>;
-  if (type === "donuts") return <div className="payment-visual"><div className="mini-donut blue-donut"><span>92%</span></div><div className="mini-donut orange-donut"><span>8%</span></div></div>;
-  if (type === "meter") return <div className="secure-visual"><div className="secure-arc">{Array.from({length:18},(_,i)=><i key={i} style={{transform:`rotate(${i * 10 - 85}deg)`}}/>)}<b>1,248</b><small>Meters tracked</small></div></div>;
-  return <div className="report-visual"><div className="score-gauge"><span><b>94</b><small>Collection score</small></span></div><div className="score-copy"><b>+12.4%</b><small>from last month</small></div></div>;
+function FeatureVisual({
+  type,
+}: {
+  type: (typeof features)[number]["visual"];
+}) {
+  if (type === "account")
+    return (
+      <div className="customer-visual">
+        <div className="avatar-stack">
+          <i>JD</i>
+          <i>MS</i>
+          <i>PR</i>
+        </div>
+        <span>
+          <b>1,248</b>
+          <small>Active customers</small>
+        </span>
+      </div>
+    );
+  if (type === "trend")
+    return (
+      <div className="billing-visual">
+        <span>₱240k</span>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 280 100"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="billFill" x1="0" y1="0" x2="0" y2="1">
+              <stop stopColor="#2780ff" stopOpacity=".3" />
+              <stop offset="1" stopColor="#2780ff" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path
+            className="area"
+            d="M0 87 C30 82 42 91 66 68 S107 50 132 55 S170 46 184 31 S220 20 280 5 V100 H0Z"
+          />
+          <path
+            className="line"
+            d="M0 87 C30 82 42 91 66 68 S107 50 132 55 S170 46 184 31 S220 20 280 5"
+          />
+          <circle cx="170" cy="43" r="5" />
+        </svg>
+      </div>
+    );
+  if (type === "donuts")
+    return (
+      <div className="payment-visual">
+        <div className="mini-donut blue-donut">
+          <span>92%</span>
+        </div>
+        <div className="mini-donut orange-donut">
+          <span>8%</span>
+        </div>
+      </div>
+    );
+  if (type === "meter")
+    return (
+      <div className="secure-visual">
+        <div className="secure-arc">
+          {Array.from({ length: 18 }, (_, i) => (
+            <i key={i} style={{ transform: `rotate(${i * 10 - 85}deg)` }} />
+          ))}
+          <b>1,248</b>
+          <small>Meters tracked</small>
+        </div>
+      </div>
+    );
+  return (
+    <div className="report-visual">
+      <div className="score-gauge">
+        <span>
+          <b>94</b>
+          <small>Collection score</small>
+        </span>
+      </div>
+      <div className="score-copy">
+        <b>+12.4%</b>
+        <small>from last month</small>
+      </div>
+    </div>
+  );
 }
 
 export function LandingPage() {
-  return <main className="landing">
-    <SiteHeader landing />
-    <section className="hero hero-photo" id="home"><div className="hero-shade"/><div className="hero-photo-copy"><span className="eyebrow">Efficient. Accurate. Transparent.</span><h1>Smart Water Billing<br/>for a Better Tomorrow</h1></div><div className="hero-service-card"><div className="service-image" role="img" aria-label="Bagamanoc water treatment facility"/><div><b>Water service, simplified</b><p>Clear records and reliable billing for every household.</p></div></div><div className="hero-photo-action"><p>A modern water billing system designed to improve collections and deliver dependable public service.</p><Link href="/billing-inquiry" className="hero-access">Check your Bill<Icon name="arrow" size={18}/></Link></div></section>
-    <section className="features-section" id="features"><div className="section-heading"><span>Features</span><h2>Streamline water billing<br/>with smart features.</h2></div><div className="feature-grid">{features.map(item=><article className={`feature-card feature-${item.visual}`} key={item.title}><div className="feature-copy"><h3>{item.title}</h3><p>{item.copy}</p></div><FeatureVisual type={item.visual}/></article>)}</div></section>
-    <section className="footer-shell" id="contact"><section className="cta"><div><span>READY TO GET STARTED?</span><h2>Make every drop—and every peso—count.</h2></div><a href="/downloads/Bagamanoc_Water_System_Service_Application_Form.pdf" download className="light-button"><Icon name="file" size={18}/> Download Form</a></section><footer><div className="footer-brand"><Logo/><p>Modern water billing for efficient, accurate, and transparent public service.</p></div><div><h3>Quick links</h3><a href="#home">Home</a><a href="#features">Features</a></div><div><h3>Resources</h3><Link href="/login">Staff login</Link><Link href="/register">User registration</Link><a href="#features">System overview</a></div><div className="contact-list"><h3>Contact us</h3><span><Icon name="phone" size={16}/> (052) 123-4567</span><span><Icon name="mail" size={16}/> info@bagamanocwater.gov.ph</span><span><Icon name="pin" size={16}/> Municipal Hall, Bagamanoc, Catanduanes</span></div><small className="copyright">© 2026 Bagamanoc Water Billing System. All rights reserved.</small></footer></section>
-  </main>;
+  return (
+    <main className="landing">
+      <SiteHeader landing />
+      <section className="hero hero-photo" id="home">
+        <div className="hero-shade" />
+        <div className="hero-photo-copy">
+          <span className="eyebrow">Efficient. Accurate. Transparent.</span>
+          <h1>
+            Smart Water Billing
+            <br />
+            for a Better Tomorrow
+          </h1>
+        </div>
+        <div className="hero-service-card">
+          <div
+            className="service-image"
+            role="img"
+            aria-label="Bagamanoc water treatment facility"
+          />
+          <div>
+            <b>Water service, simplified</b>
+            <p>Clear records and reliable billing for every household.</p>
+          </div>
+        </div>
+        <div className="hero-photo-action">
+          <p>
+            A modern water billing system designed to improve collections and
+            deliver dependable public service.
+          </p>
+          <Link href="/billing-inquiry" className="hero-access">
+            Check your Bill
+            <Icon name="arrow" size={18} />
+          </Link>
+        </div>
+      </section>
+      <section className="features-section" id="features">
+        <div className="section-heading">
+          <span>Features</span>
+          <h2>
+            Streamline water billing
+            <br />
+            with smart features.
+          </h2>
+        </div>
+        <div className="feature-grid">
+          {features.map((item) => (
+            <article
+              className={`feature-card feature-${item.visual}`}
+              key={item.title}
+            >
+              <div className="feature-copy">
+                <h3>{item.title}</h3>
+                <p>{item.copy}</p>
+              </div>
+              <FeatureVisual type={item.visual} />
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="footer-shell" id="contact">
+        <section className="cta">
+          <div>
+            <span>READY TO GET STARTED?</span>
+            <h2>Make every drop—and every peso—count.</h2>
+          </div>
+          <a
+            href="/downloads/Bagamanoc_Water_System_Service_Application_Form.pdf"
+            download
+            className="light-button"
+          >
+            <Icon name="file" size={18} /> Download Form
+          </a>
+        </section>
+        <footer>
+          <div className="footer-brand">
+            <Logo />
+            <p>
+              Modern water billing for efficient, accurate, and transparent
+              public service.
+            </p>
+          </div>
+          <div>
+            <h3>Quick links</h3>
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+          </div>
+          <div>
+            <h3>Resources</h3>
+            <Link href="/login">Staff login</Link>
+            <Link href="/register">User registration</Link>
+            <a href="#features">System overview</a>
+          </div>
+          <div className="contact-list">
+            <h3>Contact us</h3>
+            <span>
+              <Icon name="phone" size={16} /> (052) 123-4567
+            </span>
+            <span>
+              <Icon name="mail" size={16} /> info@bagamanocwater.gov.ph
+            </span>
+            <span>
+              <Icon name="pin" size={16} /> Municipal Hall, Bagamanoc,
+              Catanduanes
+            </span>
+          </div>
+          <small className="copyright">
+            © 2026 Bagamanoc Water Billing System. All rights reserved.
+          </small>
+        </footer>
+      </section>
+    </main>
+  );
 }

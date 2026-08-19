@@ -3,9 +3,11 @@ import { Pool } from "pg";
 export const runtime = "nodejs";
 
 const globalForDb = globalThis as unknown as { connectionTypesPool?: Pool };
-const pool = globalForDb.connectionTypesPool ?? new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const pool =
+  globalForDb.connectionTypesPool ??
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForDb.connectionTypesPool = pool;
@@ -36,8 +38,12 @@ function parse(body: Record<string, unknown>) {
 }
 
 function duplicateCodeError(error: unknown) {
-  return typeof error === "object" && error !== null && "code" in error &&
-    error.code === "23505";
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
 }
 
 function fail(message: string, status: number) {
@@ -66,7 +72,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const parsed = parse(await request.json());
-    if ("error" in parsed) return fail(parsed.error, 400);
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
 
     const client = await pool.connect();
     try {
@@ -78,7 +84,7 @@ export async function POST(request: Request) {
           WHERE connection_type_code = $1
           LIMIT 1
         `,
-        [parsed.connectionType.code]
+        [parsed.connectionType.code],
       );
 
       if ((duplicate.rowCount ?? 0) > 0) {
@@ -104,15 +110,18 @@ export async function POST(request: Request) {
           parsed.connectionType.name,
           parsed.connectionType.description,
           parsed.connectionType.isActive,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
-      return Response.json({
-        success: true,
-        message: "Connection type saved successfully.",
-        data: result.rows[0],
-      }, { status: 201 });
+      return Response.json(
+        {
+          success: true,
+          message: "Connection type saved successfully.",
+          data: result.rows[0],
+        },
+        { status: 201 },
+      );
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
@@ -125,7 +134,7 @@ export async function POST(request: Request) {
       duplicateCodeError(error)
         ? "That connection type code is already registered."
         : "The connection type could not be saved.",
-      duplicateCodeError(error) ? 409 : 500
+      duplicateCodeError(error) ? 409 : 500,
     );
   }
 }
@@ -139,7 +148,7 @@ export async function PUT(request: Request) {
     if (!/^\d+$/.test(connectionTypeId)) {
       return fail("Connection type ID is required.", 400);
     }
-    if ("error" in parsed) return fail(parsed.error, 400);
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
 
     const client = await pool.connect();
     try {
@@ -151,7 +160,7 @@ export async function PUT(request: Request) {
           WHERE connection_type_id = $1
           LIMIT 1
         `,
-        [connectionTypeId]
+        [connectionTypeId],
       );
 
       if ((existing.rowCount ?? 0) === 0) {
@@ -167,7 +176,7 @@ export async function PUT(request: Request) {
             AND connection_type_id <> $2
           LIMIT 1
         `,
-        [parsed.connectionType.code, connectionTypeId]
+        [parsed.connectionType.code, connectionTypeId],
       );
 
       if ((duplicate.rowCount ?? 0) > 0) {
@@ -198,7 +207,7 @@ export async function PUT(request: Request) {
           parsed.connectionType.description,
           parsed.connectionType.isActive,
           connectionTypeId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -219,7 +228,7 @@ export async function PUT(request: Request) {
       duplicateCodeError(error)
         ? "That connection type code is already registered."
         : "The connection type could not be updated.",
-      duplicateCodeError(error) ? 409 : 500
+      duplicateCodeError(error) ? 409 : 500,
     );
   }
 }

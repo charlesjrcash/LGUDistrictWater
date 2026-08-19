@@ -42,7 +42,7 @@ export async function getActiveRoles() {
     FROM roles
     WHERE is_active = true
     ORDER BY role_name
-    `
+    `,
   );
 
   return result.rows.map((row) => row.role_name);
@@ -69,7 +69,7 @@ export async function getActiveEmployees(): Promise<RegistrationEmployee[]> {
     FROM public.mt_employee
     WHERE is_active = true
     ORDER BY employee_code ASC
-    `
+    `,
   );
 
   return result.rows;

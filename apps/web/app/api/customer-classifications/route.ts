@@ -1,11 +1,143 @@
 import { Pool } from "pg";
-export const runtime="nodejs";
-const globalForDb=globalThis as unknown as {customerClassificationsPool?:Pool};
-const pool=globalForDb.customerClassificationsPool??new Pool({connectionString:process.env.DATABASE_URL});if(process.env.NODE_ENV!=="production")globalForDb.customerClassificationsPool=pool;
-const fail=(message:string,status:number)=>Response.json({success:false,message},{status});
-const text=(v:unknown)=>typeof v==="string"?v.trim():"";
-function parse(b:Record<string,unknown>){const x={code:text(b.classification_code).toUpperCase(),name:text(b.classification_name),description:text(b.description)||null,isActive:typeof b.is_active==="boolean"?b.is_active:true};return x.code&&x.name?{x}:{error:"Please complete all required fields."};}
-async function duplicate(c:Pick<Pool,"query">,x:{code:string;name:string},id?:string){const s=id?" AND classification_id <> $2":"";if((await c.query(`SELECT classification_id FROM mt_customer_classification WHERE classification_code=$1${s} LIMIT 1`,id?[x.code,id]:[x.code])).rowCount)return"That classification code is already registered.";return(await c.query(`SELECT classification_id FROM mt_customer_classification WHERE classification_name=$1${s} LIMIT 1`,id?[x.name,id]:[x.name])).rowCount?"That classification name is already registered.":null;}
-export async function GET(){try{const r=await pool.query(`SELECT classification_id,classification_code,classification_name,description,is_active FROM mt_customer_classification ORDER BY classification_name`);return Response.json({success:true,data:r.rows});}catch(e){console.error(e);return fail("Unable to load customer classifications.",500);}}
-export async function POST(req:Request){try{const p=parse(await req.json());if("error" in p)return fail(p.error,400);const c=await pool.connect();try{await c.query("BEGIN");const d=await duplicate(c,p.x);if(d){await c.query("ROLLBACK");return fail(d,409);}const r=await c.query(`INSERT INTO mt_customer_classification(classification_code,classification_name,description,is_active) VALUES($1,$2,$3,$4) RETURNING classification_id,classification_code,classification_name,description,is_active`,[p.x.code,p.x.name,p.x.description,p.x.isActive]);await c.query("COMMIT");return Response.json({success:true,message:"Customer classification saved successfully.",data:r.rows[0]},{status:201});}catch(e){await c.query("ROLLBACK");throw e;}finally{c.release();}}catch(e){console.error(e);return fail("The customer classification could not be saved.",500);}}
-export async function PUT(req:Request){try{const b=await req.json(),id=text(b.classification_id),p=parse(b);if(!/^\d+$/.test(id))return fail("Customer classification ID is required.",400);if("error" in p)return fail(p.error,400);const c=await pool.connect();try{await c.query("BEGIN");if(!(await c.query(`SELECT classification_id FROM mt_customer_classification WHERE classification_id=$1`,[id])).rowCount){await c.query("ROLLBACK");return fail("Customer classification record was not found.",404);}const d=await duplicate(c,p.x,id);if(d){await c.query("ROLLBACK");return fail(d,409);}const r=await c.query(`UPDATE mt_customer_classification SET classification_code=$1,classification_name=$2,description=$3,is_active=$4,updated_at=CURRENT_TIMESTAMP WHERE classification_id=$5 RETURNING classification_id,classification_code,classification_name,description,is_active`,[p.x.code,p.x.name,p.x.description,p.x.isActive,id]);await c.query("COMMIT");return Response.json({success:true,message:"Customer classification updated successfully.",data:r.rows[0]});}catch(e){await c.query("ROLLBACK");throw e;}finally{c.release();}}catch(e){console.error(e);return fail("The customer classification could not be updated.",500);}}
+export const runtime = "nodejs";
+const globalForDb = globalThis as unknown as {
+  customerClassificationsPool?: Pool;
+};
+const pool =
+  globalForDb.customerClassificationsPool ??
+  new Pool({ connectionString: process.env.DATABASE_URL });
+if (process.env.NODE_ENV !== "production")
+  globalForDb.customerClassificationsPool = pool;
+const fail = (message: string, status: number) =>
+  Response.json({ success: false, message }, { status });
+const text = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+function parse(b: Record<string, unknown>) {
+  const x = {
+    code: text(b.classification_code).toUpperCase(),
+    name: text(b.classification_name),
+    description: text(b.description) || null,
+    isActive: typeof b.is_active === "boolean" ? b.is_active : true,
+  };
+  return x.code && x.name
+    ? { x }
+    : { error: "Please complete all required fields." };
+}
+async function duplicate(
+  c: Pick<Pool, "query">,
+  x: { code: string; name: string },
+  id?: string,
+) {
+  const s = id ? " AND classification_id <> $2" : "";
+  if (
+    (
+      await c.query(
+        `SELECT classification_id FROM mt_customer_classification WHERE classification_code=$1${s} LIMIT 1`,
+        id ? [x.code, id] : [x.code],
+      )
+    ).rowCount
+  )
+    return "That classification code is already registered.";
+  return (
+    await c.query(
+      `SELECT classification_id FROM mt_customer_classification WHERE classification_name=$1${s} LIMIT 1`,
+      id ? [x.name, id] : [x.name],
+    )
+  ).rowCount
+    ? "That classification name is already registered."
+    : null;
+}
+export async function GET() {
+  try {
+    const r = await pool.query(
+      `SELECT classification_id,classification_code,classification_name,description,is_active FROM mt_customer_classification ORDER BY classification_name`,
+    );
+    return Response.json({ success: true, data: r.rows });
+  } catch (e) {
+    console.error(e);
+    return fail("Unable to load customer classifications.", 500);
+  }
+}
+export async function POST(req: Request) {
+  try {
+    const p = parse(await req.json());
+    if ("error" in p) return fail(p.error ?? "Invalid request.", 400);
+    const c = await pool.connect();
+    try {
+      await c.query("BEGIN");
+      const d = await duplicate(c, p.x);
+      if (d) {
+        await c.query("ROLLBACK");
+        return fail(d, 409);
+      }
+      const r = await c.query(
+        `INSERT INTO mt_customer_classification(classification_code,classification_name,description,is_active) VALUES($1,$2,$3,$4) RETURNING classification_id,classification_code,classification_name,description,is_active`,
+        [p.x.code, p.x.name, p.x.description, p.x.isActive],
+      );
+      await c.query("COMMIT");
+      return Response.json(
+        {
+          success: true,
+          message: "Customer classification saved successfully.",
+          data: r.rows[0],
+        },
+        { status: 201 },
+      );
+    } catch (e) {
+      await c.query("ROLLBACK");
+      throw e;
+    } finally {
+      c.release();
+    }
+  } catch (e) {
+    console.error(e);
+    return fail("The customer classification could not be saved.", 500);
+  }
+}
+export async function PUT(req: Request) {
+  try {
+    const b = await req.json(),
+      id = text(b.classification_id),
+      p = parse(b);
+    if (!/^\d+$/.test(id))
+      return fail("Customer classification ID is required.", 400);
+    if ("error" in p) return fail(p.error ?? "Invalid request.", 400);
+    const c = await pool.connect();
+    try {
+      await c.query("BEGIN");
+      if (
+        !(
+          await c.query(
+            `SELECT classification_id FROM mt_customer_classification WHERE classification_id=$1`,
+            [id],
+          )
+        ).rowCount
+      ) {
+        await c.query("ROLLBACK");
+        return fail("Customer classification record was not found.", 404);
+      }
+      const d = await duplicate(c, p.x, id);
+      if (d) {
+        await c.query("ROLLBACK");
+        return fail(d, 409);
+      }
+      const r = await c.query(
+        `UPDATE mt_customer_classification SET classification_code=$1,classification_name=$2,description=$3,is_active=$4,updated_at=CURRENT_TIMESTAMP WHERE classification_id=$5 RETURNING classification_id,classification_code,classification_name,description,is_active`,
+        [p.x.code, p.x.name, p.x.description, p.x.isActive, id],
+      );
+      await c.query("COMMIT");
+      return Response.json({
+        success: true,
+        message: "Customer classification updated successfully.",
+        data: r.rows[0],
+      });
+    } catch (e) {
+      await c.query("ROLLBACK");
+      throw e;
+    } finally {
+      c.release();
+    }
+  } catch (e) {
+    console.error(e);
+    return fail("The customer classification could not be updated.", 500);
+  }
+}

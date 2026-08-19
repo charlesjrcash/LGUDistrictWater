@@ -15,7 +15,7 @@ const pool =
 
 if (process.env.NODE_ENV !== "production") {
   globalForDb.waterRatesPool = pool;
-};
+}
 
 /**
  * Handles GET /api/water-rates
@@ -57,10 +57,7 @@ export async function GET() {
       data: result.rows,
     });
   } catch (error) {
-    console.error(
-      "Water rates fetch failed:",
-      error
-    );
+    console.error("Water rates fetch failed:", error);
 
     return Response.json(
       {
@@ -68,7 +65,7 @@ export async function GET() {
         message:
           "The water rates could not be loaded. Check the database connection and try again.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -80,9 +77,7 @@ export async function POST(request: Request) {
     const classificationId = Number(body.classification_id);
     const meterSizeId = Number(body.meter_size_id);
 
-    const minimumCubicMeter = Number(
-      body.minimum_cubic_meter
-    );
+    const minimumCubicMeter = Number(body.minimum_cubic_meter);
 
     const maximumCubicMeter =
       body.maximum_cubic_meter === "" ||
@@ -94,53 +89,40 @@ export async function POST(request: Request) {
     const rateAmount = Number(body.rate_amount);
 
     const rateType =
-      typeof body.rate_type === "string"
-        ? body.rate_type.trim()
-        : "";
+      typeof body.rate_type === "string" ? body.rate_type.trim() : "";
 
     const effectiveDate =
-      typeof body.effective_date === "string"
-        ? body.effective_date
-        : "";
+      typeof body.effective_date === "string" ? body.effective_date : "";
 
     const expirationDate =
-      typeof body.expiration_date === "string" &&
-      body.expiration_date !== ""
+      typeof body.expiration_date === "string" && body.expiration_date !== ""
         ? body.expiration_date
         : null;
 
     const description =
-      typeof body.description === "string"
-        ? body.description.trim()
-        : null;
+      typeof body.description === "string" ? body.description.trim() : null;
 
     /*
      * BASIC VALIDATION
      */
 
-    if (
-      !Number.isInteger(classificationId) ||
-      classificationId <= 0
-    ) {
+    if (!Number.isInteger(classificationId) || classificationId <= 0) {
       return Response.json(
         {
           success: false,
           message: "Please select a classification.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (
-      !Number.isInteger(meterSizeId) ||
-      meterSizeId <= 0
-    ) {
+    if (!Number.isInteger(meterSizeId) || meterSizeId <= 0) {
       return Response.json(
         {
           success: false,
           message: "Please select a meter size.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -150,30 +132,24 @@ export async function POST(request: Request) {
           success: false,
           message: "Please select a rate type.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (
-      !Number.isFinite(minimumCubicMeter) ||
-      minimumCubicMeter < 0
-    ) {
+    if (!Number.isFinite(minimumCubicMeter) || minimumCubicMeter < 0) {
       return Response.json(
         {
           success: false,
-          message:
-            "Minimum consumption must be 0 or greater.",
+          message: "Minimum consumption must be 0 or greater.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (
       maximumCubicMeter !== null &&
-      (
-        !Number.isFinite(maximumCubicMeter) ||
-        maximumCubicMeter < minimumCubicMeter
-      )
+      (!Number.isFinite(maximumCubicMeter) ||
+        maximumCubicMeter < minimumCubicMeter)
     ) {
       return Response.json(
         {
@@ -181,20 +157,17 @@ export async function POST(request: Request) {
           message:
             "Maximum consumption cannot be less than minimum consumption.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (
-      !Number.isFinite(rateAmount) ||
-      rateAmount <= 0
-    ) {
+    if (!Number.isFinite(rateAmount) || rateAmount <= 0) {
       return Response.json(
         {
           success: false,
           message: "Rate amount must be greater than zero.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -204,7 +177,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Effective date is required.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -212,17 +185,13 @@ export async function POST(request: Request) {
      * DATE VALIDATION
      */
 
-    if (
-      expirationDate &&
-      expirationDate < effectiveDate
-    ) {
+    if (expirationDate && expirationDate < effectiveDate) {
       return Response.json(
         {
           success: false,
-          message:
-            "Expiration date cannot be earlier than the effective date.",
+          message: "Expiration date cannot be earlier than the effective date.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -241,16 +210,15 @@ export async function POST(request: Request) {
       /*
        * Make sure the classification exists.
        */
-      const classificationResult =
-        await client.query(
-          `
+      const classificationResult = await client.query(
+        `
           SELECT classification_id
           FROM mt_customer_classification
           WHERE classification_id = $1
             AND is_active = true
           `,
-          [classificationId]
-        );
+        [classificationId],
+      );
 
       if (classificationResult.rowCount === 0) {
         await client.query("ROLLBACK");
@@ -258,26 +226,24 @@ export async function POST(request: Request) {
         return Response.json(
           {
             success: false,
-            message:
-              "The selected classification is not active.",
+            message: "The selected classification is not active.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       /*
        * Make sure the meter size exists.
        */
-      const meterSizeResult =
-        await client.query(
-          `
+      const meterSizeResult = await client.query(
+        `
           SELECT meter_size_id
           FROM mt_meter_size
           WHERE meter_size_id = $1
             AND is_active = true
           `,
-          [meterSizeId]
-        );
+        [meterSizeId],
+      );
 
       if (meterSizeResult.rowCount === 0) {
         await client.query("ROLLBACK");
@@ -285,10 +251,9 @@ export async function POST(request: Request) {
         return Response.json(
           {
             success: false,
-            message:
-              "The selected meter size is not active.",
+            message: "The selected meter size is not active.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -309,9 +274,8 @@ export async function POST(request: Request) {
        * This would overlap and therefore be rejected.
        */
 
-      const overlapResult =
-        await client.query(
-          `
+      const overlapResult = await client.query(
+        `
           SELECT rate_id
           FROM mt_water_rates
           WHERE classification_id = $1
@@ -340,15 +304,15 @@ export async function POST(request: Request) {
 
           LIMIT 1
           `,
-          [
-            classificationId,
-            meterSizeId,
-            effectiveDate,
-            expirationDate,
-            minimumCubicMeter,
-            maximumCubicMeter,
-          ]
-        );
+        [
+          classificationId,
+          meterSizeId,
+          effectiveDate,
+          expirationDate,
+          minimumCubicMeter,
+          maximumCubicMeter,
+        ],
+      );
 
       if ((overlapResult.rowCount ?? 0) > 0) {
         await client.query("ROLLBACK");
@@ -359,7 +323,7 @@ export async function POST(request: Request) {
             message:
               "This consumption range overlaps an existing active water rate for the selected classification and meter size.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -367,9 +331,8 @@ export async function POST(request: Request) {
        * INSERT WATER RATE
        */
 
-      const insertResult =
-        await client.query(
-          `
+      const insertResult = await client.query(
+        `
           INSERT INTO mt_water_rates (
             classification_id,
             meter_size_id,
@@ -396,18 +359,18 @@ export async function POST(request: Request) {
           )
           RETURNING rate_id
           `,
-          [
-            classificationId,
-            meterSizeId,
-            minimumCubicMeter,
-            maximumCubicMeter,
-            rateType,
-            rateAmount,
-            effectiveDate,
-            expirationDate,
-            description,
-          ]
-        );
+        [
+          classificationId,
+          meterSizeId,
+          minimumCubicMeter,
+          maximumCubicMeter,
+          rateType,
+          rateAmount,
+          effectiveDate,
+          expirationDate,
+          description,
+        ],
+      );
 
       await client.query("COMMIT");
 
@@ -417,7 +380,7 @@ export async function POST(request: Request) {
           message: "Water rate created successfully.",
           rate_id: insertResult.rows[0].rate_id,
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       await client.query("ROLLBACK");
@@ -427,18 +390,14 @@ export async function POST(request: Request) {
       client.release();
     }
   } catch (error) {
-    console.error(
-      "Create water rate failed:",
-      error
-    );
+    console.error("Create water rate failed:", error);
 
     return Response.json(
       {
         success: false,
-        message:
-          "The water rate could not be saved.",
+        message: "The water rate could not be saved.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,4 +1,7 @@
-import type { CustomerSummary, ReferenceOption } from "@/modules/service-applications/types";
+import type {
+  CustomerSummary,
+  ReferenceOption,
+} from "@/modules/service-applications/types";
 
 export type AccountStatus = ReferenceOption & { description?: string | null };
 

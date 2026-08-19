@@ -1,7 +1,148 @@
-type IconName = "users" | "meter" | "receipt" | "file" | "card" | "chart" | "settings" | "shield" | "clock" | "heart" | "arrow" | "login" | "pin" | "mail" | "phone";
+type IconName =
+  | "users"
+  | "meter"
+  | "receipt"
+  | "file"
+  | "card"
+  | "chart"
+  | "settings"
+  | "shield"
+  | "clock"
+  | "heart"
+  | "arrow"
+  | "login"
+  | "pin"
+  | "mail"
+  | "phone";
 const paths: Record<IconName, React.ReactNode> = {
-  users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>, meter: <><path d="M4 19V9a8 8 0 0 1 16 0v10"/><path d="m12 11 3-3M8 19h8"/><circle cx="12" cy="11" r="1"/></>, receipt: <><path d="M6 2 4 4 2 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2l-2 2-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 9h8M8 13h6"/></>, card: <><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h2"/></>, chart: <><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/><path d="M16 6h4v4"/></>, settings: <><circle cx="12" cy="12" r="3"/><path d="M19 15l2 2-4 4-2-2M9 4 7 2 3 6l2 2M4 15l-2 2 4 4 2-2M15 4l2-2 4 4-2 2M12 3v3M12 18v3M3 12h3M18 12h3"/></>, shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></>, clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>, heart: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/>, arrow: <><path d="M5 12h14M13 6l6 6-6 6"/></>, login: <><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></>, pin: <><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></>, mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></>, phone: <path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.3 1.73.5 2.63.62A2 2 0 0 1 22 16.9Z"/>,
-  file: <><path d="M6 2h8l4 4v16H6Z"/><path d="M14 2v5h5M9 12h6M9 16h6"/></>,
+  users: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </>
+  ),
+  meter: (
+    <>
+      <path d="M4 19V9a8 8 0 0 1 16 0v10" />
+      <path d="m12 11 3-3M8 19h8" />
+      <circle cx="12" cy="11" r="1" />
+    </>
+  ),
+  receipt: (
+    <>
+      <path d="M6 2 4 4 2 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2l-2 2-2-2-2 2-2-2-2 2-2-2-2 2Z" />
+      <path d="M8 9h8M8 13h6" />
+    </>
+  ),
+  card: (
+    <>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M2 10h20M6 15h2" />
+    </>
+  ),
+  chart: (
+    <>
+      <path d="M3 3v18h18M7 16l4-5 3 3 6-8" />
+      <path d="M16 6h4v4" />
+    </>
+  ),
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19 15l2 2-4 4-2-2M9 4 7 2 3 6l2 2M4 15l-2 2 4 4 2-2M15 4l2-2 4 4-2 2M12 3v3M12 18v3M3 12h3M18 12h3" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  heart: (
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+  ),
+  arrow: (
+    <>
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </>
+  ),
+  login: (
+    <>
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
+    </>
+  ),
+  pin: (
+    <>
+      <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="2" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </>
+  ),
+  phone: (
+    <path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.3 1.73.5 2.63.62A2 2 0 0 1 22 16.9Z" />
+  ),
+  file: (
+    <>
+      <path d="M6 2h8l4 4v16H6Z" />
+      <path d="M14 2v5h5M9 12h6M9 16h6" />
+    </>
+  ),
 };
-export function Icon({ name, size = 24 }: { name: IconName; size?: number }) { return <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>; }
-export function Logo({ compact = false }: { compact?: boolean }) { return <span className="brand"><svg aria-hidden="true" viewBox="0 0 44 54"><path d="M22 2C17 12 7 23 7 34a15 15 0 0 0 30 0C37 23 27 12 22 2Z" fill="currentColor"/><path d="M13 31c2 8 11 11 18 5-1 7-6 11-11 11-7 0-11-6-10-13 .5-2 1-3 3-3Z" fill="white" opacity=".9"/><path d="M20 13c-1 5-5 9-7 13" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>{!compact && <span><strong>Bagamanoc</strong><small>WATER BILLING SYSTEM</small></span>}</span>; }
+export function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {paths[name]}
+    </svg>
+  );
+}
+export function Logo({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className="brand">
+      <svg aria-hidden="true" viewBox="0 0 44 54">
+        <path
+          d="M22 2C17 12 7 23 7 34a15 15 0 0 0 30 0C37 23 27 12 22 2Z"
+          fill="currentColor"
+        />
+        <path
+          d="M13 31c2 8 11 11 18 5-1 7-6 11-11 11-7 0-11-6-10-13 .5-2 1-3 3-3Z"
+          fill="white"
+          opacity=".9"
+        />
+        <path
+          d="M20 13c-1 5-5 9-7 13"
+          stroke="white"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </svg>
+      {!compact && (
+        <span>
+          <strong>Bagamanoc</strong>
+          <small>WATER BILLING SYSTEM</small>
+        </span>
+      )}
+    </span>
+  );
+}

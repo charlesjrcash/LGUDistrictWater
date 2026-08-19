@@ -17,8 +17,26 @@ export type CustomerRecord = {
   status: string;
 };
 
-export type CustomerListRow = CustomerRecord & { applicationCount: number; serviceAccountCount: number };
+export type CustomerListRow = CustomerRecord & {
+  applicationCount: number;
+  serviceAccountCount: number;
+};
 
-export type CustomerApplication = { applicationNo: string; applicationType: string; applicationDate: string; status: string; statusCode: string };
-export type CustomerServiceAccount = { controlNo: string; classification: string; connectionType: string; status: string; statusCode: string };
-export type CustomerDetail = CustomerRecord & { applications: CustomerApplication[]; serviceAccounts: CustomerServiceAccount[] };
+export type CustomerApplication = {
+  applicationNo: string;
+  applicationType: string;
+  applicationDate: string;
+  status: string;
+  statusCode: string;
+};
+export type CustomerServiceAccount = {
+  controlNo: string;
+  classification: string;
+  connectionType: string;
+  status: string;
+  statusCode: string;
+};
+export type CustomerDetail = CustomerRecord & {
+  applications: CustomerApplication[];
+  serviceAccounts: CustomerServiceAccount[];
+};

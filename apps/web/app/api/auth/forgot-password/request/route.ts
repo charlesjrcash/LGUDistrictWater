@@ -5,16 +5,24 @@ import { sendPasswordResetCodeEmail } from "@/lib/mailer";
 export const runtime = "nodejs";
 
 const globalForDb = globalThis as unknown as { userPool?: Pool };
-const pool = globalForDb.userPool ?? new Pool({ connectionString: process.env.DATABASE_URL });
+const pool =
+  globalForDb.userPool ??
+  new Pool({ connectionString: process.env.DATABASE_URL });
 if (process.env.NODE_ENV !== "production") globalForDb.userPool = pool;
 
-const genericMessage = "If an active account uses that email, a verification code has been sent.";
+const genericMessage =
+  "If an active account uses that email, a verification code has been sent.";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return Response.json({ message: "Enter a valid email address." }, { status: 400 });
+    const email =
+      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return Response.json(
+        { message: "Enter a valid email address." },
+        { status: 400 },
+      );
 
     const result = await pool.query<{ user_id: string; email: string }>(
       "SELECT user_id, email FROM users WHERE LOWER(email) = $1 AND is_active = TRUE LIMIT 1",
@@ -40,13 +48,18 @@ export async function POST(request: Request) {
     try {
       await sendPasswordResetCodeEmail({ to: user.email, code, expiresAt });
     } catch (error) {
-      await pool.query("DELETE FROM password_reset_codes WHERE reset_id = $1", [inserted.rows[0].reset_id]);
+      await pool.query("DELETE FROM password_reset_codes WHERE reset_id = $1", [
+        inserted.rows[0].reset_id,
+      ]);
       console.error("Password reset email failed:", error);
     }
 
     return Response.json({ message: genericMessage });
   } catch (error) {
     console.error("Password reset request failed:", error);
-    return Response.json({ message: "Unable to process the request. Please try again." }, { status: 500 });
+    return Response.json(
+      { message: "Unable to process the request. Please try again." },
+      { status: 500 },
+    );
   }
 }

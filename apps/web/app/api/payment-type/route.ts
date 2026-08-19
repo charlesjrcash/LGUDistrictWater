@@ -2,11 +2,168 @@ import { db } from "@/lib/db";
 import { requireSessionUser } from "@/lib/server-session";
 
 export const runtime = "nodejs";
-type PaymentTypeInput = { code: string; name: string; description: string | null; isActive: boolean };
-function text(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
-function fail(message: string, status: number) { return Response.json({ success: false, message }, { status }); }
-function duplicateError(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "23505"; }
-function parsePaymentType(body: Record<string, unknown>): { paymentType: PaymentTypeInput } | { error: string } { const code = text(body.payment_type_code); const name = text(body.payment_type_name); if (!code) return { error: "Payment Type Code is required." }; if (!name) return { error: "Payment Type Name is required." }; return { paymentType: { code: code.toUpperCase(), name, description: text(body.description) || null, isActive: typeof body.is_active === "boolean" ? body.is_active : true } }; }
-export async function GET() { const auth = await requireSessionUser(); if (auth.response) return auth.response; try { const result = await db.query("SELECT payment_type_id, payment_type_code, payment_type_name, description, is_active FROM public.mt_payment_type ORDER BY payment_type_code ASC"); return Response.json({ success: true, data: result.rows }); } catch (error) { console.error("Failed to load payment types:", error); return fail("Unable to load payment types.", 500); } }
-export async function POST(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; let body: Record<string, unknown>; try { body = await request.json(); } catch { return fail("Invalid request.", 400); } const parsed = parsePaymentType(body); if ("error" in parsed) return fail(parsed.error, 400); const client = await db.connect(); try { await client.query("BEGIN"); const duplicate = await client.query("SELECT payment_type_id FROM public.mt_payment_type WHERE payment_type_code = $1 LIMIT 1", [parsed.paymentType.code]); if ((duplicate.rowCount ?? 0) > 0) { await client.query("ROLLBACK"); return fail("Payment Type Code already exists.", 409); } const result = await client.query("INSERT INTO public.mt_payment_type (payment_type_code, payment_type_name, description, is_active, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING payment_type_id, payment_type_code, payment_type_name, description, is_active", [parsed.paymentType.code, parsed.paymentType.name, parsed.paymentType.description, parsed.paymentType.isActive, auth.user.userId]); await client.query("COMMIT"); return Response.json({ success: true, message: "Payment type saved successfully.", data: result.rows[0] }, { status: 201 }); } catch (error) { await client.query("ROLLBACK"); console.error("Failed to save payment type:", error); return fail(duplicateError(error) ? "Payment Type Code already exists." : "The payment type could not be saved.", duplicateError(error) ? 409 : 500); } finally { client.release(); } }
-export async function PUT(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; let body: Record<string, unknown>; try { body = await request.json(); } catch { return fail("Invalid request.", 400); } const id = text(body.payment_type_id); const parsed = parsePaymentType(body); if (!/^\d+$/.test(id)) return fail("Payment Type ID is required.", 400); if ("error" in parsed) return fail(parsed.error, 400); const client = await db.connect(); try { await client.query("BEGIN"); const existing = await client.query("SELECT payment_type_id FROM public.mt_payment_type WHERE payment_type_id = $1 LIMIT 1", [id]); if ((existing.rowCount ?? 0) === 0) { await client.query("ROLLBACK"); return fail("Payment type not found.", 404); } const duplicate = await client.query("SELECT payment_type_id FROM public.mt_payment_type WHERE payment_type_code = $1 AND payment_type_id <> $2 LIMIT 1", [parsed.paymentType.code, id]); if ((duplicate.rowCount ?? 0) > 0) { await client.query("ROLLBACK"); return fail("Payment Type Code already exists.", 409); } const result = await client.query("UPDATE public.mt_payment_type SET payment_type_code = $1, payment_type_name = $2, description = $3, is_active = $4, updated_by = $5, updated_at = CURRENT_TIMESTAMP WHERE payment_type_id = $6 RETURNING payment_type_id, payment_type_code, payment_type_name, description, is_active", [parsed.paymentType.code, parsed.paymentType.name, parsed.paymentType.description, parsed.paymentType.isActive, auth.user.userId, id]); await client.query("COMMIT"); return Response.json({ success: true, message: "Payment type updated successfully.", data: result.rows[0] }); } catch (error) { await client.query("ROLLBACK"); console.error("Failed to update payment type:", error); return fail(duplicateError(error) ? "Payment Type Code already exists." : "The payment type could not be updated.", duplicateError(error) ? 409 : 500); } finally { client.release(); } }
+type PaymentTypeInput = {
+  code: string;
+  name: string;
+  description: string | null;
+  isActive: boolean;
+};
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+function fail(message: string, status: number) {
+  return Response.json({ success: false, message }, { status });
+}
+function duplicateError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
+}
+function parsePaymentType(
+  body: Record<string, unknown>,
+): { paymentType: PaymentTypeInput } | { error: string } {
+  const code = text(body.payment_type_code);
+  const name = text(body.payment_type_name);
+  if (!code) return { error: "Payment Type Code is required." };
+  if (!name) return { error: "Payment Type Name is required." };
+  return {
+    paymentType: {
+      code: code.toUpperCase(),
+      name,
+      description: text(body.description) || null,
+      isActive: typeof body.is_active === "boolean" ? body.is_active : true,
+    },
+  };
+}
+export async function GET() {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  try {
+    const result = await db.query(
+      "SELECT payment_type_id, payment_type_code, payment_type_name, description, is_active FROM public.mt_payment_type ORDER BY payment_type_code ASC",
+    );
+    return Response.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Failed to load payment types:", error);
+    return fail("Unable to load payment types.", 500);
+  }
+}
+export async function POST(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return fail("Invalid request.", 400);
+  }
+  const parsed = parsePaymentType(body);
+  if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const duplicate = await client.query(
+      "SELECT payment_type_id FROM public.mt_payment_type WHERE payment_type_code = $1 LIMIT 1",
+      [parsed.paymentType.code],
+    );
+    if ((duplicate.rowCount ?? 0) > 0) {
+      await client.query("ROLLBACK");
+      return fail("Payment Type Code already exists.", 409);
+    }
+    const result = await client.query(
+      "INSERT INTO public.mt_payment_type (payment_type_code, payment_type_name, description, is_active, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING payment_type_id, payment_type_code, payment_type_name, description, is_active",
+      [
+        parsed.paymentType.code,
+        parsed.paymentType.name,
+        parsed.paymentType.description,
+        parsed.paymentType.isActive,
+        auth.user.userId,
+      ],
+    );
+    await client.query("COMMIT");
+    return Response.json(
+      {
+        success: true,
+        message: "Payment type saved successfully.",
+        data: result.rows[0],
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Failed to save payment type:", error);
+    return fail(
+      duplicateError(error)
+        ? "Payment Type Code already exists."
+        : "The payment type could not be saved.",
+      duplicateError(error) ? 409 : 500,
+    );
+  } finally {
+    client.release();
+  }
+}
+export async function PUT(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return fail("Invalid request.", 400);
+  }
+  const id = text(body.payment_type_id);
+  const parsed = parsePaymentType(body);
+  if (!/^\d+$/.test(id)) return fail("Payment Type ID is required.", 400);
+  if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const existing = await client.query(
+      "SELECT payment_type_id FROM public.mt_payment_type WHERE payment_type_id = $1 LIMIT 1",
+      [id],
+    );
+    if ((existing.rowCount ?? 0) === 0) {
+      await client.query("ROLLBACK");
+      return fail("Payment type not found.", 404);
+    }
+    const duplicate = await client.query(
+      "SELECT payment_type_id FROM public.mt_payment_type WHERE payment_type_code = $1 AND payment_type_id <> $2 LIMIT 1",
+      [parsed.paymentType.code, id],
+    );
+    if ((duplicate.rowCount ?? 0) > 0) {
+      await client.query("ROLLBACK");
+      return fail("Payment Type Code already exists.", 409);
+    }
+    const result = await client.query(
+      "UPDATE public.mt_payment_type SET payment_type_code = $1, payment_type_name = $2, description = $3, is_active = $4, updated_by = $5, updated_at = CURRENT_TIMESTAMP WHERE payment_type_id = $6 RETURNING payment_type_id, payment_type_code, payment_type_name, description, is_active",
+      [
+        parsed.paymentType.code,
+        parsed.paymentType.name,
+        parsed.paymentType.description,
+        parsed.paymentType.isActive,
+        auth.user.userId,
+        id,
+      ],
+    );
+    await client.query("COMMIT");
+    return Response.json({
+      success: true,
+      message: "Payment type updated successfully.",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Failed to update payment type:", error);
+    return fail(
+      duplicateError(error)
+        ? "Payment Type Code already exists."
+        : "The payment type could not be updated.",
+      duplicateError(error) ? 409 : 500,
+    );
+  } finally {
+    client.release();
+  }
+}

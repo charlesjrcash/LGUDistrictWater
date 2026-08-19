@@ -2,8 +2,81 @@ import { db } from "@/lib/db";
 import { requireSessionUser } from "@/lib/server-session";
 import { parseSystemSettingValue } from "@/lib/system-settings";
 export const runtime = "nodejs";
-function text(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
-function fail(message: string, status: number) { return Response.json({ success: false, message }, { status }); }
-function validValue(value: string | null, dataType: string) { if (dataType.toUpperCase() === "TEXT") return true; return value !== null && parseSystemSettingValue(value, dataType) !== null; }
-export async function GET(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; try { const includeInactive = new URL(request.url).searchParams.get("includeInactive") === "true"; const result = await db.query(`SELECT setting_id, setting_key, setting_value, data_type, description, is_active FROM public.mt_system_settings ${includeInactive ? "" : "WHERE is_active = TRUE"} ORDER BY setting_key ASC`); return Response.json({ success: true, data: result.rows }); } catch (error) { console.error("Failed to load system settings:", error); return fail("Unable to load system settings.", 500); } }
-export async function PUT(request: Request) { const auth = await requireSessionUser(); if (auth.response) return auth.response; let body: Record<string, unknown>; try { body = await request.json(); } catch { return fail("Invalid request.", 400); } const settingId = text(body.setting_id); if (!/^\d+$/.test(settingId)) return fail("Setting ID is required.", 400); if (typeof body.is_active !== "boolean") return fail("Active status must be selected.", 400); const settingValue = body.setting_value === null || body.setting_value === undefined ? null : text(body.setting_value); const client = await db.connect(); try { await client.query("BEGIN"); const existing = await client.query<{ data_type: string }>("SELECT data_type FROM public.mt_system_settings WHERE setting_id = $1 LIMIT 1", [settingId]); if (!existing.rows[0]) { await client.query("ROLLBACK"); return fail("System setting not found.", 404); } if (!validValue(settingValue, existing.rows[0].data_type)) { await client.query("ROLLBACK"); return fail(`Please enter a valid ${existing.rows[0].data_type.toLowerCase()} value.`, 400); } const result = await client.query("UPDATE public.mt_system_settings SET setting_value = $1, is_active = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE setting_id = $4 RETURNING setting_id, setting_key, setting_value, data_type, description, is_active", [settingValue, body.is_active, auth.user.userId, settingId]); await client.query("COMMIT"); return Response.json({ success: true, message: "System setting updated successfully.", data: result.rows[0] }); } catch (error) { await client.query("ROLLBACK"); console.error("Failed to update system setting:", error); return fail("The system setting could not be updated.", 500); } finally { client.release(); } }
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+function fail(message: string, status: number) {
+  return Response.json({ success: false, message }, { status });
+}
+function validValue(value: string | null, dataType: string) {
+  if (dataType.toUpperCase() === "TEXT") return true;
+  return value !== null && parseSystemSettingValue(value, dataType) !== null;
+}
+export async function GET(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  try {
+    const includeInactive =
+      new URL(request.url).searchParams.get("includeInactive") === "true";
+    const result = await db.query(
+      `SELECT setting_id, setting_key, setting_value, data_type, description, is_active FROM public.mt_system_settings ${includeInactive ? "" : "WHERE is_active = TRUE"} ORDER BY setting_key ASC`,
+    );
+    return Response.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Failed to load system settings:", error);
+    return fail("Unable to load system settings.", 500);
+  }
+}
+export async function PUT(request: Request) {
+  const auth = await requireSessionUser();
+  if (auth.response) return auth.response;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return fail("Invalid request.", 400);
+  }
+  const settingId = text(body.setting_id);
+  if (!/^\d+$/.test(settingId)) return fail("Setting ID is required.", 400);
+  if (typeof body.is_active !== "boolean")
+    return fail("Active status must be selected.", 400);
+  const settingValue =
+    body.setting_value === null || body.setting_value === undefined
+      ? null
+      : text(body.setting_value);
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const existing = await client.query<{ data_type: string }>(
+      "SELECT data_type FROM public.mt_system_settings WHERE setting_id = $1 LIMIT 1",
+      [settingId],
+    );
+    if (!existing.rows[0]) {
+      await client.query("ROLLBACK");
+      return fail("System setting not found.", 404);
+    }
+    if (!validValue(settingValue, existing.rows[0].data_type)) {
+      await client.query("ROLLBACK");
+      return fail(
+        `Please enter a valid ${existing.rows[0].data_type.toLowerCase()} value.`,
+        400,
+      );
+    }
+    const result = await client.query(
+      "UPDATE public.mt_system_settings SET setting_value = $1, is_active = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE setting_id = $4 RETURNING setting_id, setting_key, setting_value, data_type, description, is_active",
+      [settingValue, body.is_active, auth.user.userId, settingId],
+    );
+    await client.query("COMMIT");
+    return Response.json({
+      success: true,
+      message: "System setting updated successfully.",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Failed to update system setting:", error);
+    return fail("The system setting could not be updated.", 500);
+  } finally {
+    client.release();
+  }
+}

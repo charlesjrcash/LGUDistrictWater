@@ -29,10 +29,12 @@ function getString(value: unknown) {
 }
 
 function isDuplicateCycleCodeError(error: unknown) {
-  return typeof error === "object" &&
+  return (
+    typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    error.code === "23505";
+    error.code === "23505"
+  );
 }
 
 function parseBillingCycle(body: Record<string, unknown>) {
@@ -41,9 +43,7 @@ function parseBillingCycle(body: Record<string, unknown>) {
     numberOfDaysValue === "" ||
     numberOfDaysValue === null ||
     numberOfDaysValue === undefined;
-  const numberOfDays = numberOfDaysIsEmpty
-    ? null
-    : Number(numberOfDaysValue);
+  const numberOfDays = numberOfDaysIsEmpty ? null : Number(numberOfDaysValue);
 
   const billingCycle: BillingCycleInput = {
     cycleCode: getString(body.cycle_code).toUpperCase(),
@@ -96,7 +96,7 @@ export async function GET() {
         success: false,
         message: "Unable to load billing cycles.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
           WHERE cycle_code = $1
           LIMIT 1
         `,
-        [parsed.billingCycle.cycleCode]
+        [parsed.billingCycle.cycleCode],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
             success: false,
             message: "That cycle code is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -164,7 +164,7 @@ export async function POST(request: Request) {
           parsed.billingCycle.numberOfDays,
           parsed.billingCycle.description,
           parsed.billingCycle.isActive,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -175,7 +175,7 @@ export async function POST(request: Request) {
           message: "Billing cycle created successfully.",
           data: result.rows[0],
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       await client.query("ROLLBACK");
@@ -192,7 +192,7 @@ export async function POST(request: Request) {
           success: false,
           message: "That cycle code is already registered.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
         success: false,
         message: "The billing cycle could not be saved.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -218,14 +218,14 @@ export async function PUT(request: Request) {
           success: false,
           message: "Billing cycle ID is required.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -241,7 +241,7 @@ export async function PUT(request: Request) {
           WHERE billing_cycle_id = $1
           LIMIT 1
         `,
-        [billingCycleId]
+        [billingCycleId],
       );
 
       if ((existingResult.rowCount ?? 0) === 0) {
@@ -252,7 +252,7 @@ export async function PUT(request: Request) {
             success: false,
             message: "Billing cycle record was not found.",
           },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -264,7 +264,7 @@ export async function PUT(request: Request) {
             AND billing_cycle_id <> $2
           LIMIT 1
         `,
-        [parsed.billingCycle.cycleCode, billingCycleId]
+        [parsed.billingCycle.cycleCode, billingCycleId],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -273,9 +273,10 @@ export async function PUT(request: Request) {
         return Response.json(
           {
             success: false,
-            message: "That cycle code is already registered to another billing cycle.",
+            message:
+              "That cycle code is already registered to another billing cycle.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -305,7 +306,7 @@ export async function PUT(request: Request) {
           parsed.billingCycle.description,
           parsed.billingCycle.isActive,
           billingCycleId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -328,9 +329,10 @@ export async function PUT(request: Request) {
       return Response.json(
         {
           success: false,
-          message: "That cycle code is already registered to another billing cycle.",
+          message:
+            "That cycle code is already registered to another billing cycle.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -339,7 +341,7 @@ export async function PUT(request: Request) {
         success: false,
         message: "The billing cycle could not be updated.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

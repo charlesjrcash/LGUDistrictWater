@@ -1,17 +1,22 @@
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/server-session";
-import { AdminDashboard, type DashboardData } from "@/modules/dashboard/ui/admin-dashboard";
+import {
+  AdminDashboard,
+  type DashboardData,
+} from "@/modules/dashboard/ui/admin-dashboard";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/dashboard");
-  if (!user.roles.some((role)=>role.toLowerCase().includes("admin"))) redirect("/");
+  if (!user.roles.some((role) => role.toLowerCase().includes("admin")))
+    redirect("/");
 
-  const [metricsResult, masterResult, auditResult, reportResult] = await Promise.all([
-    db.query<Record<string, string>>(`SELECT
+  const [metricsResult, masterResult, auditResult, reportResult] =
+    await Promise.all([
+      db.query<Record<string, string>>(`SELECT
       (SELECT COUNT(*) FROM users WHERE is_active=TRUE)::text AS active_users,
       (SELECT COUNT(*) FROM users)::text AS total_users,
       (SELECT COUNT(*) FROM mt_employee WHERE is_active=TRUE)::text AS active_employees,
@@ -43,52 +48,83 @@ export default async function DashboardPage() {
       (SELECT COUNT(*) FROM mt_water_rates WHERE is_active=TRUE AND expiration_date BETWEEN CURRENT_DATE AND CURRENT_DATE+30)::text AS expiring_rates,
       (SELECT COUNT(*) FROM mt_reading_route WHERE is_active=TRUE AND barangay_id IS NULL)::text AS routes_without_barangays,
       (SELECT COUNT(*) FROM users WHERE is_active=TRUE AND must_change_password=TRUE)::text AS temporary_passwords`),
-    db.query<{ category: string; label: string; count: string; href: string }>(`SELECT * FROM (VALUES
-      ('Location','Barangays',(SELECT COUNT(*)::text FROM mt_barangay),'/maintenance/Barangays'),
-      ('Location','Puroks',(SELECT COUNT(*)::text FROM mt_purok),'/maintenance/Puroks'),
-      ('Location','Reading Routes',(SELECT COUNT(*)::text FROM mt_reading_route),'/maintenance/ReadingRoutes'),
-      ('Customer Configuration','Classifications',(SELECT COUNT(*)::text FROM mt_customer_classification),'/maintenance/CustomerClassifications'),
-      ('Customer Configuration','Application Types',(SELECT COUNT(*)::text FROM mt_application_type),'/maintenance/ApplicationTypes'),
-      ('Customer Configuration','Application Statuses',(SELECT COUNT(*)::text FROM mt_application_status),'/maintenance/ApplicationStatuses'),
-      ('Water Service','Connection Types',(SELECT COUNT(*)::text FROM mt_connection_type),'/maintenance/ConnectionTypes'),
-      ('Water Service','Connection Statuses',(SELECT COUNT(*)::text FROM mt_connection_status),'/maintenance/ConnectionStatuses'),
-      ('Water Service','Service Types',(SELECT COUNT(*)::text FROM mt_service_type),'/maintenance/ServiceTypes'),
-      ('Meter','Meter Sizes',(SELECT COUNT(*)::text FROM mt_meter_size),'/maintenance/MeterSizes'),
-      ('Meter','Meter Types',(SELECT COUNT(*)::text FROM mt_meter_type),'/maintenance/MeterTypes'),
-      ('Meter','Meter Brands',(SELECT COUNT(*)::text FROM mt_meter_brand),'/maintenance/MeterBrands'),
-      ('Meter','Reading Statuses',(SELECT COUNT(*)::text FROM mt_reading_status),'/maintenance/ReadingStatuses'),
+      db.query<{
+        category: string;
+        label: string;
+        count: string;
+        href: string;
+      }>(`SELECT * FROM (VALUES
+      ('Location','Barangays',(SELECT COUNT(*)::text FROM mt_barangay),'/maintenance/barangays'),
+      ('Location','Puroks',(SELECT COUNT(*)::text FROM mt_purok),'/maintenance/puroks'),
+      ('Location','Reading Routes',(SELECT COUNT(*)::text FROM mt_reading_route),'/maintenance/reading-routes'),
+      ('Customer Configuration','Classifications',(SELECT COUNT(*)::text FROM mt_customer_classification),'/maintenance/customer-classifications'),
+      ('Customer Configuration','Application Types',(SELECT COUNT(*)::text FROM mt_application_type),'/maintenance/application-types'),
+      ('Customer Configuration','Application Statuses',(SELECT COUNT(*)::text FROM mt_application_status),'/maintenance/application-statuses'),
+      ('Water Service','Connection Types',(SELECT COUNT(*)::text FROM mt_connection_type),'/maintenance/connection-types'),
+      ('Water Service','Connection Statuses',(SELECT COUNT(*)::text FROM mt_connection_status),'/maintenance/connection-statuses'),
+      ('Water Service','Service Types',(SELECT COUNT(*)::text FROM mt_service_type),'/maintenance/service-types'),
+      ('Meter','Meter Sizes',(SELECT COUNT(*)::text FROM mt_meter_size),'/maintenance/meter-sizes'),
+      ('Meter','Meter Types',(SELECT COUNT(*)::text FROM mt_meter_type),'/maintenance/meter-types'),
+      ('Meter','Meter Brands',(SELECT COUNT(*)::text FROM mt_meter_brand),'/maintenance/meter-brands'),
+      ('Meter','Reading Statuses',(SELECT COUNT(*)::text FROM mt_reading_status),'/maintenance/reading-statuses'),
       ('Billing','Water Rates',(SELECT COUNT(*)::text FROM mt_water_rates),'/maintenance/water-rates'),
-      ('Billing','Fees',(SELECT COUNT(*)::text FROM mt_fees),'/maintenance/Fees'),
-      ('Billing','Penalty Rates',(SELECT COUNT(*)::text FROM mt_penalty_rates),'/maintenance/PenaltyRates'),
-      ('Billing','Billing Cycles',(SELECT COUNT(*)::text FROM mt_billing_cycle),'/maintenance/BillingCycles'),
-      ('Billing','Billing Periods',(SELECT COUNT(*)::text FROM mt_billing_period),'/maintenance/BillingPeriods'),
-      ('Billing','Due Date Rules',(SELECT COUNT(*)::text FROM mt_due_date_rule),'/maintenance/DueDateRules'),
-      ('Engineering','Materials',(SELECT COUNT(*)::text FROM mt_material),'/maintenance/Materials'),
-      ('Engineering','Units',(SELECT COUNT(*)::text FROM mt_unit_of_measure),'/maintenance/Units'),
-      ('Disconnection','Reasons',(SELECT COUNT(*)::text FROM mt_disconnection_reason),'/maintenance/DisconnectionReasons'),
-      ('Collection','Payment Methods',(SELECT COUNT(*)::text FROM mt_payment_method),'/maintenance/PaymentMethods'),
-      ('Collection','Payment Types',(SELECT COUNT(*)::text FROM mt_payment_type),'/maintenance/PaymentTypes'),
-      ('Collection','Receipt Types',(SELECT COUNT(*)::text FROM mt_receipt_type),'/maintenance/ReceiptTypes'),
-      ('Personnel','Employees',(SELECT COUNT(*)::text FROM mt_employee),'/maintenance/Employees'),
-      ('Personnel','Meter Readers',(SELECT COUNT(*)::text FROM mt_meter_reader),'/maintenance/MeterReaders')
+      ('Billing','Fees',(SELECT COUNT(*)::text FROM mt_fees),'/maintenance/fees'),
+      ('Billing','Penalty Rates',(SELECT COUNT(*)::text FROM mt_penalty_rates),'/maintenance/penalty-rates'),
+      ('Billing','Billing Cycles',(SELECT COUNT(*)::text FROM mt_billing_cycle),'/maintenance/billing-cycles'),
+      ('Billing','Billing Periods',(SELECT COUNT(*)::text FROM mt_billing_period),'/maintenance/billing-periods'),
+      ('Billing','Due Date Rules',(SELECT COUNT(*)::text FROM mt_due_date_rule),'/maintenance/due-date-rules'),
+      ('Engineering','Materials',(SELECT COUNT(*)::text FROM mt_material),'/maintenance/materials'),
+      ('Engineering','Units',(SELECT COUNT(*)::text FROM mt_unit_of_measure),'/maintenance/units'),
+      ('Disconnection','Reasons',(SELECT COUNT(*)::text FROM mt_disconnection_reason),'/maintenance/disconnection-reasons'),
+      ('Collection','Payment Methods',(SELECT COUNT(*)::text FROM mt_payment_method),'/maintenance/payment-methods'),
+      ('Collection','Payment Types',(SELECT COUNT(*)::text FROM mt_payment_type),'/maintenance/payment-types'),
+      ('Collection','Receipt Types',(SELECT COUNT(*)::text FROM mt_receipt_type),'/maintenance/receipt-types'),
+      ('Personnel','Employees',(SELECT COUNT(*)::text FROM mt_employee),'/maintenance/employees'),
+      ('Personnel','Meter Readers',(SELECT COUNT(*)::text FROM mt_meter_reader),'/maintenance/meter-readers')
     ) AS data(category,label,count,href)`),
-    db.query<{ id: string; action: string; description: string | null; username: string | null; created_at: Date }>(`SELECT a.audit_id::text AS id,a.action,a.description,u.username,a.created_at FROM audit_logs a LEFT JOIN users u ON u.user_id=a.user_id ORDER BY a.created_at DESC LIMIT 10`),
-    db.query<{ report_date: Date; collections: string; bills: string; applications: string }>(`SELECT day AS report_date,
+      db.query<{
+        id: string;
+        action: string;
+        description: string | null;
+        username: string | null;
+        created_at: Date;
+      }>(
+        `SELECT a.audit_id::text AS id,a.action,a.description,u.username,a.created_at FROM audit_logs a LEFT JOIN users u ON u.user_id=a.user_id ORDER BY a.created_at DESC LIMIT 10`,
+      ),
+      db.query<{
+        report_date: Date;
+        collections: string;
+        bills: string;
+        applications: string;
+      }>(`SELECT day AS report_date,
       COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.payment_date::date=day::date AND p.status='POSTED'),0)::text AS collections,
       (SELECT COUNT(*) FROM bills b WHERE b.created_at::date=day::date)::text AS bills,
       (SELECT COUNT(*) FROM service_applications a WHERE a.created_at::date=day::date)::text AS applications
       FROM generate_series(CURRENT_DATE-6,CURRENT_DATE,INTERVAL '1 day') day ORDER BY day`),
-  ]);
+    ]);
 
   const raw = metricsResult.rows[0];
   const number = (key: string) => Number(raw[key] ?? 0);
   const data: DashboardData = {
     userName: user.name || user.username,
-    metrics: Object.fromEntries(Object.keys(raw).map((key)=>[key,number(key)])),
-    masterData: masterResult.rows.map((item)=>({...item,count:Number(item.count)})),
-    activity: auditResult.rows.map((item)=>({...item,createdAt:item.created_at.toISOString()})),
-    report: reportResult.rows.map((item)=>({date:item.report_date.toISOString(),collections:Number(item.collections),bills:Number(item.bills),applications:Number(item.applications)})),
+    metrics: Object.fromEntries(
+      Object.keys(raw).map((key) => [key, number(key)]),
+    ),
+    masterData: masterResult.rows.map((item) => ({
+      ...item,
+      count: Number(item.count),
+    })),
+    activity: auditResult.rows.map((item) => ({
+      ...item,
+      createdAt: item.created_at.toISOString(),
+    })),
+    report: reportResult.rows.map((item) => ({
+      date: item.report_date.toISOString(),
+      collections: Number(item.collections),
+      bills: Number(item.bills),
+      applications: Number(item.applications),
+    })),
   };
 
-  return <AdminDashboard data={data}/>;
+  return <AdminDashboard data={data} />;
 }

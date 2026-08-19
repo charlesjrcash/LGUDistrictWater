@@ -5,16 +5,321 @@ import { useCallback, useEffect, useState } from "react";
 import type { CustomerDetail } from "@/modules/customers/types";
 import { ApplicationStatusBadge } from "@/modules/service-applications/ui/application-status-badge";
 import { AccountStatusBadge } from "@/modules/service-accounts/ui/account-status-badge";
-import { ModuleShell } from "@/modules/service-applications/ui/module-shell";
-import styles from "@/modules/service-applications/ui/service-applications.module.css";
+import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
+import styles from "@/modules/transactions/ui/transactions.module.css";
 import { CustomerStatusBadge } from "./customer-status-badge";
 
-type Tab="overview"|"applications"|"accounts";
-function formatDate(value:string){return new Intl.DateTimeFormat("en-PH",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(`${value}T00:00:00Z`));}
-export function CustomerDetails({customerNo}:{customerNo:string}){const[customer,setCustomer]=useState<CustomerDetail|null>(null);const[tab,setTab]=useState<Tab>("overview");const[loading,setLoading]=useState(true);const[error,setError]=useState("");const[notice,setNotice]=useState("");const load=useCallback(async()=>{setLoading(true);setError("");try{const response=await fetch(`/api/customers/${encodeURIComponent(customerNo)}`,{cache:"no-store"});const body=await response.json();if(!response.ok)throw new Error(body.message);setCustomer(body.data);}catch(loadError){setError(loadError instanceof Error?loadError.message:"Unable to load the customer record.");}finally{setLoading(false);}},[customerNo]);useEffect(()=>{const timer=window.setTimeout(()=>{void load();const params=new URLSearchParams(window.location.search);if(params.has("created"))setNotice(`Customer ${customerNo} was created successfully.`);if(params.has("updated"))setNotice(`Customer ${customerNo} was updated successfully.`);if(params.has("created")||params.has("updated"))window.history.replaceState({},"",window.location.pathname);},0);return()=>window.clearTimeout(timer);},[customerNo,load]);
-if(loading)return <ModuleShell active="customers"><div className={`${styles.panel} ${styles.loading}`}><div className={styles.skeleton} style={{height:220}}/></div></ModuleShell>;if(!customer)return <ModuleShell active="customers"><Link className={styles.backLink} href="/customers">← Customers</Link><div className={`${styles.panel} ${styles.errorState}`}><h2>Customer unavailable</h2><p>{error}</p><button className={styles.secondaryButton} onClick={load}>Try again</button></div></ModuleShell>;
-const overview=[["Customer No.",customer.customerNo],["Customer Name",customer.customerName],["First Name",customer.firstName||"—"],["Middle Name",customer.middleName||"—"],["Last Name",customer.lastName||"—"],["Contact Number",customer.contactNo||"—"],["Email",customer.email||"—"],["Address",customer.address||"—"],["Barangay",customer.barangay||"—"],["Purok",customer.purok||"—"],["Status",customer.status]];
-return <ModuleShell active="customers"><Link className={styles.backLink} href="/customers">← Customers</Link>{notice&&<div className={styles.successNotice}>{notice}</div>}<header className={styles.detailHeader}><div><div className={styles.applicationNumber}><h1>{customer.customerName}</h1><CustomerStatusBadge status={customer.status}/></div><p className={styles.detailCustomer}>{customer.customerNo}</p></div><Link className={styles.secondaryButton} href={`/customers/${encodeURIComponent(customer.customerNo)}/edit`}>Edit Customer</Link></header><div className={styles.panel} style={{marginBottom:18,padding:"0 20px"}}><div style={{display:"flex",gap:24,overflowX:"auto"}}>{([['overview','Overview'],['applications',`Applications (${customer.applications.length})`],['accounts',`Service Accounts (${customer.serviceAccounts.length})`]] as [Tab,string][]).map(([key,label])=><button key={key} onClick={()=>setTab(key)} style={{padding:"15px 2px 12px",border:0,borderBottom:tab===key?"3px solid #0874e8":"3px solid transparent",background:"transparent",color:tab===key?"#075fc5":"#64748b",fontWeight:750,cursor:"pointer",whiteSpace:"nowrap"}}>{label}</button>)}</div></div>
-{tab==="overview"&&<div className={styles.detailGrid}><section className={styles.detailCard}><div className={styles.cardHeading}><h2>Customer Information</h2></div><div className={styles.detailItems}>{overview.map(([label,value])=><div className={styles.detailItem} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div></section><aside><section className={styles.detailCard}><div className={styles.cardHeading}><h2>Customer Relationships</h2></div><div className={styles.summaryGrid} style={{gridTemplateColumns:"1fr 1fr",margin:0}}><div className={styles.summaryCard}><div className={styles.summaryLabel}>Applications</div><div className={styles.summaryValue}>{customer.applications.length}</div></div><div className={styles.summaryCard}><div className={styles.summaryLabel}>Service Accounts</div><div className={styles.summaryValue}>{customer.serviceAccounts.length}</div></div></div></section><section className={styles.detailCard}><div className={styles.cardHeading}><h2>Quick Actions</h2></div><div className={styles.actionStack}><Link className={styles.button} href={`/service-applications/new?customer=${encodeURIComponent(customer.customerNo)}`}>Create Service Application</Link><Link className={styles.secondaryButton} href={`/customers/${encodeURIComponent(customer.customerNo)}/edit`}>Edit Customer</Link></div></section></aside></div>}
-{tab==="applications"&&<section className={styles.panel}>{customer.applications.length===0?<div className={styles.empty}><h2>No service applications found for this customer.</h2><p>Create an application using this customer&apos;s existing master record.</p><Link className={styles.button} href={`/service-applications/new?customer=${encodeURIComponent(customer.customerNo)}`}>Create Service Application</Link></div>:<div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Application No.</th><th>Type</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>{customer.applications.map((application)=><tr key={application.applicationNo}><td className={styles.strong}>{application.applicationNo}</td><td>{application.applicationType}</td><td>{formatDate(application.applicationDate)}</td><td><ApplicationStatusBadge code={application.statusCode} name={application.status}/></td><td><Link className={styles.viewLink} href={`/service-applications/${encodeURIComponent(application.applicationNo)}`}>View Application</Link></td></tr>)}</tbody></table></div>}</section>}
-{tab==="accounts"&&<section className={styles.panel}>{customer.serviceAccounts.length===0?<div className={styles.empty}><h2>No service accounts found for this customer.</h2><p>Service accounts are created after an application is approved.</p></div>:<div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Control No.</th><th>Classification</th><th>Connection Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>{customer.serviceAccounts.map((account)=><tr key={account.controlNo}><td className={styles.strong}>{account.controlNo}</td><td>{account.classification}</td><td>{account.connectionType}</td><td><AccountStatusBadge code={account.statusCode} name={account.status}/></td><td><Link className={styles.viewLink} href={`/service-accounts/${encodeURIComponent(account.controlNo)}`}>View Service Account</Link></td></tr>)}</tbody></table></div>}</section>}</ModuleShell>;}
+type Tab = "overview" | "applications" | "accounts";
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en-PH", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+}
+export function CustomerDetails({ customerNo }: { customerNo: string }) {
+  const [customer, setCustomer] = useState<CustomerDetail | null>(null);
+  const [tab, setTab] = useState<Tab>("overview");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch(
+        `/api/customers/${encodeURIComponent(customerNo)}`,
+        { cache: "no-store" },
+      );
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.message);
+      setCustomer(body.data);
+    } catch (loadError) {
+      setError(
+        loadError instanceof Error
+          ? loadError.message
+          : "Unable to load the customer record.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [customerNo]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void load();
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("created"))
+        setNotice(`Customer ${customerNo} was created successfully.`);
+      if (params.has("updated"))
+        setNotice(`Customer ${customerNo} was updated successfully.`);
+      if (params.has("created") || params.has("updated"))
+        window.history.replaceState({}, "", window.location.pathname);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [customerNo, load]);
+  if (loading)
+    return (
+      <TransactionShell active="customers">
+        <div className={`${styles.panel} ${styles.loading}`}>
+          <div className={styles.skeleton} style={{ height: 220 }} />
+        </div>
+      </TransactionShell>
+    );
+  if (!customer)
+    return (
+      <TransactionShell active="customers">
+        <Link className={styles.backLink} href="/transactions/customers">
+          ← Customers
+        </Link>
+        <div className={`${styles.panel} ${styles.errorState}`}>
+          <h2>Customer unavailable</h2>
+          <p>{error}</p>
+          <button className={styles.secondaryButton} onClick={load}>
+            Try again
+          </button>
+        </div>
+      </TransactionShell>
+    );
+  const overview = [
+    ["Customer No.", customer.customerNo],
+    ["Customer Name", customer.customerName],
+    ["First Name", customer.firstName || "—"],
+    ["Middle Name", customer.middleName || "—"],
+    ["Last Name", customer.lastName || "—"],
+    ["Contact Number", customer.contactNo || "—"],
+    ["Email", customer.email || "—"],
+    ["Address", customer.address || "—"],
+    ["Barangay", customer.barangay || "—"],
+    ["Purok", customer.purok || "—"],
+    ["Status", customer.status],
+  ];
+  return (
+    <TransactionShell active="customers">
+      <Link className={styles.backLink} href="/transactions/customers">
+        ← Customers
+      </Link>
+      {notice && <div className={styles.successNotice}>{notice}</div>}
+      <header className={styles.detailHeader}>
+        <div>
+          <div className={styles.applicationNumber}>
+            <h1>{customer.customerName}</h1>
+            <CustomerStatusBadge status={customer.status} />
+          </div>
+          <p className={styles.detailCustomer}>{customer.customerNo}</p>
+        </div>
+        <Link
+          className={styles.secondaryButton}
+          href={`/transactions/customers/${encodeURIComponent(customer.customerNo)}/edit`}
+        >
+          Edit Customer
+        </Link>
+      </header>
+      <div
+        className={styles.panel}
+        style={{ marginBottom: 18, padding: "0 20px" }}
+      >
+        <div style={{ display: "flex", gap: 24, overflowX: "auto" }}>
+          {(
+            [
+              ["overview", "Overview"],
+              [
+                "applications",
+                `Applications (${customer.applications.length})`,
+              ],
+              [
+                "accounts",
+                `Service Accounts (${customer.serviceAccounts.length})`,
+              ],
+            ] as [Tab, string][]
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              style={{
+                padding: "15px 2px 12px",
+                border: 0,
+                borderBottom:
+                  tab === key ? "3px solid #0874e8" : "3px solid transparent",
+                background: "transparent",
+                color: tab === key ? "#075fc5" : "#64748b",
+                fontWeight: 750,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      {tab === "overview" && (
+        <div className={styles.detailGrid}>
+          <section className={styles.detailCard}>
+            <div className={styles.cardHeading}>
+              <h2>Customer Information</h2>
+            </div>
+            <div className={styles.detailItems}>
+              {overview.map(([label, value]) => (
+                <div className={styles.detailItem} key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+          <aside>
+            <section className={styles.detailCard}>
+              <div className={styles.cardHeading}>
+                <h2>Customer Relationships</h2>
+              </div>
+              <div
+                className={styles.summaryGrid}
+                style={{ gridTemplateColumns: "1fr 1fr", margin: 0 }}
+              >
+                <div className={styles.summaryCard}>
+                  <div className={styles.summaryLabel}>Applications</div>
+                  <div className={styles.summaryValue}>
+                    {customer.applications.length}
+                  </div>
+                </div>
+                <div className={styles.summaryCard}>
+                  <div className={styles.summaryLabel}>Service Accounts</div>
+                  <div className={styles.summaryValue}>
+                    {customer.serviceAccounts.length}
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section className={styles.detailCard}>
+              <div className={styles.cardHeading}>
+                <h2>Quick Actions</h2>
+              </div>
+              <div className={styles.actionStack}>
+                <Link
+                  className={styles.button}
+                  href={`/transactions/service-applications/new?customer=${encodeURIComponent(customer.customerNo)}`}
+                >
+                  Create Service Application
+                </Link>
+                <Link
+                  className={styles.secondaryButton}
+                  href={`/transactions/customers/${encodeURIComponent(customer.customerNo)}/edit`}
+                >
+                  Edit Customer
+                </Link>
+              </div>
+            </section>
+          </aside>
+        </div>
+      )}
+      {tab === "applications" && (
+        <section className={styles.panel}>
+          {customer.applications.length === 0 ? (
+            <div className={styles.empty}>
+              <h2>No service applications found for this customer.</h2>
+              <p>
+                Create an application using this customer&apos;s existing master
+                record.
+              </p>
+              <Link
+                className={styles.button}
+                href={`/transactions/service-applications/new?customer=${encodeURIComponent(customer.customerNo)}`}
+              >
+                Create Service Application
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.tableWrap}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Application No.</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customer.applications.map((application) => (
+                    <tr key={application.applicationNo}>
+                      <td className={styles.strong}>
+                        {application.applicationNo}
+                      </td>
+                      <td>{application.applicationType}</td>
+                      <td>{formatDate(application.applicationDate)}</td>
+                      <td>
+                        <ApplicationStatusBadge
+                          code={application.statusCode}
+                          name={application.status}
+                        />
+                      </td>
+                      <td>
+                        <Link
+                          className={styles.viewLink}
+                          href={`/transactions/service-applications/${encodeURIComponent(application.applicationNo)}`}
+                        >
+                          View Application
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+      {tab === "accounts" && (
+        <section className={styles.panel}>
+          {customer.serviceAccounts.length === 0 ? (
+            <div className={styles.empty}>
+              <h2>No service accounts found for this customer.</h2>
+              <p>
+                Service accounts are created after an application is approved.
+              </p>
+            </div>
+          ) : (
+            <div className={styles.tableWrap}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Control No.</th>
+                    <th>Classification</th>
+                    <th>Connection Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customer.serviceAccounts.map((account) => (
+                    <tr key={account.controlNo}>
+                      <td className={styles.strong}>{account.controlNo}</td>
+                      <td>{account.classification}</td>
+                      <td>{account.connectionType}</td>
+                      <td>
+                        <AccountStatusBadge
+                          code={account.statusCode}
+                          name={account.status}
+                        />
+                      </td>
+                      <td>
+                        <Link
+                          className={styles.viewLink}
+                          href={`/transactions/service-accounts/${encodeURIComponent(account.controlNo)}`}
+                        >
+                          View Service Account
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+    </TransactionShell>
+  );
+}

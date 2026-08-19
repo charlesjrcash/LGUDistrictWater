@@ -39,7 +39,10 @@ function parseApplicationType(body: Record<string, unknown>) {
     isActive: typeof body.is_active === "boolean" ? body.is_active : true,
   };
 
-  if (!applicationType.applicationTypeCode || !applicationType.applicationTypeName) {
+  if (
+    !applicationType.applicationTypeCode ||
+    !applicationType.applicationTypeName
+  ) {
     return { error: "Please complete all required fields." };
   }
 
@@ -47,10 +50,12 @@ function parseApplicationType(body: Record<string, unknown>) {
 }
 
 function isDuplicateApplicationTypeCodeError(error: unknown) {
-  return typeof error === "object" &&
+  return (
+    typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    error.code === "23505";
+    error.code === "23505"
+  );
 }
 
 export async function GET() {
@@ -72,7 +77,7 @@ export async function GET() {
 
     return Response.json(
       { success: false, message: "Unable to load application types." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -85,7 +90,7 @@ export async function POST(request: Request) {
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -101,7 +106,7 @@ export async function POST(request: Request) {
           WHERE application_type_code = $1
           LIMIT 1
         `,
-        [parsed.applicationType.applicationTypeCode]
+        [parsed.applicationType.applicationTypeCode],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -112,7 +117,7 @@ export async function POST(request: Request) {
             success: false,
             message: "That application type code is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -137,7 +142,7 @@ export async function POST(request: Request) {
           parsed.applicationType.applicationTypeName,
           parsed.applicationType.description,
           parsed.applicationType.isActive,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -148,7 +153,7 @@ export async function POST(request: Request) {
           message: "Application type saved successfully.",
           data: result.rows[0],
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       await client.query("ROLLBACK");
@@ -165,13 +170,13 @@ export async function POST(request: Request) {
           success: false,
           message: "That application type code is already registered.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return Response.json(
       { success: false, message: "The application type could not be saved." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -185,14 +190,14 @@ export async function PUT(request: Request) {
     if (!/^\d+$/.test(applicationTypeId)) {
       return Response.json(
         { success: false, message: "Application type ID is required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if ("error" in parsed) {
       return Response.json(
         { success: false, message: parsed.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -208,7 +213,7 @@ export async function PUT(request: Request) {
           WHERE application_type_id = $1
           LIMIT 1
         `,
-        [applicationTypeId]
+        [applicationTypeId],
       );
 
       if ((existingResult.rowCount ?? 0) === 0) {
@@ -216,7 +221,7 @@ export async function PUT(request: Request) {
 
         return Response.json(
           { success: false, message: "Application type not found." },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -228,7 +233,7 @@ export async function PUT(request: Request) {
             AND application_type_id <> $2
           LIMIT 1
         `,
-        [parsed.applicationType.applicationTypeCode, applicationTypeId]
+        [parsed.applicationType.applicationTypeCode, applicationTypeId],
       );
 
       if ((duplicateResult.rowCount ?? 0) > 0) {
@@ -239,7 +244,7 @@ export async function PUT(request: Request) {
             success: false,
             message: "That application type code is already registered.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -266,7 +271,7 @@ export async function PUT(request: Request) {
           parsed.applicationType.description,
           parsed.applicationType.isActive,
           applicationTypeId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -291,13 +296,13 @@ export async function PUT(request: Request) {
           success: false,
           message: "That application type code is already registered.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return Response.json(
       { success: false, message: "The application type could not be updated." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

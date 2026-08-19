@@ -4,7 +4,10 @@ import { requireAnyPermission } from "@/lib/permissions";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const auth = await requireAnyPermission(["SERVICE_APPLICATION_CREATE", "SERVICE_APPLICATION_EDIT"]);
+  const auth = await requireAnyPermission([
+    "SERVICE_APPLICATION_CREATE",
+    "SERVICE_APPLICATION_EDIT",
+  ]);
   if (auth.response) return auth.response;
   try {
     const [types, statuses, connectionTypes, meterSizes] = await Promise.all([
@@ -25,9 +28,20 @@ export async function GET() {
            FROM mt_meter_size WHERE is_active = TRUE ORDER BY meter_size_id`,
       ),
     ]);
-    return Response.json({ success: true, data: { types: types.rows, statuses: statuses.rows, connectionTypes: connectionTypes.rows, meterSizes: meterSizes.rows } });
+    return Response.json({
+      success: true,
+      data: {
+        types: types.rows,
+        statuses: statuses.rows,
+        connectionTypes: connectionTypes.rows,
+        meterSizes: meterSizes.rows,
+      },
+    });
   } catch (error) {
     console.error("Unable to load service application options:", error);
-    return Response.json({ success: false, message: "Unable to load application options." }, { status: 500 });
+    return Response.json(
+      { success: false, message: "Unable to load application options." },
+      { status: 500 },
+    );
   }
 }

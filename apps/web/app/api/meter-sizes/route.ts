@@ -3,14 +3,140 @@ import { Pool } from "pg";
 export const runtime = "nodejs";
 
 const globalForDb = globalThis as unknown as { meterSizesPool?: Pool };
-const pool = globalForDb.meterSizesPool ?? new Pool({ connectionString: process.env.DATABASE_URL });
+const pool =
+  globalForDb.meterSizesPool ??
+  new Pool({ connectionString: process.env.DATABASE_URL });
 if (process.env.NODE_ENV !== "production") globalForDb.meterSizesPool = pool;
 
-function text(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
-function fail(message: string, status: number) { return Response.json({ success: false, message }, { status }); }
-function duplicateError(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "23505"; }
-function parse(body: Record<string, unknown>) { const meterSize = text(body.meter_size); return meterSize ? { meterSize, description: text(body.description) || null, isActive: typeof body.is_active === "boolean" ? body.is_active : true } : { error: "Please complete all required fields." }; }
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+function fail(message: string, status: number) {
+  return Response.json({ success: false, message }, { status });
+}
+function duplicateError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
+}
+function parse(body: Record<string, unknown>) {
+  const meterSize = text(body.meter_size);
+  return meterSize
+    ? {
+        meterSize,
+        description: text(body.description) || null,
+        isActive: typeof body.is_active === "boolean" ? body.is_active : true,
+      }
+    : { error: "Please complete all required fields." };
+}
 
-export async function GET() { try { const result = await pool.query(`SELECT meter_size_id, meter_size, description, is_active FROM mt_meter_size ORDER BY meter_size;`); return Response.json({ success: true, data: result.rows }); } catch (error) { console.error("Failed to load meter sizes:", error); return fail("Unable to load meter sizes.", 500); } }
-export async function POST(request: Request) { try { const parsed = parse(await request.json()); if ("error" in parsed) return fail(parsed.error, 400); const client = await pool.connect(); try { await client.query("BEGIN"); const duplicate = await client.query(`SELECT meter_size_id FROM mt_meter_size WHERE meter_size = $1 LIMIT 1`, [parsed.meterSize]); if ((duplicate.rowCount ?? 0) > 0) { await client.query("ROLLBACK"); return fail("That meter size is already registered.", 409); } const result = await client.query(`INSERT INTO mt_meter_size (meter_size, description, is_active) VALUES ($1, $2, $3) RETURNING meter_size_id, meter_size, description, is_active`, [parsed.meterSize, parsed.description, parsed.isActive]); await client.query("COMMIT"); return Response.json({ success: true, message: "Meter size saved successfully.", data: result.rows[0] }, { status: 201 }); } catch (error) { await client.query("ROLLBACK"); throw error; } finally { client.release(); } } catch (error) { console.error("Failed to save meter size:", error); return fail(duplicateError(error) ? "That meter size is already registered." : "The meter size could not be saved.", duplicateError(error) ? 409 : 500); } }
-export async function PUT(request: Request) { try { const body = await request.json(); const id = text(body.meter_size_id); const parsed = parse(body); if (!/^\d+$/.test(id)) return fail("Meter size ID is required.", 400); if ("error" in parsed) return fail(parsed.error, 400); const client = await pool.connect(); try { await client.query("BEGIN"); const existing = await client.query(`SELECT meter_size_id FROM mt_meter_size WHERE meter_size_id = $1 LIMIT 1`, [id]); if ((existing.rowCount ?? 0) === 0) { await client.query("ROLLBACK"); return fail("Meter size not found.", 404); } const duplicate = await client.query(`SELECT meter_size_id FROM mt_meter_size WHERE meter_size = $1 AND meter_size_id <> $2 LIMIT 1`, [parsed.meterSize, id]); if ((duplicate.rowCount ?? 0) > 0) { await client.query("ROLLBACK"); return fail("That meter size is already registered.", 409); } const result = await client.query(`UPDATE mt_meter_size SET meter_size = $1, description = $2, is_active = $3, updated_at = CURRENT_TIMESTAMP WHERE meter_size_id = $4 RETURNING meter_size_id, meter_size, description, is_active`, [parsed.meterSize, parsed.description, parsed.isActive, id]); await client.query("COMMIT"); return Response.json({ success: true, message: "Meter size updated successfully.", data: result.rows[0] }); } catch (error) { await client.query("ROLLBACK"); throw error; } finally { client.release(); } } catch (error) { console.error("Failed to update meter size:", error); return fail(duplicateError(error) ? "That meter size is already registered." : "The meter size could not be updated.", duplicateError(error) ? 409 : 500); } }
+export async function GET() {
+  try {
+    const result = await pool.query(
+      `SELECT meter_size_id, meter_size, description, is_active FROM mt_meter_size ORDER BY meter_size;`,
+    );
+    return Response.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Failed to load meter sizes:", error);
+    return fail("Unable to load meter sizes.", 500);
+  }
+}
+export async function POST(request: Request) {
+  try {
+    const parsed = parse(await request.json());
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const duplicate = await client.query(
+        `SELECT meter_size_id FROM mt_meter_size WHERE meter_size = $1 LIMIT 1`,
+        [parsed.meterSize],
+      );
+      if ((duplicate.rowCount ?? 0) > 0) {
+        await client.query("ROLLBACK");
+        return fail("That meter size is already registered.", 409);
+      }
+      const result = await client.query(
+        `INSERT INTO mt_meter_size (meter_size, description, is_active) VALUES ($1, $2, $3) RETURNING meter_size_id, meter_size, description, is_active`,
+        [parsed.meterSize, parsed.description, parsed.isActive],
+      );
+      await client.query("COMMIT");
+      return Response.json(
+        {
+          success: true,
+          message: "Meter size saved successfully.",
+          data: result.rows[0],
+        },
+        { status: 201 },
+      );
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Failed to save meter size:", error);
+    return fail(
+      duplicateError(error)
+        ? "That meter size is already registered."
+        : "The meter size could not be saved.",
+      duplicateError(error) ? 409 : 500,
+    );
+  }
+}
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const id = text(body.meter_size_id);
+    const parsed = parse(body);
+    if (!/^\d+$/.test(id)) return fail("Meter size ID is required.", 400);
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const existing = await client.query(
+        `SELECT meter_size_id FROM mt_meter_size WHERE meter_size_id = $1 LIMIT 1`,
+        [id],
+      );
+      if ((existing.rowCount ?? 0) === 0) {
+        await client.query("ROLLBACK");
+        return fail("Meter size not found.", 404);
+      }
+      const duplicate = await client.query(
+        `SELECT meter_size_id FROM mt_meter_size WHERE meter_size = $1 AND meter_size_id <> $2 LIMIT 1`,
+        [parsed.meterSize, id],
+      );
+      if ((duplicate.rowCount ?? 0) > 0) {
+        await client.query("ROLLBACK");
+        return fail("That meter size is already registered.", 409);
+      }
+      const result = await client.query(
+        `UPDATE mt_meter_size SET meter_size = $1, description = $2, is_active = $3, updated_at = CURRENT_TIMESTAMP WHERE meter_size_id = $4 RETURNING meter_size_id, meter_size, description, is_active`,
+        [parsed.meterSize, parsed.description, parsed.isActive, id],
+      );
+      await client.query("COMMIT");
+      return Response.json({
+        success: true,
+        message: "Meter size updated successfully.",
+        data: result.rows[0],
+      });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Failed to update meter size:", error);
+    return fail(
+      duplicateError(error)
+        ? "That meter size is already registered."
+        : "The meter size could not be updated.",
+      duplicateError(error) ? 409 : 500,
+    );
+  }
+}

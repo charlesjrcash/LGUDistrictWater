@@ -1,3 +1,119 @@
-import{db}from"@/lib/db";import{requireSessionUser}from"@/lib/server-session";export const runtime="nodejs";function fail(message:string,status:number){return Response.json({success:false,message},{status})}function id(v:string|null|undefined){return v&&/^\d+$/.test(v)?v:null}
-export async function GET(request:Request){const a=await requireSessionUser();if(a.response)return a.response;const roleId=id(new URL(request.url).searchParams.get("role_id"));if(!roleId)return fail("A valid role is required.",400);try{const role=await db.query("SELECT role_id,role_name FROM public.roles WHERE role_id=$1 AND is_active=TRUE",[roleId]);if(!role.rows[0])return fail("Role not found.",404);const r=await db.query("SELECT m.module_id,m.module_code,m.module_name,p.permission_id,p.permission_code,p.permission_name,p.description,EXISTS(SELECT 1 FROM public.mt_role_permission rp WHERE rp.role_id=$1 AND rp.permission_id=p.permission_id) assigned FROM public.mt_system_module m JOIN public.mt_permission p ON p.module_id=m.module_id WHERE m.is_active=TRUE AND p.is_active=TRUE ORDER BY m.sort_order,p.permission_name",[roleId]);const modules=new Map<string,{module_id:string;module_code:string;module_name:string;permissions:unknown[]}>();for(const row of r.rows){const key=String(row.module_id);if(!modules.has(key))modules.set(key,{module_id:row.module_id,module_code:row.module_code,module_name:row.module_name,permissions:[]});modules.get(key)?.permissions.push({permission_id:row.permission_id,permission_code:row.permission_code,permission_name:row.permission_name,description:row.description,assigned:row.assigned})}return Response.json({success:true,role:role.rows[0],modules:[...modules.values()]})}catch(e){console.error("Unable to load role permissions:",e);return fail("Unable to load role permissions.",500)}}
-export async function PUT(request:Request){const a=await requireSessionUser();if(a.response)return a.response;let b:{role_id?:unknown;permission_ids?:unknown};try{b=await request.json()}catch{return fail("Invalid role permission request.",400)}const roleId=id(String(b.role_id??""));if(!roleId||!Array.isArray(b.permission_ids)||!b.permission_ids.every(v=>/^\d+$/.test(String(v))))return fail("Invalid role permission request.",400);const ids=[...new Set(b.permission_ids.map(String))];const c=await db.connect();try{await c.query("BEGIN");const role=await c.query("SELECT role_id FROM public.roles WHERE role_id=$1 AND is_active=TRUE",[roleId]);if(!role.rows[0]){await c.query("ROLLBACK");return fail("Role not found or inactive.",400)}if(ids.length){const p=await c.query("SELECT permission_id FROM public.mt_permission WHERE permission_id=ANY($1::bigint[]) AND is_active=TRUE",[ids]);if(p.rows.length!==ids.length){await c.query("ROLLBACK");return fail("One or more permissions are invalid or inactive.",400)}}await c.query("DELETE FROM public.mt_role_permission WHERE role_id=$1",[roleId]);if(ids.length)await c.query("INSERT INTO public.mt_role_permission(role_id,permission_id) SELECT $1,unnest($2::bigint[])",[roleId,ids]);await c.query("COMMIT");return Response.json({success:true,message:"Role permissions updated successfully."})}catch(e){await c.query("ROLLBACK");console.error("Unable to save role permissions:",e);return fail("Role permissions could not be saved. Please try again.",500)}finally{c.release()}}
+import { db } from "@/lib/db";
+import { requireSessionUser } from "@/lib/server-session";
+export const runtime = "nodejs";
+function fail(message: string, status: number) {
+  return Response.json({ success: false, message }, { status });
+}
+function id(v: string | null | undefined) {
+  return v && /^\d+$/.test(v) ? v : null;
+}
+export async function GET(request: Request) {
+  const a = await requireSessionUser();
+  if (a.response) return a.response;
+  const roleId = id(new URL(request.url).searchParams.get("role_id"));
+  if (!roleId) return fail("A valid role is required.", 400);
+  try {
+    const role = await db.query(
+      "SELECT role_id,role_name FROM public.roles WHERE role_id=$1 AND is_active=TRUE",
+      [roleId],
+    );
+    if (!role.rows[0]) return fail("Role not found.", 404);
+    const r = await db.query(
+      "SELECT m.module_id,m.module_code,m.module_name,p.permission_id,p.permission_code,p.permission_name,p.description,EXISTS(SELECT 1 FROM public.mt_role_permission rp WHERE rp.role_id=$1 AND rp.permission_id=p.permission_id) assigned FROM public.mt_system_module m JOIN public.mt_permission p ON p.module_id=m.module_id WHERE m.is_active=TRUE AND p.is_active=TRUE ORDER BY m.sort_order,p.permission_name",
+      [roleId],
+    );
+    const modules = new Map<
+      string,
+      {
+        module_id: string;
+        module_code: string;
+        module_name: string;
+        permissions: unknown[];
+      }
+    >();
+    for (const row of r.rows) {
+      const key = String(row.module_id);
+      if (!modules.has(key))
+        modules.set(key, {
+          module_id: row.module_id,
+          module_code: row.module_code,
+          module_name: row.module_name,
+          permissions: [],
+        });
+      modules.get(key)?.permissions.push({
+        permission_id: row.permission_id,
+        permission_code: row.permission_code,
+        permission_name: row.permission_name,
+        description: row.description,
+        assigned: row.assigned,
+      });
+    }
+    return Response.json({
+      success: true,
+      role: role.rows[0],
+      modules: [...modules.values()],
+    });
+  } catch (e) {
+    console.error("Unable to load role permissions:", e);
+    return fail("Unable to load role permissions.", 500);
+  }
+}
+export async function PUT(request: Request) {
+  const a = await requireSessionUser();
+  if (a.response) return a.response;
+  let b: { role_id?: unknown; permission_ids?: unknown };
+  try {
+    b = await request.json();
+  } catch {
+    return fail("Invalid role permission request.", 400);
+  }
+  const roleId = id(String(b.role_id ?? ""));
+  if (
+    !roleId ||
+    !Array.isArray(b.permission_ids) ||
+    !b.permission_ids.every((v) => /^\d+$/.test(String(v)))
+  )
+    return fail("Invalid role permission request.", 400);
+  const ids = [...new Set(b.permission_ids.map(String))];
+  const c = await db.connect();
+  try {
+    await c.query("BEGIN");
+    const role = await c.query(
+      "SELECT role_id FROM public.roles WHERE role_id=$1 AND is_active=TRUE",
+      [roleId],
+    );
+    if (!role.rows[0]) {
+      await c.query("ROLLBACK");
+      return fail("Role not found or inactive.", 400);
+    }
+    if (ids.length) {
+      const p = await c.query(
+        "SELECT permission_id FROM public.mt_permission WHERE permission_id=ANY($1::bigint[]) AND is_active=TRUE",
+        [ids],
+      );
+      if (p.rows.length !== ids.length) {
+        await c.query("ROLLBACK");
+        return fail("One or more permissions are invalid or inactive.", 400);
+      }
+    }
+    await c.query("DELETE FROM public.mt_role_permission WHERE role_id=$1", [
+      roleId,
+    ]);
+    if (ids.length)
+      await c.query(
+        "INSERT INTO public.mt_role_permission(role_id,permission_id) SELECT $1,unnest($2::bigint[])",
+        [roleId, ids],
+      );
+    await c.query("COMMIT");
+    return Response.json({
+      success: true,
+      message: "Role permissions updated successfully.",
+    });
+  } catch (e) {
+    await c.query("ROLLBACK");
+    console.error("Unable to save role permissions:", e);
+    return fail("Role permissions could not be saved. Please try again.", 500);
+  } finally {
+    c.release();
+  }
+}

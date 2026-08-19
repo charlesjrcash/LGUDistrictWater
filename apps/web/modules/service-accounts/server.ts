@@ -5,13 +5,30 @@ export function classifyAccountStatus(code: string, name = "") {
   if (value.includes("DISCONNECT")) return "rejected";
   if (value.includes("INACTIVE") || value.includes("CLOSED")) return "neutral";
   if (value.includes("PENDING") || value.includes("INSTALL")) return "pending";
-  if (value.includes("ACTIVE") || value.includes("CONNECTED")) return "approved";
+  if (value.includes("ACTIVE") || value.includes("CONNECTED"))
+    return "approved";
   return "neutral";
 }
 
+<<<<<<< HEAD
 export async function findActiveAccountStatus(client: PoolClient) {
   const preferred = ["ACTIVE"];
   const result = await client.query<{ connection_status_id: string; status_code: string; status_name: string }>(
+=======
+export async function findInitialAccountStatus(client: PoolClient) {
+  const preferred = [
+    "PENDING_INSTALLATION",
+    "PENDING INSTALLATION",
+    "FOR_INSTALLATION",
+    "FOR INSTALLATION",
+    "PENDING",
+  ];
+  const result = await client.query<{
+    connection_status_id: string;
+    status_code: string;
+    status_name: string;
+  }>(
+>>>>>>> 5e852f8f672f3ffc47731a0574417c82b0b41e8a
     `SELECT connection_status_id, status_code, status_name
        FROM mt_connection_status
       WHERE is_active = TRUE
@@ -23,6 +40,7 @@ export async function findActiveAccountStatus(client: PoolClient) {
   return result.rows[0] ?? null;
 }
 
+<<<<<<< HEAD
 export type AccountCreationInput = {
   applicationNo: string;
   classificationCode: string;
@@ -73,6 +91,12 @@ export async function createAccountFromApplication(client: PoolClient, input: Ac
 }
 
 export async function nextControlNumber(client: PoolClient, userId: string | null) {
+=======
+export async function nextControlNumber(
+  client: PoolClient,
+  userId: string | null,
+) {
+>>>>>>> 5e852f8f672f3ffc47731a0574417c82b0b41e8a
   const seriesResult = await client.query<{
     series_id: string;
     prefix: string | null;
@@ -97,7 +121,9 @@ export async function nextControlNumber(client: PoolClient, userId: string | nul
     return `${series.prefix || "SA-"}${next.toString().padStart(series.padding_length || 5, "0")}`;
   }
 
-  await client.query("SELECT pg_advisory_xact_lock(hashtext('service_accounts.control_no'))");
+  await client.query(
+    "SELECT pg_advisory_xact_lock(hashtext('service_accounts.control_no'))",
+  );
   const maxResult = await client.query<{ next_number: string }>(
     `SELECT COALESCE(MAX((regexp_match(control_no, '^SA-([0-9]+)$'))[1]::bigint), 0) + 1 AS next_number
        FROM service_accounts`,

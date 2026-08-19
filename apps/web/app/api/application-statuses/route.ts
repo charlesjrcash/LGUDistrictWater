@@ -41,10 +41,12 @@ function parseApplicationStatus(body: Record<string, unknown>) {
 }
 
 function isDuplicateStatusCodeError(error: unknown) {
-  return typeof error === "object" &&
+  return (
+    typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    error.code === "23505";
+    error.code === "23505"
+  );
 }
 
 function fail(message: string, status: number) {
@@ -75,7 +77,7 @@ export async function POST(request: Request) {
   try {
     const parsed = parseApplicationStatus(await request.json());
 
-    if ("error" in parsed) return fail(parsed.error, 400);
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
 
     const client = await pool.connect();
 
@@ -89,7 +91,7 @@ export async function POST(request: Request) {
           WHERE status_code = $1
           LIMIT 1
         `,
-        [parsed.applicationStatus.statusCode]
+        [parsed.applicationStatus.statusCode],
       );
 
       if ((duplicate.rowCount ?? 0) > 0) {
@@ -115,7 +117,7 @@ export async function POST(request: Request) {
           parsed.applicationStatus.statusName,
           parsed.applicationStatus.description,
           parsed.applicationStatus.isActive,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -125,7 +127,7 @@ export async function POST(request: Request) {
           message: "Application status saved successfully.",
           data: result.rows[0],
         },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       await client.query("ROLLBACK");
@@ -139,7 +141,7 @@ export async function POST(request: Request) {
       isDuplicateStatusCodeError(error)
         ? "That application status code is already registered."
         : "The application status could not be saved.",
-      isDuplicateStatusCodeError(error) ? 409 : 500
+      isDuplicateStatusCodeError(error) ? 409 : 500,
     );
   }
 }
@@ -154,7 +156,7 @@ export async function PUT(request: Request) {
       return fail("Application status ID is required.", 400);
     }
 
-    if ("error" in parsed) return fail(parsed.error, 400);
+    if ("error" in parsed) return fail(parsed.error ?? "Invalid request.", 400);
 
     const client = await pool.connect();
 
@@ -168,7 +170,7 @@ export async function PUT(request: Request) {
           WHERE application_status_id = $1
           LIMIT 1
         `,
-        [applicationStatusId]
+        [applicationStatusId],
       );
 
       if ((existing.rowCount ?? 0) === 0) {
@@ -184,7 +186,7 @@ export async function PUT(request: Request) {
             AND application_status_id <> $2
           LIMIT 1
         `,
-        [parsed.applicationStatus.statusCode, applicationStatusId]
+        [parsed.applicationStatus.statusCode, applicationStatusId],
       );
 
       if ((duplicate.rowCount ?? 0) > 0) {
@@ -215,7 +217,7 @@ export async function PUT(request: Request) {
           parsed.applicationStatus.description,
           parsed.applicationStatus.isActive,
           applicationStatusId,
-        ]
+        ],
       );
 
       await client.query("COMMIT");
@@ -236,7 +238,7 @@ export async function PUT(request: Request) {
       isDuplicateStatusCodeError(error)
         ? "That application status code is already registered."
         : "The application status could not be updated.",
-      isDuplicateStatusCodeError(error) ? 409 : 500
+      isDuplicateStatusCodeError(error) ? 409 : 500,
     );
   }
 }

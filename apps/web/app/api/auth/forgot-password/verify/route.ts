@@ -1,20 +1,33 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { Pool } from "pg";
-import { createSessionToken, hashSessionToken, PASSWORD_RESET_COOKIE_NAME, PASSWORD_RESET_DURATION_SECONDS } from "@/lib/auth";
+import {
+  createSessionToken,
+  hashSessionToken,
+  isSecureRequest,
+  PASSWORD_RESET_COOKIE_NAME,
+  PASSWORD_RESET_DURATION_SECONDS,
+} from "@/lib/auth";
 
 export const runtime = "nodejs";
 
 const globalForDb = globalThis as unknown as { userPool?: Pool };
-const pool = globalForDb.userPool ?? new Pool({ connectionString: process.env.DATABASE_URL });
+const pool =
+  globalForDb.userPool ??
+  new Pool({ connectionString: process.env.DATABASE_URL });
 if (process.env.NODE_ENV !== "production") globalForDb.userPool = pool;
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    const email =
+      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const code = typeof body.code === "string" ? body.code.trim() : "";
-    if (!/^\d{6}$/.test(code)) return Response.json({ message: "Enter the six-digit verification code." }, { status: 400 });
+    if (!/^\d{6}$/.test(code))
+      return Response.json(
+        { message: "Enter the six-digit verification code." },
+        { status: 400 },
+      );
 
     const codeHash = createHash("sha256").update(code).digest("hex");
     const result = await pool.query<{ reset_id: string; code_hash: string }>(
@@ -33,15 +46,39 @@ export async function POST(request: Request) {
       [email],
     );
     const reset = result.rows[0];
-    if (!reset || !timingSafeEqual(Buffer.from(reset.code_hash, "hex"), Buffer.from(codeHash, "hex"))) return Response.json({ message: "The verification code is invalid or expired." }, { status: 400 });
+    if (
+      !reset ||
+      !timingSafeEqual(
+        Buffer.from(reset.code_hash, "hex"),
+        Buffer.from(codeHash, "hex"),
+      )
+    )
+      return Response.json(
+        { message: "The verification code is invalid or expired." },
+        { status: 400 },
+      );
 
     const token = createSessionToken();
-    await pool.query("UPDATE password_reset_codes SET verified_at = NOW(), token_hash = $1 WHERE reset_id = $2", [hashSessionToken(token), reset.reset_id]);
+    await pool.query(
+      "UPDATE password_reset_codes SET verified_at = NOW(), token_hash = $1 WHERE reset_id = $2",
+      [hashSessionToken(token), reset.reset_id],
+    );
     const cookieStore = await cookies();
-    cookieStore.set(PASSWORD_RESET_COOKIE_NAME, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: PASSWORD_RESET_DURATION_SECONDS });
-    return Response.json({ message: "Code verified. You can now create a new password." });
+    cookieStore.set(PASSWORD_RESET_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: isSecureRequest(request),
+      sameSite: "lax",
+      path: "/",
+      maxAge: PASSWORD_RESET_DURATION_SECONDS,
+    });
+    return Response.json({
+      message: "Code verified. You can now create a new password.",
+    });
   } catch (error) {
     console.error("Password reset verification failed:", error);
-    return Response.json({ message: "Unable to verify the code. Please try again." }, { status: 500 });
+    return Response.json(
+      { message: "Unable to verify the code. Please try again." },
+      { status: 500 },
+    );
   }
 }

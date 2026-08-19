@@ -21,7 +21,6 @@ export default async function RegisterPage() {
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-4xl">
-
         {/* Page heading */}
         <div className="mb-7">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">
@@ -50,7 +49,6 @@ export default async function RegisterPage() {
           initialRoles={initialRoles}
           initialEmployees={initialEmployees}
         />
-
       </div>
     </main>
   );
