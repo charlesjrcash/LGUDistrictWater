@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { hasPermission } from "@/lib/permissions";
 import { CreateAccountForm } from "@/modules/service-accounts/ui/create-account-form";
 import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
 import styles from "@/modules/transactions/ui/transactions.module.css";
@@ -8,6 +10,7 @@ export default async function Page({
 }: {
   searchParams: Promise<{ application?: string }>;
 }) {
+  if (!(await hasPermission("SERVICE_ACCOUNT_CREATE"))) redirect("/");
   const applicationNo = (await searchParams).application?.trim();
   if (!applicationNo)
     return (

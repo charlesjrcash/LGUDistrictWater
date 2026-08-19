@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { hasPermission } from "@/lib/permissions";
 import { AccountDetails } from "@/modules/service-accounts/ui/account-details";
 
 export default async function Page({
@@ -6,5 +8,11 @@ export default async function Page({
   params: Promise<{ controlNo: string }>;
 }) {
   const { controlNo } = await params;
-  return <AccountDetails controlNo={decodeURIComponent(controlNo)} />;
+  if (!(await hasPermission("SERVICE_ACCOUNT_VIEW"))) redirect("/");
+  return (
+    <AccountDetails
+      controlNo={decodeURIComponent(controlNo)}
+      canEdit={await hasPermission("SERVICE_ACCOUNT_EDIT")}
+    />
+  );
 }

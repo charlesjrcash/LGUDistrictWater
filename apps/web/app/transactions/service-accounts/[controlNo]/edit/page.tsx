@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { hasPermission } from "@/lib/permissions";
 import { EditAccountForm } from "@/modules/service-accounts/ui/edit-account-form";
 
 export default async function Page({
@@ -6,5 +8,6 @@ export default async function Page({
   params: Promise<{ controlNo: string }>;
 }) {
   const { controlNo } = await params;
+  if (!(await hasPermission("SERVICE_ACCOUNT_EDIT"))) redirect("/");
   return <EditAccountForm controlNo={decodeURIComponent(controlNo)} />;
 }
