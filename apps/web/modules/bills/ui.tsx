@@ -132,7 +132,7 @@ export function BillsPage({
           </p>
         </div>
         {canCreate && (
-          <Link className={styles.button} href="/transactions/new">
+          <Link className={styles.button} href="/transactions/bills/new">
             ＋ New Bill
           </Link>
         )}
@@ -227,7 +227,7 @@ export function BillsPage({
                       <td>
                         <Link
                           className={styles.viewLink}
-                          href={`/transactions/${encodeURIComponent(b.billNo)}`}
+                          href={`/transactions/bills/${encodeURIComponent(b.billNo)}`}
                         >
                           View
                         </Link>
@@ -236,7 +236,7 @@ export function BillsPage({
                             <span className={styles.muted}> · </span>
                             <Link
                               className={styles.viewLink}
-                              href={`/transactions/${encodeURIComponent(b.billNo)}/edit`}
+                              href={`/transactions/bills/${encodeURIComponent(b.billNo)}/edit`}
                             >
                               Edit
                             </Link>
@@ -295,7 +295,7 @@ export function BillDetail({
   if (!item)
     return (
       <TransactionShell>
-        <Link className={styles.backLink} href="/transactions">
+        <Link className={styles.backLink} href="/transactions/bills">
           ← Bills
         </Link>
         <Failure message={error} retry={load} />
@@ -324,7 +324,7 @@ export function BillDetail({
   );
   return (
     <TransactionShell>
-      <Link className={styles.backLink} href="/transactions">
+      <Link className={styles.backLink} href="/transactions/bills">
         ← Bills
       </Link>
       <header className={styles.detailHeader}>
@@ -343,7 +343,7 @@ export function BillDetail({
         {canEdit && (
           <Link
             className={styles.secondaryButton}
-            href={`/transactions/${encodeURIComponent(item.billNo)}/edit`}
+            href={`/transactions/bills/${encodeURIComponent(item.billNo)}/edit`}
           >
             Edit Bill
           </Link>
@@ -399,12 +399,30 @@ export function BillDetail({
               <h2>Rate Breakdown</h2>
             </div>
             {!item.details?.length ? (
-              <p className={styles.remarks}>No water-consumption charges were recorded.</p>
+              <p className={styles.remarks}>
+                No water-consumption charges were recorded.
+              </p>
             ) : (
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
-                  <thead><tr><th>Description</th><th>Quantity</th><th>Rate</th><th>Amount</th></tr></thead>
-                  <tbody>{item.details.map((detail) => <tr key={detail.billDetailId}><td>{detail.description || detail.chargeType}</td><td>{detail.quantity}</td><td>{money(detail.rate)}</td><td>{money(detail.amount)}</td></tr>)}</tbody>
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Quantity</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {item.details.map((detail) => (
+                      <tr key={detail.billDetailId}>
+                        <td>{detail.description || detail.chargeType}</td>
+                        <td>{detail.quantity}</td>
+                        <td>{money(detail.rate)}</td>
+                        <td>{money(detail.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               </div>
             )}
@@ -493,7 +511,7 @@ export function BillForm({ billNo }: { billNo?: string }) {
         throw new Error(b.message);
       }
       router.push(
-        `/transactions/${encodeURIComponent(b.data.billNo || billNo!)}`,
+        `/transactions/bills/${encodeURIComponent(b.data.billNo || billNo!)}`,
       );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to save bill.");
@@ -548,8 +566,8 @@ export function BillForm({ billNo }: { billNo?: string }) {
           className={styles.backLink}
           href={
             editing
-              ? `/transactions/${encodeURIComponent(billNo!)}`
-              : "/transactions"
+              ? `/transactions/bills/${encodeURIComponent(billNo!)}`
+              : "/transactions/bills"
           }
         >
           ← {editing ? "Bill" : "Bills"}
@@ -720,8 +738,8 @@ export function BillForm({ billNo }: { billNo?: string }) {
               className={styles.secondaryButton}
               href={
                 editing
-                  ? `/transactions/${encodeURIComponent(billNo!)}`
-                  : "/transactions"
+                  ? `/transactions/bills/${encodeURIComponent(billNo!)}`
+                  : "/transactions/bills"
               }
             >
               Cancel

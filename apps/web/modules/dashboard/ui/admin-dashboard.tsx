@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminBrandMark } from "./admin-brand-mark";
+import {
+  transactionHref,
+  transactionsByCategory,
+} from "@/modules/transactions/registry";
 import styles from "./admin-dashboard.module.css";
 
 type Section =
@@ -78,6 +82,24 @@ const money = new Intl.NumberFormat("en-PH", {
   currency: "PHP",
   maximumFractionDigits: 2,
 });
+const operationalTransactions = transactionsByCategory("operational");
+const billingTransactions = transactionsByCategory("billing");
+
+function TransactionLinks({
+  transactions,
+}: {
+  transactions: typeof operationalTransactions;
+}) {
+  return (
+    <div className={styles.quickLinks}>
+      {transactions.map((transaction) => (
+        <Link href={transactionHref(transaction)} key={transaction.slug}>
+          {transaction.label} →
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 function Icon({
   name,
@@ -641,15 +663,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                 { label: "Activities Today", value: m.activities_today },
               ]}
             />
-            <div className={styles.quickLinks}>
-              <Link href="/transactions/customers">Manage customers →</Link>
-              <Link href="/transactions/service-applications">
-                Review applications →
-              </Link>
-              <Link href="/transactions/service-accounts">
-                View service accounts →
-              </Link>
-            </div>
+            <TransactionLinks transactions={operationalTransactions} />
           </>
         )}
         {section === "billing" && (
@@ -670,7 +684,14 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               ]}
             />
             <div className={styles.quickLinks}>
-              <Link href="/transactions/bills">Bills →</Link>
+              {billingTransactions.map((transaction) => (
+                <Link
+                  href={transactionHref(transaction)}
+                  key={transaction.slug}
+                >
+                  {transaction.label} →
+                </Link>
+              ))}
               <Link href="/maintenance/billing-periods">Billing periods →</Link>
               <Link href="/maintenance/water-rates">Water rates →</Link>
               <Link href="/maintenance/fees">Fees →</Link>
@@ -703,20 +724,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                 },
               ]}
             />
-            <div className={styles.quickLinks}>
-              <Link href="/transactions/customers">Customers →</Link>
-              <Link href="/transactions/service-applications">
-                Service applications →
-              </Link>
-              <Link href="/transactions/service-accounts">
-                Service accounts →
-              </Link>
-              <Link href="/transactions/meters">Meters →</Link>
-              <Link href="/transactions/meter-installations">
-                Meter installations →
-              </Link>
-              <Link href="/transactions/meter-readings">Meter readings →</Link>
-            </div>
+            <TransactionLinks transactions={operationalTransactions} />
           </>
         )}
         {section === "health" && (

@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
-import { hasPermission } from "@/lib/permissions";
-import { BillDetail } from "@/modules/bills/ui";
-
-export default async function Page({ params }: PageProps<"/transactions/[billNo]">) {
+export default async function Page({
+  params,
+}: PageProps<"/transactions/[billNo]">) {
   const { billNo } = await params;
-  if (!(await hasPermission("BILL_VIEW"))) redirect("/");
-  return <BillDetail billNo={decodeURIComponent(billNo)} canEdit={await hasPermission("BILL_EDIT")} />;
+  redirect(
+    `/transactions/bills/${encodeURIComponent(decodeURIComponent(billNo))}`,
+  );
 }
