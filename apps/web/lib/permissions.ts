@@ -1,11 +1,17 @@
 import { db } from "@/lib/db";
 import { requireSessionUser, type SessionUser } from "@/lib/server-session";
 
-export type CurrentUserPermissions = {
-  user: SessionUser | null;
-  permissions: string[];
-  response: Response | null;
-};
+export type CurrentUserPermissions =
+  | {
+      user: SessionUser;
+      permissions: string[];
+      response: null;
+    }
+  | {
+      user: SessionUser | null;
+      permissions: string[];
+      response: Response;
+    };
 
 type PermissionRow = {
   permission_code: string;
@@ -82,6 +88,17 @@ export async function requirePermission(permissionCode: string): Promise<Current
   if (auth.response) return auth;
 
   return auth.permissions.includes(permissionCode.trim())
+    ? auth
+    : { user: auth.user, permissions: auth.permissions, response: forbiddenResponse() };
+}
+
+/** Requires at least one permission, for operations shared by multiple roles. */
+export async function requireAnyPermission(permissionCodes: readonly string[]): Promise<CurrentUserPermissions> {
+  const auth = await getCurrentUserPermissions();
+  if (auth.response) return auth;
+
+  const allowed = permissionCodes.some((permissionCode) => auth.permissions.includes(permissionCode.trim()));
+  return allowed
     ? auth
     : { user: auth.user, permissions: auth.permissions, response: forbiddenResponse() };
 }

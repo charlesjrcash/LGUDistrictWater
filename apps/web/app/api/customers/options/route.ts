@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
-import { requireSessionUser } from "@/lib/server-session";
+import { requireAnyPermission } from "@/lib/permissions";
 
 export const runtime = "nodejs";
 export async function GET() {
-  const auth = await requireSessionUser(); if (auth.response) return auth.response;
+  const auth = await requireAnyPermission(["CUSTOMER_CREATE", "CUSTOMER_EDIT"]); if (auth.response) return auth.response;
   try {
     const [barangays, puroks] = await Promise.all([
       db.query(`SELECT barangay_code AS code, barangay_name AS name FROM mt_barangay WHERE is_active=TRUE ORDER BY barangay_name`),
