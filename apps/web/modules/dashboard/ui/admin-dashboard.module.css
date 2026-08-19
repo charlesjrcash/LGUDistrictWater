@@ -116,3 +116,8 @@
 .subnav{position:fixed;inset:0 auto 0 0;width:224px;height:100vh;max-height:100vh;overflow:hidden}.content{grid-column:2}
 @media(max-width:1100px){.subnav{width:196px}}
 @media(max-width:760px){.subnav{display:none}.content{grid-column:auto}}
+
+/* Persistent admin shell around existing maintenance CRUD pages. */
+.adminFormShell{min-height:100vh;background:#f7f7fa}.formSidebar{z-index:30}.formSidebar .navGroup button svg{fill:none;stroke:currentColor;stroke-width:1.6}.adminFormContent{min-height:100vh;margin-left:224px;background:#f7f7fa}.adminFormContent>main{min-height:100vh}.adminFormShell .logoutButton{z-index:35}
+@media(max-width:1100px){.adminFormContent{margin-left:196px}}
+@media(max-width:760px){.adminFormContent{margin-left:0}.adminFormShell{padding-top:0}}
