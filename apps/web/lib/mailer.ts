@@ -7,6 +7,12 @@ type TemporaryCredentials = {
   expiresAt: Date;
 };
 
+type PasswordResetCode = {
+  to: string;
+  code: string;
+  expiresAt: Date;
+};
+
 /** Escapes dynamic values before inserting them into the HTML email template. */
 function escapeHtml(value: string) {
   return value.replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character] ?? character);
@@ -50,5 +56,20 @@ export async function sendTemporaryCredentialsEmail({ to, username, temporaryPas
     subject: "Your LGU District Water temporary account credentials",
     text: `Your LGU District Water account has been created.\n\nUsername: ${username}\nTemporary password: ${temporaryPassword}\n\nThis temporary password expires on ${expiresAtLabel} and must be changed when you first sign in.`,
     html: `<p>Your LGU District Water account has been created.</p><p><strong>Username:</strong> ${safeUsername}<br /><strong>Temporary password:</strong> ${safePassword}</p><p>This temporary password expires on <strong>${safeExpiry}</strong> and must be changed when you first sign in.</p>`,
+  });
+}
+
+/** Sends a short-lived verification code without exposing account details. */
+export async function sendPasswordResetCodeEmail({ to, code, expiresAt }: PasswordResetCode) {
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!from) throw new Error("Email delivery is not configured. Set SMTP_FROM or SMTP_USER.");
+
+  const expiresAtLabel = new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Manila" }).format(expiresAt);
+  await createTransporter().sendMail({
+    from,
+    to,
+    subject: "Your LGU District Water password reset code",
+    text: `Your password reset verification code is ${code}. It expires on ${expiresAtLabel}. If you did not request this code, you can ignore this email.`,
+    html: `<p>Use this verification code to reset your LGU District Water password:</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${escapeHtml(code)}</p><p>This code expires on <strong>${escapeHtml(expiresAtLabel)}</strong>.</p><p>If you did not request this code, you can ignore this email.</p>`,
   });
 }
