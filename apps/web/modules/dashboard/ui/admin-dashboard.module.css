@@ -303,6 +303,7 @@
   display: flex;
   gap: 9px;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 .quickLinks a {
   border: 1px solid #cbdced;
@@ -2138,14 +2139,16 @@
   order: 1;
 }
 .content:has(.reportsSection) > .metrics {
-  order: 2;
-}
-.content:has(.reportsSection) > .reportsSection {
   order: 3;
 }
-.content:has(.reportsSection) > .twoColumn,
-.content:has(.reportsSection) > .quickLinks {
+.content:has(.reportsSection) > .reportsSection {
   order: 4;
+}
+.content:has(.reportsSection) > .quickLinks {
+  order: 2;
+}
+.content:has(.reportsSection) > .twoColumn {
+  order: 5;
 }
 .reportsSection {
   margin: 0 0 14px;
