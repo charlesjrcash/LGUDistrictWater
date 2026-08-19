@@ -68,6 +68,10 @@ const initial = {
 };
 function useFetch<T>(url: string) {
   const [data, setData] = useState<T | null>(null),
+    [pagination, setPagination] = useState<{
+      page: number;
+      totalPages: number;
+    } | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
   const load = useCallback(async () => {
@@ -77,6 +81,7 @@ function useFetch<T>(url: string) {
         b = await r.json();
       if (!r.ok) throw new Error(b.message);
       setData(b.data);
+      setPagination(b.pagination || null);
       setError("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to load information.");
@@ -87,7 +92,7 @@ function useFetch<T>(url: string) {
   useEffect(() => {
     void load();
   }, [load]);
-  return { data, error, loading, load };
+  return { data, pagination, error, loading, load };
 }
 export function BillsPage({
   canCreate,
@@ -104,10 +109,9 @@ export function BillsPage({
   if (search) query.set("search", search);
   if (status) query.set("status", status);
   if (period) query.set("billingPeriod", period);
-  const { data, error, loading, load } = useFetch<{
-    data: Bill[];
-    pagination: { page: number; totalPages: number };
-  }>(`/api/bills?${query}`);
+  const { data, pagination, error, loading, load } = useFetch<Bill[]>(
+    `/api/bills?${query}`,
+  );
   return (
     <TransactionShell>
       <div className={styles.headingRow}>
@@ -163,7 +167,7 @@ export function BillsPage({
           <Loading />
         ) : error ? (
           <Failure message={error} retry={load} />
-        ) : !data?.data.length ? (
+        ) : !data?.length ? (
           <div className={styles.empty}>
             <h2>No bills found.</h2>
           </div>
@@ -192,7 +196,7 @@ export function BillsPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {data.data.map((b) => (
+                  {data.map((b) => (
                     <tr key={b.billId}>
                       <td className={styles.strong}>{b.billNo}</td>
                       <td>{b.controlNo}</td>
@@ -244,11 +248,11 @@ export function BillsPage({
                 Previous
               </button>
               <span>
-                Page {data.pagination.page} of {data.pagination.totalPages}
+                Page {pagination?.page || 1} of {pagination?.totalPages || 1}
               </span>
               <button
                 className={styles.secondaryButton}
-                disabled={page >= data.pagination.totalPages}
+                disabled={page >= (pagination?.totalPages || 1)}
                 onClick={() => setPage((x) => x + 1)}
               >
                 Next
