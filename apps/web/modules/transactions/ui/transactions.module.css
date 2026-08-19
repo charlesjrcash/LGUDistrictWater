@@ -3,66 +3,6 @@
   background: #f6f8fb;
   color: #10234a;
 }
-.topbar {
-  height: 72px;
-  background: #fff;
-  border-bottom: 1px solid #dce5f0;
-  display: flex;
-  align-items: center;
-  padding: 0 32px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-.topbarInner {
-  width: min(1440px, 100%);
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  color: #10234a;
-  text-decoration: none;
-  font-weight: 800;
-  font-size: 19px;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-.brandMark {
-  width: 34px;
-  height: 42px;
-  color: #0874e8;
-}
-.brandSmall {
-  display: block;
-  color: #0874e8;
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  margin-top: 1px;
-}
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.nav a {
-  color: #52627a;
-  text-decoration: none;
-  padding: 10px 13px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 650;
-}
-.nav a:hover,
-.nav .active {
-  color: #075fce;
-  background: #eef6ff;
-}
 .main {
   width: min(1320px, calc(100% - 48px));
   margin: 0 auto;
@@ -710,14 +650,8 @@
   .detailGrid {
     grid-template-columns: 1fr;
   }
-  .nav a:not(.active) {
-    display: none;
-  }
 }
 @media (max-width: 640px) {
-  .topbar {
-    padding: 0 18px;
-  }
   .main {
     width: min(100% - 28px, 1320px);
     padding-top: 25px;

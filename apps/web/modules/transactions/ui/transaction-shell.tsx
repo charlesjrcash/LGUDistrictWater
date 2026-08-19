@@ -1,31 +1,8 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import styles from "@/modules/transactions/ui/transactions.module.css";
 
-function WaterMark() {
-  return (
-    <svg
-      className={styles.brandMark}
-      viewBox="0 0 40 48"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M20 2C15 12 6 21 6 31.3A14 14 0 0 0 34 31.3C34 21 25 12 20 2Z"
-        fill="currentColor"
-      />
-      <path
-        d="M12 31c1 6 5 9 10 9 4 0 7-2 9-5-8 4-15 1-19-4Z"
-        fill="white"
-        opacity=".9"
-      />
-    </svg>
-  );
-}
-
 export function TransactionShell({
   children,
-  active = "service-applications",
 }: {
   children: ReactNode;
   active?:
@@ -39,70 +16,6 @@ export function TransactionShell({
 }) {
   return (
     <div className={styles.page}>
-      <header className={styles.topbar}>
-        <div className={styles.topbarInner}>
-          <Link href="/" className={styles.brand}>
-            <WaterMark />
-            <span>
-              Bagamanoc
-              <span className={styles.brandSmall}>WATER BILLING SYSTEM</span>
-            </span>
-          </Link>
-          <nav className={styles.nav} aria-label="Administration">
-            <Link
-              href="/dashboard"
-              className={active === "dashboard" ? styles.active : undefined}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/transactions/customers"
-              className={active === "customers" ? styles.active : undefined}
-            >
-              Customers
-            </Link>
-            <Link
-              href="/transactions/service-applications"
-              className={
-                active === "service-applications" ? styles.active : undefined
-              }
-            >
-              Service Applications
-            </Link>
-            <Link
-              href="/transactions/service-accounts"
-              className={
-                active === "service-accounts" ? styles.active : undefined
-              }
-            >
-              Service Accounts
-            </Link>
-            <Link
-              href="/transactions/meters"
-              className={active === "meters" ? styles.active : undefined}
-            >
-              Meters
-            </Link>
-            <Link
-              href="/transactions/meter-installations"
-              className={
-                active === "meter-installations" ? styles.active : undefined
-              }
-            >
-              Installations
-            </Link>
-            <Link
-              href="/transactions/meter-readings"
-              className={
-                active === "meter-readings" ? styles.active : undefined
-              }
-            >
-              Meter Readings
-            </Link>
-            <Link href="/maintenance/water-rates">Water Rates</Link>
-          </nav>
-        </div>
-      </header>
       <main className={styles.main}>{children}</main>
     </div>
   );

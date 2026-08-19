@@ -46,7 +46,13 @@ function MenuIcon() {
   );
 }
 
-export function MaintenanceAdminShell({ children }: { children: ReactNode }) {
+export function MaintenanceAdminShell({
+  children,
+  activeSection = "master",
+}: {
+  children: ReactNode;
+  activeSection?: string;
+}) {
   const router = useRouter();
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -81,7 +87,9 @@ export function MaintenanceAdminShell({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 key={item.id}
-                className={item.id === "master" ? styles.active : undefined}
+                className={
+                  item.id === activeSection ? styles.active : undefined
+                }
                 onClick={() => openSection(item.id)}
               >
                 <MenuIcon />

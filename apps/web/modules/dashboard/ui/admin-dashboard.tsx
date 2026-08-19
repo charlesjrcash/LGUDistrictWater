@@ -665,6 +665,20 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                 },
               ]}
             />
+            <div className={styles.quickLinks}>
+              <Link href="/transactions/customers">Customers →</Link>
+              <Link href="/transactions/service-applications">
+                Service applications →
+              </Link>
+              <Link href="/transactions/service-accounts">
+                Service accounts →
+              </Link>
+              <Link href="/transactions/meters">Meters →</Link>
+              <Link href="/transactions/meter-installations">
+                Meter installations →
+              </Link>
+              <Link href="/transactions/meter-readings">Meter readings →</Link>
+            </div>
           </>
         )}
         {section === "health" && (
