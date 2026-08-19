@@ -16,6 +16,15 @@ type Bill = Record<string, string | null> & {
   controlNo: string;
   customerName: string;
   billingPeriod: string;
+  details?: {
+    billDetailId: string;
+    chargeType: string;
+    description: string | null;
+    quantity: string;
+    rate: string;
+    amount: string;
+    sequenceNo: number | null;
+  }[];
 };
 type Options = {
   serviceAccounts: {
@@ -123,7 +132,7 @@ export function BillsPage({
           </p>
         </div>
         {canCreate && (
-          <Link className={styles.button} href="/transactions/bills/new">
+          <Link className={styles.button} href="/transactions/new">
             ＋ New Bill
           </Link>
         )}
@@ -218,7 +227,7 @@ export function BillsPage({
                       <td>
                         <Link
                           className={styles.viewLink}
-                          href={`/transactions/bills/${encodeURIComponent(b.billNo)}`}
+                          href={`/transactions/${encodeURIComponent(b.billNo)}`}
                         >
                           View
                         </Link>
@@ -227,7 +236,7 @@ export function BillsPage({
                             <span className={styles.muted}> · </span>
                             <Link
                               className={styles.viewLink}
-                              href={`/transactions/bills/${encodeURIComponent(b.billNo)}/edit`}
+                              href={`/transactions/${encodeURIComponent(b.billNo)}/edit`}
                             >
                               Edit
                             </Link>
@@ -286,7 +295,7 @@ export function BillDetail({
   if (!item)
     return (
       <TransactionShell>
-        <Link className={styles.backLink} href="/transactions/bills">
+        <Link className={styles.backLink} href="/transactions">
           ← Bills
         </Link>
         <Failure message={error} retry={load} />
@@ -315,7 +324,7 @@ export function BillDetail({
   );
   return (
     <TransactionShell>
-      <Link className={styles.backLink} href="/transactions/bills">
+      <Link className={styles.backLink} href="/transactions">
         ← Bills
       </Link>
       <header className={styles.detailHeader}>
@@ -334,7 +343,7 @@ export function BillDetail({
         {canEdit && (
           <Link
             className={styles.secondaryButton}
-            href={`/transactions/bills/${encodeURIComponent(item.billNo)}/edit`}
+            href={`/transactions/${encodeURIComponent(item.billNo)}/edit`}
           >
             Edit Bill
           </Link>
@@ -385,6 +394,21 @@ export function BillDetail({
               ["Total Amount Due", money(item.totalAmountDue)],
             ]}
           />
+          <section className={styles.detailCard}>
+            <div className={styles.cardHeading}>
+              <h2>Rate Breakdown</h2>
+            </div>
+            {!item.details?.length ? (
+              <p className={styles.remarks}>No water-consumption charges were recorded.</p>
+            ) : (
+              <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead><tr><th>Description</th><th>Quantity</th><th>Rate</th><th>Amount</th></tr></thead>
+                  <tbody>{item.details.map((detail) => <tr key={detail.billDetailId}><td>{detail.description || detail.chargeType}</td><td>{detail.quantity}</td><td>{money(detail.rate)}</td><td>{money(detail.amount)}</td></tr>)}</tbody>
+                </table>
+              </div>
+            )}
+          </section>
           <Card title="Remarks" rows={[["Remarks", item.remarks || "—"]]} />
           <Card
             title="Audit"
@@ -469,7 +493,7 @@ export function BillForm({ billNo }: { billNo?: string }) {
         throw new Error(b.message);
       }
       router.push(
-        `/transactions/bills/${encodeURIComponent(b.data.billNo || billNo!)}`,
+        `/transactions/${encodeURIComponent(b.data.billNo || billNo!)}`,
       );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to save bill.");
@@ -524,8 +548,8 @@ export function BillForm({ billNo }: { billNo?: string }) {
           className={styles.backLink}
           href={
             editing
-              ? `/transactions/bills/${encodeURIComponent(billNo!)}`
-              : "/transactions/bills"
+              ? `/transactions/${encodeURIComponent(billNo!)}`
+              : "/transactions"
           }
         >
           ← {editing ? "Bill" : "Bills"}
@@ -651,6 +675,7 @@ export function BillForm({ billNo }: { billNo?: string }) {
                 label="Water Consumption Amount"
                 name="waterConsumptionAmount"
                 type="number"
+                disabled
               />
               <Field
                 label="Previous Balance"
@@ -695,8 +720,8 @@ export function BillForm({ billNo }: { billNo?: string }) {
               className={styles.secondaryButton}
               href={
                 editing
-                  ? `/transactions/bills/${encodeURIComponent(billNo!)}`
-                  : "/transactions/bills"
+                  ? `/transactions/${encodeURIComponent(billNo!)}`
+                  : "/transactions"
               }
             >
               Cancel
