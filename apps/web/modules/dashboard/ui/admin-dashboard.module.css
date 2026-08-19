@@ -2901,24 +2901,28 @@
   width: 52px;
   height: 52px;
   flex: none;
+  display: grid;
+  place-items: center;
+  color: #0874e8;
 }
-.adminMark:before {
-  width: 27px;
-  height: 35px;
-  transform: scale(1.18);
-}
+.adminMark:before,
 .adminMark:after {
-  left: 15px;
-  bottom: 12px;
-  width: 13px;
-  height: 6px;
+  content: none;
+}
+.adminMark svg {
+  display: block;
+  width: 42px;
+  height: 52px;
 }
 .adminTitle > div:last-child:before {
-  font-size: 19px;
+  font-size: 22px;
+  color: #0c2452;
+  letter-spacing: -0.035em;
 }
 .adminTitle > div:last-child:after {
   font-size: 7px;
   margin-top: 5px;
+  color: #0874e8;
 }
 
 /* Keep the administrator navigation fixed while content scrolls. */

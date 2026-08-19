@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AdminBrandMark } from "./admin-brand-mark";
 import styles from "./admin-dashboard.module.css";
 
 type Section =
@@ -467,7 +468,9 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
       </div>
       <aside className={styles.subnav}>
         <div className={styles.adminTitle}>
-          <div className={styles.adminMark}>BW</div>
+          <div className={styles.adminMark}>
+            <AdminBrandMark />
+          </div>
           <div>
             <span>System Administrator</span>
             <strong>{data.userName}</strong>
