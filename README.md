@@ -32,6 +32,7 @@ Route files in `apps/web/app` should stay small. Feature implementations belong 
 | Customers | `/transactions/customers` |
 | Service applications | `/transactions/service-applications` |
 | Service accounts | `/transactions/service-accounts` |
+| Bills | `/transactions/bills` |
 | Meters | `/transactions/meters` |
 | Meter installations | `/transactions/meter-installations` |
 | Meter readings | `/transactions/meter-readings` |

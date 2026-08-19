@@ -670,6 +670,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               ]}
             />
             <div className={styles.quickLinks}>
+              <Link href="/transactions/bills">Bills →</Link>
               <Link href="/maintenance/billing-periods">Billing periods →</Link>
               <Link href="/maintenance/water-rates">Water rates →</Link>
               <Link href="/maintenance/fees">Fees →</Link>

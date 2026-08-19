@@ -38,6 +38,7 @@ const legacyMaintenanceRoutes: Record<string, string> = {
 
 export function proxy(request: NextRequest) {
   const legacyTransactionPrefixes: Record<string, string> = {
+    "/bills": "/transactions/bills",
     "/meters": "/transactions/meters",
     "/meter-installations": "/transactions/meter-installations",
     "/meter-readings": "/transactions/meter-readings",
@@ -67,6 +68,7 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/maintenance/:path*",
+    "/bills/:path*",
     "/meters/:path*",
     "/meter-installations/:path*",
     "/meter-readings/:path*",
