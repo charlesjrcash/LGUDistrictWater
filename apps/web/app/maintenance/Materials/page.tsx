@@ -69,7 +69,7 @@ export default function MaterialsPage() {
 
   async function loadUnits() {
     try {
-      const response = await fetch("/api/units");
+      const response = await fetch("/api/units?activeOnly=true");
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.message || "Failed to load units of measure.");
       setUnits(result.data);
