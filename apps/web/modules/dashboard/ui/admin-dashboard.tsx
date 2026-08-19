@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./admin-dashboard.module.css";
 
@@ -28,6 +28,7 @@ function BillingStatus({total,unpaid}:{total:number;unpaid:number}){const paid=M
 export function AdminDashboard({data}:{data:DashboardData}) {
   const router=useRouter();
   const [section,setSection]=useState<Section>("overview"); const m=data.metrics;
+  const [sectionReady,setSectionReady]=useState(false);
   const [query,setQuery]=useState("");
   const [confirmLogout,setConfirmLogout]=useState(false);
   const [loggingOut,setLoggingOut]=useState(false);
@@ -39,6 +40,8 @@ export function AdminDashboard({data}:{data:DashboardData}) {
   const normalizedQuery=query.trim().toLowerCase();
   const sectionResults=normalizedQuery?groups.flatMap(group=>group.items.map(item=>({...item,group:group.label}))).filter(item=>`${item.label} ${item.group}`.toLowerCase().includes(normalizedQuery)).slice(0,5):[];
   const masterResults=normalizedQuery?data.masterData.filter(item=>`${item.label} ${item.category}`.toLowerCase().includes(normalizedQuery)).slice(0,5):[];
+  useEffect(()=>{const timer=window.setTimeout(()=>{const saved=window.sessionStorage.getItem("admin-dashboard-section");const valid=groups.some(group=>group.items.some(item=>item.id===saved));if(valid)setSection(saved as Section);setSectionReady(true);},0);return()=>window.clearTimeout(timer);},[]);
+  useEffect(()=>{if(sectionReady)window.sessionStorage.setItem("admin-dashboard-section",section);},[section,sectionReady]);
   async function logout(){if(loggingOut)return;setLoggingOut(true);try{await fetch("/api/auth/logout",{method:"POST"});}finally{router.replace("/login");router.refresh();}}
   return <div className={styles.dashboard}><div className={styles.mobileNav}><label htmlFor="dashboard-section">Dashboard section</label><select id="dashboard-section" value={section} onChange={event=>setSection(event.target.value as Section)}>{groups.map(group=><optgroup label={group.label} key={group.label}>{group.items.map(item=><option value={item.id} key={item.id}>{item.label}</option>)}</optgroup>)}</select></div><aside className={styles.subnav}><div className={styles.adminTitle}><div className={styles.adminMark}>BW</div><div><span>System Administrator</span><strong>{data.userName}</strong></div></div>{groups.map(group=><div className={styles.navGroup} key={group.label}><h2>{group.label}</h2>{group.items.map(item=><button type="button" key={item.id} className={section===item.id?styles.active:undefined} onClick={()=>setSection(item.id)}><Icon name={iconBySection[item.id]}/><span>{item.label}</span></button>)}</div>)}<div className={styles.navFooter}><span>LGU Water District</span><small>Administration Console</small></div></aside><main className={styles.content}><div className={styles.pageHeading}><div><span>{section==="overview"?"System administration workspace":labels[section]}</span><h1>{section==="overview"?<>Welcome back, {firstName} <b>👋</b></>:labels[section]}</h1></div><div className={styles.profile}><div><strong>{data.userName}</strong><span><i/> System online</span></div><b>{initials}</b></div></div>
   {section==="overview"&&<><SectionHeader title="Dashboard Overview" copy="A concise view of access, personnel, service coverage, and system activity."/><MetricGrid items={[{label:"Active Users",value:m.active_users},{label:"Active Employees",value:m.active_employees},{label:"Service Accounts",value:m.service_accounts},{label:"Activities Today",value:m.activities_today}]}/><div className={styles.twoColumn}><article className={styles.panel}><h3>System status</h3><div className={styles.statusList}>{health.slice(0,4).map(item=><Link href={item.href} key={item.label}><i className={item.value>0?styles.good:styles.warn}/><span><strong>{item.label}</strong><small>{item.value>0?`${item.value} active configuration${item.value===1?"":"s"}`:"Configuration required"}</small></span></Link>)}</div></article><article className={styles.panel}><h3>Important warnings</h3>{issues.length?<div className={styles.issueList}>{issues.slice(0,3).map(issue=><button key={issue.title} onClick={()=>setSection("attention")}><Icon name="warning"/><span><strong>{issue.title}</strong><small>{issue.copy}</small></span></button>)}</div>:<div className={styles.allClear}><Icon name="health"/><strong>No critical warnings</strong><span>Core configuration checks are healthy.</span></div>}</article></div></>}
