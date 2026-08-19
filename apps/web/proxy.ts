@@ -37,6 +37,24 @@ const legacyMaintenanceRoutes: Record<string, string> = {
 };
 
 export function proxy(request: NextRequest) {
+  const legacyTransactionPrefixes: Record<string, string> = {
+    "/meters": "/transactions/meters",
+    "/meter-installations": "/transactions/meter-installations",
+    "/meter-readings": "/transactions/meter-readings",
+  };
+  const legacyTransactionRoute = Object.entries(legacyTransactionPrefixes).find(
+    ([source]) =>
+      request.nextUrl.pathname === source ||
+      request.nextUrl.pathname.startsWith(`${source}/`),
+  );
+
+  if (legacyTransactionRoute) {
+    const [source, destination] = legacyTransactionRoute;
+    const url = request.nextUrl.clone();
+    url.pathname = `${destination}${request.nextUrl.pathname.slice(source.length)}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   const destination = legacyMaintenanceRoutes[request.nextUrl.pathname];
 
   if (!destination) {
@@ -47,5 +65,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/maintenance/:path*",
+  matcher: [
+    "/maintenance/:path*",
+    "/meters/:path*",
+    "/meter-installations/:path*",
+    "/meter-readings/:path*",
+  ],
 };

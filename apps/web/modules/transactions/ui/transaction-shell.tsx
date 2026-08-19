@@ -29,7 +29,13 @@ export function TransactionShell({
 }: {
   children: ReactNode;
   active?:
-    "dashboard" | "customers" | "service-applications" | "service-accounts";
+    | "dashboard"
+    | "customers"
+    | "service-applications"
+    | "service-accounts"
+    | "meters"
+    | "meter-installations"
+    | "meter-readings";
 }) {
   return (
     <div className={styles.page}>
@@ -70,6 +76,28 @@ export function TransactionShell({
               }
             >
               Service Accounts
+            </Link>
+            <Link
+              href="/transactions/meters"
+              className={active === "meters" ? styles.active : undefined}
+            >
+              Meters
+            </Link>
+            <Link
+              href="/transactions/meter-installations"
+              className={
+                active === "meter-installations" ? styles.active : undefined
+              }
+            >
+              Installations
+            </Link>
+            <Link
+              href="/transactions/meter-readings"
+              className={
+                active === "meter-readings" ? styles.active : undefined
+              }
+            >
+              Meter Readings
             </Link>
             <Link href="/maintenance/water-rates">Water Rates</Link>
           </nav>

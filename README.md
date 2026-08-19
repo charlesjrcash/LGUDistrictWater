@@ -32,6 +32,9 @@ Route files in `apps/web/app` should stay small. Feature implementations belong 
 | Customers | `/transactions/customers` |
 | Service applications | `/transactions/service-applications` |
 | Service accounts | `/transactions/service-accounts` |
+| Meters | `/transactions/meters` |
+| Meter installations | `/transactions/meter-installations` |
+| Meter readings | `/transactions/meter-readings` |
 | Maintenance | `/maintenance/<feature-name>` |
 
 Maintenance routes use lowercase kebab-case. Legacy PascalCase maintenance URLs are
