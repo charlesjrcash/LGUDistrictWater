@@ -22,9 +22,9 @@ export function ModuleShell({ children, active = "service-applications" }: { chi
           </Link>
           <nav className={styles.nav} aria-label="Administration">
             <Link href="/dashboard" className={active === "dashboard" ? styles.active : undefined}>Dashboard</Link>
-            <Link href="/customers" className={active === "customers" ? styles.active : undefined}>Customers</Link>
-            <Link href="/service-applications" className={active === "service-applications" ? styles.active : undefined}>Service Applications</Link>
-            <Link href="/service-accounts" className={active === "service-accounts" ? styles.active : undefined}>Service Accounts</Link>
+            <Link href="/transactions/customers" className={active === "customers" ? styles.active : undefined}>Customers</Link>
+            <Link href="/transactions/service-applications" className={active === "service-applications" ? styles.active : undefined}>Service Applications</Link>
+            <Link href="/transactions/service-accounts" className={active === "service-accounts" ? styles.active : undefined}>Service Accounts</Link>
             <Link href="/maintenance/water-rates">Water Rates</Link>
           </nav>
         </div>

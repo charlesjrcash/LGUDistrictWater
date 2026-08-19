@@ -4,7 +4,7 @@ import { getSessionUser } from "@/lib/server-session";
 import { hasPermission } from "@/lib/permissions";
 
 export default async function Page() {
-  if (!await getSessionUser()) redirect("/login?next=/service-applications");
+  if (!await getSessionUser()) redirect("/login?next=/transactions/service-applications");
   if (!await hasPermission("SERVICE_APPLICATION_VIEW")) redirect("/");
   return <ServiceApplicationsPage />;
 }

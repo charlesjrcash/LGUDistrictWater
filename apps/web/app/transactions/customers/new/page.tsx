@@ -4,7 +4,7 @@
 import { CustomerForm } from "@/modules/customers/ui/customer-form";
 
 export default async function Page({searchParams}:{searchParams:Promise<{returnTo?:string}>}){
-  // if(!await getSessionUser())redirect("/login?next=/customers/new");
+  // if(!await getSessionUser())redirect("/login?next=/transactions/customers/new");
   // if(!await hasPermission("CUSTOMER_CREATE"))redirect("/");
   const{returnTo}=await searchParams;
   return <CustomerForm returnTo={returnTo}/>;

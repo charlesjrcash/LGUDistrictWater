@@ -58,19 +58,19 @@ export function CreateAccountForm({ applicationNo }: { applicationNo: string }) 
       const response = await fetch("/api/service-accounts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ applicationNo, classificationCode, connectionTypeCode }) });
       const body = await response.json();
       if (!response.ok) { setFieldErrors(body.errors || {}); throw new Error(body.message || "Unable to create the service account."); }
-      router.push(`/service-accounts/${encodeURIComponent(body.data.controlNo)}?created=1`);
+      router.push(`/transactions/service-accounts/${encodeURIComponent(body.data.controlNo)}?created=1`);
     } catch (submitError) { setError(submitError instanceof Error ? submitError.message : "Unable to create the service account."); setSubmitting(false); }
   }
 
   const approved = context ? `${context.application.statusCode} ${context.application.status}`.toUpperCase().includes("APPROV") : false;
   return <ModuleShell active="service-accounts"><div className={styles.formShell}>
-    <Link href={`/service-applications/${encodeURIComponent(applicationNo)}`} className={styles.backLink}>← {applicationNo}</Link>
+    <Link href={`/transactions/service-applications/${encodeURIComponent(applicationNo)}`} className={styles.backLink}>← {applicationNo}</Link>
     <div className={styles.headingRow}><div><div className={styles.eyebrow}>Service Accounts</div><h1 className={styles.title}>Create Service Account</h1><p className={styles.subtitle}>Create the permanent water service record for this approved application.</p></div></div>
     <form className={`${styles.panel} ${styles.formPanel}`} onSubmit={submit}>
       {error && <div className={styles.notice}>{error}</div>}
       {loading ? <div className={styles.loading}><div className={styles.skeleton} style={{ height: 150 }} /></div> : context && <>
         {!approved && <div className={styles.notice}>This application is {context.application.status}. Approve it before creating a service account.</div>}
-        {context.existingControlNo && <div className={styles.successNotice}>This application already has service account <strong>{context.existingControlNo}</strong>. <Link className={styles.viewLink} href={`/service-accounts/${encodeURIComponent(context.existingControlNo)}`}>View Service Account</Link></div>}
+        {context.existingControlNo && <div className={styles.successNotice}>This application already has service account <strong>{context.existingControlNo}</strong>. <Link className={styles.viewLink} href={`/transactions/service-accounts/${encodeURIComponent(context.existingControlNo)}`}>View Service Account</Link></div>}
         <section className={styles.section}><div className={styles.cardHeading}><div><h2 className={styles.sectionTitle}>Application Reference</h2><p className={styles.sectionDescription}>Approved application information is read-only.</p></div><ApplicationStatusBadge code={context.application.statusCode} name={context.application.status} /></div><div className={styles.customerCard}>{[["Application No.", context.application.applicationNo], ["Application Type", context.application.applicationType], ["Application Date", formatDate(context.application.applicationDate)], ["Application Status", context.application.status]].map(([label,value]) => <div className={styles.customerCardItem} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div></section>
         <section className={styles.section}><h2 className={styles.sectionTitle}>Customer Information</h2><p className={styles.sectionDescription}>Customer information is inherited from the application.</p><div className={styles.customerCard}>{[["Customer Name",context.customer.name],["Customer No.",context.customer.customerNo],["Address",context.customer.address || "—"],["Barangay",context.customer.barangay || "—"],["Contact Number",context.customer.contactNo || "—"],["Customer Status",context.customer.status]].map(([label,value]) => <div className={styles.customerCardItem} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div></section>
         <section className={styles.section}><h2 className={styles.sectionTitle}>Service Account Information</h2><p className={styles.sectionDescription}>The control number is generated automatically when the account is saved.</p><div className={styles.fieldGrid}>
@@ -79,7 +79,7 @@ export function CreateAccountForm({ applicationNo }: { applicationNo: string }) 
           <div><label className={styles.label} htmlFor="connection-type">Connection Type <span className={styles.required}>*</span></label><select id="connection-type" className={styles.select} value={connectionTypeCode} onChange={(event) => setConnectionTypeCode(event.target.value)}><option value="">Select connection type</option>{connectionTypes.map((item) => <option key={item.code} value={item.code}>{item.name}</option>)}</select>{fieldErrors.connectionTypeCode && <div className={styles.fieldError}>{fieldErrors.connectionTypeCode}</div>}</div>
           <div><label className={styles.label}>Initial Status</label><input className={styles.input} value={initialStatus?.name || "Pending Installation status required"} disabled /></div><div><label className={styles.label}>Date Connected</label><input className={styles.input} value="Not yet connected" disabled /></div>
         </div></section>
-        <div className={styles.formActions}><Link className={styles.secondaryButton} href={`/service-applications/${encodeURIComponent(applicationNo)}`}>Cancel</Link><button className={styles.button} disabled={submitting || !approved || Boolean(context.existingControlNo) || !initialStatus}>{submitting ? "Creating…" : "Create Service Account"}</button></div>
+        <div className={styles.formActions}><Link className={styles.secondaryButton} href={`/transactions/service-applications/${encodeURIComponent(applicationNo)}`}>Cancel</Link><button className={styles.button} disabled={submitting || !approved || Boolean(context.existingControlNo) || !initialStatus}>{submitting ? "Creating…" : "Create Service Account"}</button></div>
       </>}
     </form>
   </div></ModuleShell>;
