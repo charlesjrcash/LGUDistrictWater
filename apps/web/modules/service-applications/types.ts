@@ -24,6 +24,14 @@ export type ServiceApplicationRow = {
 
 export type ServiceApplicationDetail = ServiceApplicationRow & {
   customer: CustomerSummary;
+  connectionType: string | null;
+  connectionTypeCode: string | null;
+  requestedMeterSize: string | null;
+  requestedMeterSizeCode: string | null;
+  investigationDate: string | null;
+  investigationResult: string | null;
+  inspectionDate: string | null;
+  inspectionResult: string | null;
   remarks: string | null;
   statuses: ApplicationStatus[];
   createdAt: string;

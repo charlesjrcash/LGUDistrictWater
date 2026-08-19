@@ -19,11 +19,15 @@ export function classifyStatus(code: string, name = "") {
   return "neutral";
 }
 
-export async function findWorkflowStatus(client: PoolClient, action: "initial" | "approve" | "reject") {
+export type WorkflowAction = "initial" | "inspect" | "approve" | "reject" | "complete";
+
+export async function findWorkflowStatus(client: PoolClient, action: WorkflowAction) {
   const patterns = {
     initial: ["PENDING", "SUBMITTED", "NEW"],
+    inspect: ["INSPECT", "FOR INSPECTION", "INSPECTION"],
     approve: ["APPROVED", "APPROVE"],
     reject: ["REJECTED", "REJECT", "DENIED"],
+    complete: ["COMPLETED", "COMPLETE"],
   }[action];
 
   const result = await client.query<{ application_status_id: string; status_code: string; status_name: string }>(
@@ -36,6 +40,14 @@ export async function findWorkflowStatus(client: PoolClient, action: "initial" |
     [patterns, patterns[0]],
   );
   return result.rows[0] ?? null;
+}
+
+export function allowedWorkflowActions(statusCode: string, statusName = ""): Exclude<WorkflowAction, "initial">[] {
+  const status = `${statusCode} ${statusName}`.toUpperCase();
+  if (/(PENDING|SUBMIT|NEW)/.test(status)) return ["inspect", "reject"];
+  if (/(PROCESS|INSPECT|REVIEW)/.test(status)) return ["approve", "reject"];
+  if (/APPROV/.test(status)) return ["complete"];
+  return [];
 }
 
 export async function nextApplicationNumber(client: PoolClient, userId: string | null) {

@@ -21,12 +21,16 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
   const router = useRouter();
   const editing = Boolean(applicationNo);
   const [types, setTypes] = useState<ReferenceOption[]>([]);
+  const [connectionTypes, setConnectionTypes] = useState<ReferenceOption[]>([]);
+  const [meterSizes, setMeterSizes] = useState<ReferenceOption[]>([]);
   const [customerQuery, setCustomerQuery] = useState("");
   const [customerResults, setCustomerResults] = useState<CustomerSummary[]>([]);
   const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerSummary | null>(null);
   const [applicationTypeCode, setApplicationTypeCode] = useState("");
   const [applicationDate, setApplicationDate] = useState(localDate);
+  const [connectionTypeCode, setConnectionTypeCode] = useState("");
+  const [requestedMeterSizeCode, setRequestedMeterSizeCode] = useState("");
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(editing);
   const [searching, setSearching] = useState(false);
@@ -43,7 +47,11 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
         const responses = await Promise.all(requests);
         const optionBody = await responses[0].json();
         if (!responses[0].ok) throw new Error(optionBody.message);
-        if (!cancelled) setTypes(optionBody.data.types);
+        if (!cancelled) {
+          setTypes(optionBody.data.types);
+          setConnectionTypes(optionBody.data.connectionTypes);
+          setMeterSizes(optionBody.data.meterSizes);
+        }
         if (responses[1]) {
           const detailBody = await responses[1].json();
           if (!responses[1].ok) throw new Error(detailBody.message);
@@ -52,6 +60,8 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
             setSelectedCustomer(detail.customer);
             setApplicationTypeCode(detail.applicationTypeCode);
             setApplicationDate(detail.applicationDate);
+            setConnectionTypeCode(detail.connectionTypeCode || "");
+            setRequestedMeterSizeCode(detail.requestedMeterSizeCode || "");
             setRemarks(detail.remarks || "");
           }
         }
@@ -132,7 +142,7 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
       const response = await fetch(editing ? `/api/service-applications/${encodeURIComponent(applicationNo!)}` : "/api/service-applications", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerNo: selectedCustomer?.customerNo, applicationTypeCode, applicationDate, remarks }),
+        body: JSON.stringify({ customerNo: selectedCustomer?.customerNo, applicationTypeCode, applicationDate, connectionTypeCode, requestedMeterSizeCode, remarks }),
       });
       const body = await response.json();
       if (!response.ok) {
@@ -165,6 +175,8 @@ export function ApplicationForm({ applicationNo, initialCustomerNo }: { applicat
               <div className={styles.fieldGrid}>
                 <div><label className={styles.label} htmlFor="application-type">Application Type <span className={styles.required}>*</span></label><select id="application-type" className={styles.select} value={applicationTypeCode} onChange={(event) => setApplicationTypeCode(event.target.value)}><option value="">Select application type</option>{types.map((item) => <option value={item.code} key={item.code}>{item.name}</option>)}</select>{fieldErrors.applicationTypeCode && <div className={styles.fieldError}>{fieldErrors.applicationTypeCode}</div>}</div>
                 <div><label className={styles.label} htmlFor="application-date">Application Date <span className={styles.required}>*</span></label><input id="application-date" className={styles.input} type="date" value={applicationDate} onChange={(event) => setApplicationDate(event.target.value)} />{fieldErrors.applicationDate && <div className={styles.fieldError}>{fieldErrors.applicationDate}</div>}</div>
+                <div><label className={styles.label} htmlFor="connection-type">Connection Type</label><select id="connection-type" className={styles.select} value={connectionTypeCode} onChange={(event) => setConnectionTypeCode(event.target.value)}><option value="">Select connection type</option>{connectionTypes.map((item) => <option value={item.code} key={item.code}>{item.name}</option>)}</select>{fieldErrors.connectionTypeCode && <div className={styles.fieldError}>{fieldErrors.connectionTypeCode}</div>}</div>
+                <div><label className={styles.label} htmlFor="requested-meter-size">Requested Meter Size</label><select id="requested-meter-size" className={styles.select} value={requestedMeterSizeCode} onChange={(event) => setRequestedMeterSizeCode(event.target.value)}><option value="">Select meter size</option>{meterSizes.map((item) => <option value={item.code} key={item.code}>{item.name}</option>)}</select>{fieldErrors.requestedMeterSizeCode && <div className={styles.fieldError}>{fieldErrors.requestedMeterSizeCode}</div>}</div>
                 <div className={styles.fullField}><label className={styles.label} htmlFor="remarks">Notes / Remarks</label><textarea id="remarks" className={styles.textarea} value={remarks} onChange={(event) => setRemarks(event.target.value)} maxLength={4000} placeholder="Optional notes about this application" /></div>
               </div>
             </section>

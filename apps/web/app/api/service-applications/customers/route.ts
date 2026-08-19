@@ -1,11 +1,11 @@
 import { db } from "@/lib/db";
-import { requireSessionUser } from "@/lib/server-session";
+import { requirePermission } from "@/lib/permissions";
 import { clean } from "@/modules/service-applications/server";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  const auth = await requireSessionUser();
+  const auth = await requirePermission("SERVICE_APPLICATION_CREATE");
   if (auth.response) return auth.response;
   const query = clean(new URL(request.url).searchParams.get("q"), 100);
 
