@@ -3173,13 +3173,14 @@
   width: 100%;
   border-collapse: collapse;
   background: var(--admin-surface);
+  border-top: 1px solid #34465a;
 }
 .adminFormTheme :global(thead) {
   background: #eef1f4 !important;
   color: #59697b !important;
 }
 .adminFormTheme :global(th) {
-  border-bottom: 1px solid #d6dde5 !important;
+  border-bottom: 1px solid #34465a !important;
   color: #59697b !important;
   font-size: 0.7rem !important;
   font-weight: 700 !important;
@@ -3187,8 +3188,11 @@
   text-transform: uppercase;
 }
 .adminFormTheme :global(td) {
-  border-bottom-color: #e7ebef !important;
+  border-bottom: 1px solid #34465a !important;
   color: #34475b;
+}
+.adminFormTheme :global(tbody tr:last-child td) {
+  border-bottom: 0 !important;
 }
 .adminFormTheme :global(tbody tr) {
   background: #fff;
