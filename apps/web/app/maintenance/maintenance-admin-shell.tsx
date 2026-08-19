@@ -112,7 +112,9 @@ export function MaintenanceAdminShell({
         </svg>
         <span>Log out</span>
       </button>
-      <main className={styles.adminFormContent}>{children}</main>
+      <main className={`${styles.adminFormContent} ${styles.adminFormTheme}`}>
+        {children}
+      </main>
       {confirmLogout && (
         <div
           className={styles.logoutBackdrop}

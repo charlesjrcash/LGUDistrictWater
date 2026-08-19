@@ -3104,6 +3104,128 @@
 .adminFormContent > main {
   min-height: 100vh;
 }
+.adminFormTheme {
+  --admin-canvas: #f3f4f6;
+  --admin-surface: #fff;
+  --admin-border: #d8dee7;
+  --admin-border-soft: #e6eaf0;
+  --admin-text: #26384d;
+  --admin-muted: #6b7888;
+  --admin-blue: #176fc1;
+  --admin-blue-soft: #edf5fc;
+  background: var(--admin-canvas);
+  color: var(--admin-text);
+}
+.adminFormTheme :global(main) {
+  background: transparent !important;
+}
+.adminFormTheme :global(h1) {
+  color: #1e3148 !important;
+  font-size: clamp(1.6rem, 2.2vw, 1.9rem) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.025em !important;
+}
+.adminFormTheme :global(h2),
+.adminFormTheme :global(h3) {
+  color: #293d55;
+}
+.adminFormTheme :global(p) {
+  color: var(--admin-muted);
+}
+.adminFormTheme :global(form),
+.adminFormTheme :global(table) {
+  color: var(--admin-text);
+}
+.adminFormTheme :global(input:not([type="checkbox"]):not([type="radio"])),
+.adminFormTheme :global(select),
+.adminFormTheme :global(textarea) {
+  border-color: #cfd6df !important;
+  background-color: #f9fafb !important;
+  color: #26384d !important;
+  box-shadow: none !important;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+.adminFormTheme :global(input:not([type="checkbox"]):not([type="radio"]):hover),
+.adminFormTheme :global(select:hover),
+.adminFormTheme :global(textarea:hover) {
+  border-color: #8eb6dc !important;
+  background-color: #fff !important;
+}
+.adminFormTheme :global(input:not([type="checkbox"]):not([type="radio"]):focus),
+.adminFormTheme :global(select:focus),
+.adminFormTheme :global(textarea:focus) {
+  border-color: var(--admin-blue) !important;
+  background-color: #fff !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(23, 111, 193, 0.12) !important;
+}
+.adminFormTheme :global(input:disabled),
+.adminFormTheme :global(select:disabled),
+.adminFormTheme :global(textarea:disabled) {
+  background-color: #eef1f4 !important;
+  color: #7c8794 !important;
+  cursor: not-allowed;
+}
+.adminFormTheme :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--admin-surface);
+}
+.adminFormTheme :global(thead) {
+  background: #eef1f4 !important;
+  color: #59697b !important;
+}
+.adminFormTheme :global(th) {
+  border-bottom: 1px solid #d6dde5 !important;
+  color: #59697b !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.045em !important;
+  text-transform: uppercase;
+}
+.adminFormTheme :global(td) {
+  border-bottom-color: #e7ebef !important;
+  color: #34475b;
+}
+.adminFormTheme :global(tbody tr) {
+  background: #fff;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+.adminFormTheme :global(tbody tr:nth-child(even)) {
+  background: #fafbfc;
+}
+.adminFormTheme :global(tbody tr:hover) {
+  background: var(--admin-blue-soft) !important;
+  box-shadow: inset 3px 0 var(--admin-blue);
+}
+.adminFormTheme :global(button),
+.adminFormTheme :global(a) {
+  transition:
+    color 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+.adminFormTheme :global(button:not(:disabled):hover),
+.adminFormTheme :global(a:hover) {
+  border-color: #8eb6dc;
+}
+.adminFormTheme :global(button:focus-visible),
+.adminFormTheme :global(a:focus-visible) {
+  outline: 3px solid rgba(23, 111, 193, 0.18);
+  outline-offset: 2px;
+}
+.adminFormTheme :global([role="dialog"]),
+.adminFormTheme :global([aria-modal="true"]) {
+  border: 1px solid var(--admin-border);
+  background: #fff;
+}
 .adminFormShell .logoutButton {
   z-index: 35;
 }

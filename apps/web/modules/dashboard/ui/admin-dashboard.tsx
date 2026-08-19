@@ -146,10 +146,10 @@ function MetricGrid({
     <div className={styles.metrics}>
       <div className={styles.metricMeta}>
         <span>
-          <i /> Live system totals
+          <i /> Database snapshot
         </span>
         <time suppressHydrationWarning>
-          Updated{" "}
+          Loaded{" "}
           {new Intl.DateTimeFormat("en-PH", {
             dateStyle: "medium",
             timeStyle: "short",
