@@ -28,10 +28,12 @@ export async function POST(request: Request) {
     const expiresAt = new Date(Date.now() + SESSION_DURATION_SECONDS * 1000);
     await pool.query("INSERT INTO user_sessions (user_id, token_hash, expires_at) VALUES ($1, $2, $3)", [user.user_id, hashSessionToken(sessionToken), expiresAt]);
     await pool.query("UPDATE users SET last_login_at = NOW() WHERE user_id = $1", [user.user_id]);
+    const roleResult = await pool.query<{ role_name: string }>("SELECT r.role_name FROM user_roles ur INNER JOIN roles r ON r.role_id = ur.role_id WHERE ur.user_id = $1 AND r.is_active = TRUE", [user.user_id]);
+    const redirectTo = roleResult.rows.some((role) => role.role_name.toLowerCase().includes("admin")) ? "/dashboard" : "/";
 
     const cookieStore = await cookies();
     cookieStore.set(SESSION_COOKIE_NAME, sessionToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: SESSION_DURATION_SECONDS });
-    return Response.json({ message: user.must_change_password ? "Temporary password accepted. Create a new password to continue." : "Signed in successfully.", mustChangePassword: user.must_change_password });
+    return Response.json({ message: user.must_change_password ? "Temporary password accepted. Create a new password to continue." : "Signed in successfully.", mustChangePassword: user.must_change_password, redirectTo });
   } catch (error) {
     console.error("Login failed:", error);
     return Response.json({ message: "Unable to sign in. Please try again." }, { status: 500 });

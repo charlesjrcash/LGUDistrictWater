@@ -11,7 +11,7 @@ function WaterLogo() {
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; next?: string; passwordChanged?: string }> }) {
   const { error, next, passwordChanged } = await searchParams;
-  const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
+  const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : undefined;
   const initialSuccess = passwordChanged === "1" ? "Password changed successfully! Sign in with your new password." : undefined;
   return <><SiteHeader /><main className={styles.page}><section className={styles.intro}><div className={styles.introContent}><WaterLogo /></div><div className={styles.waveOne}/><div className={styles.waveTwo}/><div className={styles.waveThree}/></section><section className={styles.formPanel}><LoginForm initialError={error} initialSuccess={initialSuccess} nextPath={nextPath} /></section></main></>;
 }

@@ -11,7 +11,7 @@ function WaterMark() {
   );
 }
 
-export function ModuleShell({ children, active = "service-applications" }: { children: ReactNode; active?: "customers" | "service-applications" | "service-accounts" }) {
+export function ModuleShell({ children, active = "service-applications" }: { children: ReactNode; active?: "dashboard" | "customers" | "service-applications" | "service-accounts" }) {
   return (
     <div className={styles.page}>
       <header className={styles.topbar}>
@@ -21,6 +21,7 @@ export function ModuleShell({ children, active = "service-applications" }: { chi
             <span>Bagamanoc<span className={styles.brandSmall}>WATER BILLING SYSTEM</span></span>
           </Link>
           <nav className={styles.nav} aria-label="Administration">
+            <Link href="/dashboard" className={active === "dashboard" ? styles.active : undefined}>Dashboard</Link>
             <Link href="/customers" className={active === "customers" ? styles.active : undefined}>Customers</Link>
             <Link href="/service-applications" className={active === "service-applications" ? styles.active : undefined}>Service Applications</Link>
             <Link href="/service-accounts" className={active === "service-accounts" ? styles.active : undefined}>Service Accounts</Link>
