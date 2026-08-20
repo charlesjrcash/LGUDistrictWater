@@ -96,11 +96,9 @@ export function LandingPage() {
       <section className="hero hero-photo" id="home">
         <div className="hero-shade" />
         <div className="hero-photo-copy">
-          <span className="eyebrow">Efficient. Accurate. Transparent.</span>
+          <span className="eyebrow">Good day, Guest !</span>
           <h1>
-            Smart Water Billing
-            <br />
-            for a Better Tomorrow
+            Smarter Public Service.
           </h1>
         </div>
         <div className="hero-service-card">
