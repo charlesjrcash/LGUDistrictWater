@@ -61,6 +61,12 @@ export async function replaceWaterCharges(client: PoolClient, billId: string, ch
   for (const charge of charges) await client.query("INSERT INTO bill_details(bill_id,charge_type,rate_id,description,quantity,rate,amount,sequence_no) VALUES($1,'WATER_CONSUMPTION',$2,$3,$4,$5,$6,$7)", [billId, charge.rateId, charge.description, charge.quantity, charge.rate, charge.amount, charge.sequenceNo]);
 }
 
+/** Uses PostgreSQL numeric arithmetic to maintain bill header summaries. */
+export async function recalculateBill(client: PoolClient, billId: string, userId?: string) {
+  const result = await client.query(`WITH summaries AS (SELECT b.bill_id,COALESCE((SELECT SUM(d.amount) FROM bill_details d WHERE d.bill_id=b.bill_id AND d.charge_type='WATER_CONSUMPTION'),0::numeric) AS water_amount,COALESCE((SELECT SUM(d.amount) FROM bill_details d WHERE d.bill_id=b.bill_id),0::numeric) AS current_charges,COALESCE((SELECT SUM(p.amount) FROM bill_penalties p WHERE p.bill_id=b.bill_id),0::numeric) AS penalty_amount,COALESCE((SELECT SUM(a.amount) FROM bill_adjustments a WHERE a.bill_id=b.bill_id AND a.approved_at IS NOT NULL),0::numeric) AS adjustment_amount FROM bills b WHERE b.bill_id=$1) UPDATE bills b SET water_consumption_amount=s.water_amount,penalty_amount=s.penalty_amount,adjustment_amount=s.adjustment_amount,total_amount_due=b.previous_balance+s.current_charges+s.penalty_amount+b.connection_fee_amount+s.adjustment_amount,updated_by=COALESCE($2,b.updated_by),updated_at=NOW() FROM summaries s WHERE b.bill_id=s.bill_id RETURNING b.bill_id::text AS "billId",s.current_charges::text AS "currentCharges",b.total_amount_due::text AS "totalAmountDue"`, [billId, userId || null]);
+  return result.rows[0];
+}
+
 export async function validateRelations(client: PoolClient, value: BillInput) {
   const [account, period, reading] = await Promise.all([
     client.query("SELECT service_account_id FROM service_accounts WHERE service_account_id=$1", [value.serviceAccountId]),

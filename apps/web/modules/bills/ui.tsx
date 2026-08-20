@@ -25,6 +25,8 @@ type Bill = Record<string, string | null> & {
     amount: string;
     sequenceNo: number | null;
   }[];
+  penalties?: { billPenaltyId: string; penaltyName: string; baseAmount: string; rate: string; amount: string }[];
+  adjustments?: { adjustmentId: string; adjustmentType: string; amount: string; reason: string | null; approvedBy: string | null; approvedAt: string | null }[];
 };
 type Options = {
   serviceAccounts: {
@@ -280,6 +282,10 @@ export function BillDetail({
   billNo: string;
   canEdit: boolean;
 }) {
+  const [penaltyModal, setPenaltyModal] = useState<string | null>(null);
+  const [adjustmentModal, setAdjustmentModal] = useState<string | null>(null);
+  const [approval, setApproval] = useState<NonNullable<Bill["adjustments"]>[number] | null>(null);
+  const [removal, setRemoval] = useState<{ kind: "penalty" | "adjustment"; id: string; label: string; amount: string; reason?: string | null } | null>(null);
   const {
     data: item,
     loading,
@@ -384,9 +390,10 @@ export function BillDetail({
             }
           />
           <Card
-            title="Bill Amounts"
+            title="Bill Summary"
             rows={[
-              ["Water Consumption", money(item.waterConsumptionAmount)],
+              ["Water Consumption Amount", money(item.waterConsumptionAmount)],
+              ["Current Charges", money(item.currentCharges)],
               ["Previous Balance", money(item.previousBalance)],
               ["Penalty", money(item.penaltyAmount)],
               ["Connection Fee", money(item.connectionFeeAmount)],
@@ -396,7 +403,7 @@ export function BillDetail({
           />
           <section className={styles.detailCard}>
             <div className={styles.cardHeading}>
-              <h2>Rate Breakdown</h2>
+              <h2>Bill Details</h2>
             </div>
             {!item.details?.length ? (
               <p className={styles.remarks}>
@@ -407,7 +414,9 @@ export function BillDetail({
                 <table className={styles.table}>
                   <thead>
                     <tr>
+                      <th>Sequence</th>
                       <th>Description</th>
+                      <th>Charge Type</th>
                       <th>Quantity</th>
                       <th>Rate</th>
                       <th>Amount</th>
@@ -416,7 +425,9 @@ export function BillDetail({
                   <tbody>
                     {item.details.map((detail) => (
                       <tr key={detail.billDetailId}>
+                        <td>{detail.sequenceNo ?? "—"}</td>
                         <td>{detail.description || detail.chargeType}</td>
+                        <td>{detail.chargeType}</td>
                         <td>{detail.quantity}</td>
                         <td>{money(detail.rate)}</td>
                         <td>{money(detail.amount)}</td>
@@ -426,6 +437,14 @@ export function BillDetail({
                 </table>
               </div>
             )}
+          </section>
+          <section className={styles.detailCard}>
+            <div className={styles.cardHeading}><h2>Penalties</h2>{canEdit && <button className={styles.secondaryButton} onClick={() => setPenaltyModal("create")}>+ Add Penalty</button>}</div>
+            {!item.penalties?.length ? <p className={styles.remarks}>No penalties have been applied.</p> : <div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Penalty</th><th>Base Amount</th><th>Rate</th><th>Amount</th>{canEdit && <th>Actions</th>}</tr></thead><tbody>{item.penalties.map((penalty) => <tr key={penalty.billPenaltyId}><td>{penalty.penaltyName}</td><td>{money(penalty.baseAmount)}</td><td>{penalty.rate}%</td><td>{money(penalty.amount)}</td>{canEdit && <td><button className={styles.viewLink} onClick={() => setPenaltyModal(penalty.billPenaltyId)}>Edit</button><button className={styles.viewLink} onClick={() => setRemoval({ kind: "penalty", id: penalty.billPenaltyId, label: penalty.penaltyName, amount: penalty.amount })}> · Remove</button></td>}</tr>)}</tbody></table></div>}
+          </section>
+          <section className={styles.detailCard}>
+            <div className={styles.cardHeading}><h2>Adjustments</h2>{canEdit && <button className={styles.secondaryButton} onClick={() => setAdjustmentModal("create")}>+ Add Adjustment</button>}</div>
+            {!item.adjustments?.length ? <p className={styles.remarks}>No adjustments have been recorded.</p> : <div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Type</th><th>Amount</th><th>Reason</th><th>Approved By</th><th>Approved At</th>{canEdit && <th>Actions</th>}</tr></thead><tbody>{item.adjustments.map((adjustment) => <tr key={adjustment.adjustmentId}><td>{adjustment.adjustmentType}</td><td>{money(adjustment.amount)}</td><td>{adjustment.reason || "—"}</td><td>{adjustment.approvedBy || "Pending"}</td><td>{date(adjustment.approvedAt)}</td>{canEdit && !adjustment.approvedAt && <td><button className={styles.viewLink} onClick={() => setAdjustmentModal(adjustment.adjustmentId)}>Edit</button><button className={styles.viewLink} onClick={() => setRemoval({ kind: "adjustment", id: adjustment.adjustmentId, label: adjustment.adjustmentType, amount: adjustment.amount, reason: adjustment.reason })}> · Remove</button><button className={styles.viewLink} onClick={() => setApproval(adjustment)}> · Approve</button></td>}</tr>)}</tbody></table></div>}
           </section>
           <Card title="Remarks" rows={[["Remarks", item.remarks || "—"]]} />
           <Card
@@ -437,6 +456,10 @@ export function BillDetail({
           />
         </div>
       </div>
+      {penaltyModal && <PenaltyModal billId={item.billId} penalty={item.penalties?.find((x) => x.billPenaltyId === penaltyModal)} onClose={() => setPenaltyModal(null)} onSaved={() => { setPenaltyModal(null); void load(); }} />}
+      {adjustmentModal && <AdjustmentModal billId={item.billId} adjustment={item.adjustments?.find((x) => x.adjustmentId === adjustmentModal)} onClose={() => setAdjustmentModal(null)} onSaved={() => { setAdjustmentModal(null); void load(); }} />}
+      {removal && <RemovalDialog removal={removal} onClose={() => setRemoval(null)} onRemoved={() => { setRemoval(null); void load(); }} />}
+      {approval && <ApprovalDialog adjustment={approval} onClose={() => setApproval(null)} onApproved={() => { setApproval(null); void load(); }} />}
     </TransactionShell>
   );
 }
@@ -701,9 +724,10 @@ export function BillForm({ billNo }: { billNo?: string }) {
                 type="number"
               />
               <Field
-                label="Penalty Amount"
+                label="Penalty Amount (from penalties)"
                 name="penaltyAmount"
                 type="number"
+                disabled
               />
               <Field
                 label="Connection Fee Amount"
@@ -711,9 +735,10 @@ export function BillForm({ billNo }: { billNo?: string }) {
                 type="number"
               />
               <Field
-                label="Adjustment Amount"
+                label="Adjustment Amount (approved adjustments)"
                 name="adjustmentAmount"
                 type="number"
+                disabled
               />
               <div>
                 <label className={styles.label}>Total Amount Due</label>
@@ -753,6 +778,32 @@ export function BillForm({ billNo }: { billNo?: string }) {
     </TransactionShell>
   );
 }
+function ApprovalDialog({ adjustment, onClose, onApproved }: { adjustment: NonNullable<Bill["adjustments"]>[number]; onClose: () => void; onApproved: () => void }) {
+  const [error, setError] = useState(""), [approving, setApproving] = useState(false);
+  async function approve() { setApproving(true); setError(""); try { const r = await fetch(`/api/bill-adjustments/${adjustment.adjustmentId}/approve`, { method: "POST" }), b = await r.json(); if (!r.ok) throw new Error(b.message); onApproved(); } catch (e) { setError(e instanceof Error ? e.message : "Unable to approve adjustment."); } finally { setApproving(false); } }
+  return <div className={styles.dialogBackdrop} role="presentation"><div className={styles.dialog} role="dialog" aria-modal="true" aria-label="Approve adjustment"><h2>Approve Adjustment</h2><p>Are you sure you want to approve this adjustment? It will affect the bill total.</p><p>Adjustment Type: {adjustment.adjustmentType}</p><p>Amount: {money(adjustment.amount)}</p><p>Reason: {adjustment.reason || "—"}</p>{error && <p className={styles.fieldError}>{error}</p>}<div className={styles.dialogActions}><button className={styles.secondaryButton} onClick={onClose} disabled={approving}>Cancel</button><button className={styles.button} onClick={() => void approve()} disabled={approving}>{approving ? "Approving…" : "Approve"}</button></div></div></div>;
+}
+
+function RemovalDialog({ removal, onClose, onRemoved }: { removal: { kind: "penalty" | "adjustment"; id: string; label: string; amount: string; reason?: string | null }; onClose: () => void; onRemoved: () => void }) {
+  const [error, setError] = useState(""), [removing, setRemoving] = useState(false); const title = removal.kind === "penalty" ? "Remove this penalty?" : "Remove this pending adjustment?";
+  async function remove() { setRemoving(true); setError(""); try { const r = await fetch(`/api/${removal.kind === "penalty" ? "bill-penalties" : "bill-adjustments"}/${removal.id}`, { method: "DELETE" }), b = await r.json(); if (!r.ok) throw new Error(b.message); onRemoved(); } catch (e) { setError(e instanceof Error ? e.message : "Unable to remove record."); } finally { setRemoving(false); } }
+  return <div className={styles.dialogBackdrop} role="presentation"><div className={styles.dialog} role="dialog" aria-modal="true" aria-label={title}><h2>{title}</h2><p>{removal.kind === "penalty" ? "Penalty" : "Adjustment Type"}: {removal.label}</p><p>Amount: {money(removal.amount)}</p>{removal.reason && <p>Reason: {removal.reason}</p>}{error && <p className={styles.fieldError}>{error}</p>}<div className={styles.dialogActions}><button className={styles.secondaryButton} onClick={onClose} disabled={removing}>Cancel</button><button className={styles.button} onClick={() => void remove()} disabled={removing}>{removing ? "Removing…" : removal.kind === "penalty" ? "Remove Penalty" : "Remove Adjustment"}</button></div></div></div>;
+}
+
+function PenaltyModal({ billId, penalty, onClose, onSaved }: { billId: string; penalty?: NonNullable<Bill["penalties"]>[number]; onClose: () => void; onSaved: () => void }) {
+  const [baseAmount, setBaseAmount] = useState(penalty?.baseAmount || ""), [penaltyId, setPenaltyId] = useState(""), [types, setTypes] = useState<{ penaltyId: string; penaltyName: string; rate: string }[]>([]), [error, setError] = useState(""), [saving, setSaving] = useState(false);
+  useEffect(() => { void (async () => { const r = await fetch(`/api/bill-penalties?options=1&billId=${billId}`), b = await r.json(); if (r.ok) { setTypes(b.data.penaltyTypes); if (!penalty) setBaseAmount(b.data.baseAmount); } else setError(b.message); })(); }, [billId, penalty]);
+  const selected = types.find((x) => x.penaltyId === penaltyId); const amount = baseAmount && selected ? (Number(baseAmount) * Number(selected.rate) / 100).toFixed(2) : "0.00";
+  async function save(e: React.FormEvent) { e.preventDefault(); setSaving(true); setError(""); try { const r = await fetch(penalty ? `/api/bill-penalties/${penalty.billPenaltyId}` : "/api/bill-penalties", { method: penalty ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(penalty ? { baseAmount } : { billId, penaltyId, baseAmount }) }), b = await r.json(); if (!r.ok) throw new Error(b.message); onSaved(); } catch (e) { setError(e instanceof Error ? e.message : "Unable to save penalty."); } finally { setSaving(false); } }
+  return <div className={styles.dialogBackdrop} role="presentation"><form className={styles.dialog} onSubmit={save}><h2>{penalty ? "Edit Bill Penalty" : "Add Bill Penalty"}</h2>{error && <p className={styles.fieldError}>{error}</p>}<div className={styles.fieldGrid}>{penalty ? <div><label className={styles.label}>Penalty Type</label><input className={styles.input} value={penalty.penaltyName} disabled /></div> : <div><label className={styles.label}>Penalty Type</label><select className={styles.select} value={penaltyId} onChange={(e) => setPenaltyId(e.target.value)} required><option value="">Select penalty type</option>{types.map((x) => <option key={x.penaltyId} value={x.penaltyId}>{x.penaltyName}</option>)}</select></div>}<div><label className={styles.label}>Base Amount</label><input className={styles.input} type="number" min="0.01" step="0.01" value={baseAmount} onChange={(e) => setBaseAmount(e.target.value)} required /></div>{!penalty && <><div><label className={styles.label}>Penalty Rate</label><input className={styles.input} value={selected ? `${selected.rate}%` : "Select a penalty type"} disabled /></div><div><label className={styles.label}>Penalty Amount</label><input className={styles.input} value={money(amount)} disabled /></div></>}</div><div className={styles.dialogActions}><button type="button" className={styles.secondaryButton} onClick={onClose}>Cancel</button><button className={styles.button} disabled={saving}>{saving ? "Saving…" : "Save Penalty"}</button></div></form></div>;
+}
+
+function AdjustmentModal({ billId, adjustment, onClose, onSaved }: { billId: string; adjustment?: NonNullable<Bill["adjustments"]>[number]; onClose: () => void; onSaved: () => void }) {
+  const [type, setType] = useState(adjustment?.adjustmentType || "CREDIT"), [amount, setAmount] = useState(adjustment ? String(Math.abs(Number(adjustment.amount))) : ""), [reason, setReason] = useState(adjustment?.reason || ""), [error, setError] = useState(""), [saving, setSaving] = useState(false);
+  async function save(e: React.FormEvent) { e.preventDefault(); setSaving(true); setError(""); try { const r = await fetch(adjustment ? `/api/bill-adjustments/${adjustment.adjustmentId}` : "/api/bill-adjustments", { method: adjustment ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ billId, adjustmentType: type, amount, reason }) }), b = await r.json(); if (!r.ok) throw new Error(b.message); onSaved(); } catch (e) { setError(e instanceof Error ? e.message : "Unable to save adjustment."); } finally { setSaving(false); } }
+  return <div className={styles.dialogBackdrop} role="presentation"><form className={styles.dialog} onSubmit={save}><h2>{adjustment ? "Edit Bill Adjustment" : "Add Bill Adjustment"}</h2><p>New adjustments remain pending approval and do not affect the bill total until approved.</p>{error && <p className={styles.fieldError}>{error}</p>}<div className={styles.fieldGrid}><div><label className={styles.label}>Adjustment Type</label><select className={styles.select} value={type} onChange={(e) => setType(e.target.value)}><option value="CREDIT">CREDIT</option><option value="DEBIT">DEBIT</option></select></div><div><label className={styles.label}>Amount</label><input className={styles.input} type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} required /></div><div className={styles.fullField}><label className={styles.label}>Reason</label><textarea className={styles.textarea} value={reason} onChange={(e) => setReason(e.target.value)} required /></div></div><div className={styles.dialogActions}><button type="button" className={styles.secondaryButton} onClick={onClose}>Cancel</button><button className={styles.button} disabled={saving}>{saving ? "Saving…" : "Save Adjustment"}</button></div></form></div>;
+}
+
 function Select({
   label,
   value,
