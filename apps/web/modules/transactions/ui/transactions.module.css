@@ -1,12 +1,12 @@
 .page {
   min-height: 100vh;
-  background: #f6f8fb;
-  color: #10234a;
+  background: transparent;
+  color: #172b34;
 }
 .main {
   width: min(1320px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 36px 0 64px;
+  padding: 30px 0 56px;
 }
 .headingRow {
   display: flex;
@@ -25,7 +25,7 @@
 }
 .title {
   margin: 0;
-  color: #0c2452;
+  color: #10262f;
   font-size: 30px;
   line-height: 1.2;
   letter-spacing: -0.035em;
@@ -120,9 +120,9 @@
 }
 .panel {
   background: #fff;
-  border: 1px solid #dce5f0;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(27, 53, 87, 0.04);
+  border: 1px solid #d5dfe3;
+  border-radius: 10px;
+  box-shadow: none;
 }
 .filters {
   padding: 16px;
@@ -212,8 +212,8 @@
   min-width: 930px;
 }
 .table th {
-  color: #65758b;
-  background: #f9fbfd;
+  color: #536871;
+  background: #f2f7f9;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.055em;
@@ -224,8 +224,8 @@
 }
 .table td {
   padding: 15px 16px;
-  border-bottom: 1px solid #ebf0f5;
-  color: #42536b;
+  border-bottom: 1px solid #e7edef;
+  color: #30464f;
   font-size: 14px;
 }
 .table tbody tr {
@@ -357,10 +357,10 @@
   color: #086ee5;
 }
 .formShell {
-  max-width: 920px;
+  max-width: 1040px;
 }
 .formPanel {
-  padding: 25px;
+  padding: 24px;
 }
 .section + .section {
   border-top: 1px solid #e4ebf2;
@@ -480,8 +480,8 @@
 }
 .detailHeader {
   background: #fff;
-  border: 1px solid #dce5f0;
-  border-radius: 12px;
+  border: 1px solid #d5dfe3;
+  border-radius: 10px;
   padding: 23px 25px;
   display: flex;
   align-items: center;
@@ -519,8 +519,8 @@
 }
 .detailCard {
   background: #fff;
-  border: 1px solid #dce5f0;
-  border-radius: 12px;
+  border: 1px solid #d5dfe3;
+  border-radius: 10px;
   padding: 22px;
 }
 .detailCard + .detailCard {

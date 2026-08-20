@@ -3089,7 +3089,7 @@
 /* Persistent admin shell around existing maintenance CRUD pages. */
 .adminFormShell {
   min-height: 100vh;
-  background: #f7f7fa;
+  background: #f4f7f8;
 }
 .formSidebar {
   z-index: 30;
@@ -3102,20 +3102,20 @@
 .adminFormContent {
   min-height: 100vh;
   margin-left: 224px;
-  background: #f7f7fa;
+  background: #f4f7f8;
 }
 .adminFormContent > main {
   min-height: 100vh;
 }
 .adminFormTheme {
-  --admin-canvas: #f3f4f6;
+  --admin-canvas: #f4f7f8;
   --admin-surface: #fff;
-  --admin-border: #d8dee7;
-  --admin-border-soft: #e6eaf0;
-  --admin-text: #26384d;
-  --admin-muted: #6b7888;
-  --admin-blue: #176fc1;
-  --admin-blue-soft: #edf5fc;
+  --admin-border: #d5dfe3;
+  --admin-border-soft: #e7edef;
+  --admin-text: #172b34;
+  --admin-muted: #63747c;
+  --admin-blue: #0b69d1;
+  --admin-blue-soft: #f1f7fb;
   background: var(--admin-canvas);
   color: var(--admin-text);
 }
@@ -3123,9 +3123,9 @@
   background: transparent !important;
 }
 .adminFormTheme :global(h1) {
-  color: #1e3148 !important;
-  font-size: clamp(1.6rem, 2.2vw, 1.9rem) !important;
-  font-weight: 650 !important;
+  color: #10262f !important;
+  font-size: clamp(1.55rem, 2vw, 1.85rem) !important;
+  font-weight: 700 !important;
   letter-spacing: -0.025em !important;
 }
 .adminFormTheme :global(h2),
@@ -3143,8 +3143,8 @@
 .adminFormTheme :global(select),
 .adminFormTheme :global(textarea) {
   border-color: #cfd6df !important;
-  background-color: #f9fafb !important;
-  color: #26384d !important;
+  background-color: #fff !important;
+  color: #172b34 !important;
   box-shadow: none !important;
   transition:
     border-color 150ms ease,
@@ -3176,23 +3176,23 @@
   width: 100%;
   border-collapse: collapse;
   background: var(--admin-surface);
-  border-top: 1px solid #34465a;
+  border-top: 1px solid var(--admin-border-soft);
 }
 .adminFormTheme :global(thead) {
-  background: #eef1f4 !important;
-  color: #59697b !important;
+  background: #f2f7f9 !important;
+  color: #536871 !important;
 }
 .adminFormTheme :global(th) {
-  border-bottom: 1px solid #34465a !important;
-  color: #59697b !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  color: #536871 !important;
   font-size: 0.7rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.045em !important;
   text-transform: uppercase;
 }
 .adminFormTheme :global(td) {
-  border-bottom: 1px solid #34465a !important;
-  color: #34475b;
+  border-bottom: 1px solid var(--admin-border-soft) !important;
+  color: #30464f;
 }
 .adminFormTheme :global(tbody tr:last-child td) {
   border-bottom: 0 !important;
@@ -3204,11 +3204,23 @@
     box-shadow 140ms ease;
 }
 .adminFormTheme :global(tbody tr:nth-child(even)) {
-  background: #fafbfc;
+  background: #fff;
 }
 .adminFormTheme :global(tbody tr:hover) {
   background: var(--admin-blue-soft) !important;
-  box-shadow: inset 3px 0 var(--admin-blue);
+  box-shadow: none;
+}
+.adminFormTheme :global(.shadow-sm),
+.adminFormTheme :global(.shadow-md),
+.adminFormTheme :global(.shadow-lg),
+.adminFormTheme :global(.shadow-xl) {
+  box-shadow: none !important;
+}
+.adminFormTheme :global(.rounded-xl) {
+  border-radius: 10px !important;
+}
+.adminFormTheme :global(form) {
+  background: #fff;
 }
 .adminFormTheme :global(button),
 .adminFormTheme :global(a) {
