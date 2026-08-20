@@ -1490,7 +1490,7 @@ footer > div:not(.footer-brand) {
 .landing .hero-photo {
   width: calc(100% - 32px);
   max-width: none;
-  min-height: 640px;
+  min-height: 600px;
   margin: 0 16px;
   padding: 70px clamp(28px, 5vw, 78px) 48px;
   display: block;
@@ -1532,7 +1532,7 @@ footer > div:not(.footer-brand) {
 .hero-service-card {
   position: absolute;
   left: clamp(28px, 5vw, 78px);
-  bottom: 72px;
+  bottom: 88px;
   width: 300px;
   min-height: 142px;
   padding: 20px;
@@ -1567,7 +1567,7 @@ footer > div:not(.footer-brand) {
 .hero-photo-action {
   position: absolute;
   right: clamp(28px, 5vw, 78px);
-  bottom: 72px;
+  bottom: 88px;
   width: min(390px, 35vw);
 }
 .hero-photo-action > p {
