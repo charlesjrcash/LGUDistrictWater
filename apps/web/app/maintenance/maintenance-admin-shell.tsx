@@ -101,17 +101,17 @@ export function MaintenanceAdminShell({
             ))}
           </div>
         ))}
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={() => setConfirmLogout(true)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9" />
+          </svg>
+          <span>Log out</span>
+        </button>
       </aside>
-      <button
-        type="button"
-        className={styles.logoutButton}
-        onClick={() => setConfirmLogout(true)}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9" />
-        </svg>
-        <span>Log out</span>
-      </button>
       <main className={`${styles.adminFormContent} ${styles.adminFormTheme}`}>
         {children}
       </main>

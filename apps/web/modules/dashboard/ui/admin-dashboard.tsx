@@ -548,6 +548,16 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             ))}
           </div>
         ))}
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={() => setConfirmLogout(true)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9" />
+          </svg>
+          <span>Log out</span>
+        </button>
         <div className={styles.navFooter}>
           <span>LGU Water District</span>
           <small>Administration Console</small>
@@ -957,16 +967,6 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          className={styles.logoutButton}
-          onClick={() => setConfirmLogout(true)}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9" />
-          </svg>
-          <span>Log out</span>
-        </button>
         {confirmLogout && (
           <div
             className={styles.logoutBackdrop}
