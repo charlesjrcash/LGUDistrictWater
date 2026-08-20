@@ -67,6 +67,11 @@ export type users = Prisma.usersModel
  */
 export type user_sessions = Prisma.user_sessionsModel
 /**
+ * Model password_reset_codes
+ * 
+ */
+export type password_reset_codes = Prisma.password_reset_codesModel
+/**
  * Model audit_logs
  * 
  */

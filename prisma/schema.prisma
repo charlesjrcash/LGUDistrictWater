@@ -278,6 +278,7 @@ model bills {
   bill_adjustments              bill_adjustments[]
   bill_details                  bill_details[]
   bill_penalties                bill_penalties[]
+  connection_fees               connection_fees[]
   mt_billing_period             mt_billing_period     @relation(fields: [billing_period_id], references: [billing_period_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_billing_period")
   users_bills_created_byTousers users?                @relation("bills_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_created_by")
   meter_readings                meter_readings?       @relation(fields: [reading_id], references: [reading_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_bill_reading")
@@ -295,6 +296,7 @@ model connection_fees {
   connection_fee_id                       BigInt           @id @default(autoincrement())
   service_account_id                      BigInt
   fee_id                                  BigInt
+  bill_id                                 BigInt?
   assessed_amount                         Decimal          @default(0) @db.Decimal(14, 2)
   amount_paid                             Decimal          @default(0) @db.Decimal(14, 2)
   balance_amount                          Decimal          @default(0) @db.Decimal(14, 2)
@@ -307,10 +309,12 @@ model connection_fees {
   updated_at                              DateTime?        @db.Timestamp(6)
   users_connection_fees_created_byTousers users?           @relation("connection_fees_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_created_by")
   mt_fees                                 mt_fees          @relation(fields: [fee_id], references: [fee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_master")
+  bills                                   bills?           @relation(fields: [bill_id], references: [bill_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_bill")
   service_accounts                        service_accounts @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_service")
   users_connection_fees_updated_byTousers users?           @relation("connection_fees_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_connection_fee_updated_by")
 
   @@index([service_account_id], map: "idx_connection_fee_service")
+  @@index([bill_id], map: "idx_connection_fee_bill")
 }
 
 model disconnection_orders {

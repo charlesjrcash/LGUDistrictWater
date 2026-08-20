@@ -375,6 +375,7 @@ export type billsWhereInput = {
   bill_adjustments?: Prisma.Bill_adjustmentsListRelationFilter
   bill_details?: Prisma.Bill_detailsListRelationFilter
   bill_penalties?: Prisma.Bill_penaltiesListRelationFilter
+  connection_fees?: Prisma.Connection_feesListRelationFilter
   mt_billing_period?: Prisma.XOR<Prisma.Mt_billing_periodScalarRelationFilter, Prisma.mt_billing_periodWhereInput>
   users_bills_created_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   meter_readings?: Prisma.XOR<Prisma.Meter_readingsNullableScalarRelationFilter, Prisma.meter_readingsWhereInput> | null
@@ -406,6 +407,7 @@ export type billsOrderByWithRelationInput = {
   bill_adjustments?: Prisma.bill_adjustmentsOrderByRelationAggregateInput
   bill_details?: Prisma.bill_detailsOrderByRelationAggregateInput
   bill_penalties?: Prisma.bill_penaltiesOrderByRelationAggregateInput
+  connection_fees?: Prisma.connection_feesOrderByRelationAggregateInput
   mt_billing_period?: Prisma.mt_billing_periodOrderByWithRelationInput
   users_bills_created_byTousers?: Prisma.usersOrderByWithRelationInput
   meter_readings?: Prisma.meter_readingsOrderByWithRelationInput
@@ -440,6 +442,7 @@ export type billsWhereUniqueInput = Prisma.AtLeast<{
   bill_adjustments?: Prisma.Bill_adjustmentsListRelationFilter
   bill_details?: Prisma.Bill_detailsListRelationFilter
   bill_penalties?: Prisma.Bill_penaltiesListRelationFilter
+  connection_fees?: Prisma.Connection_feesListRelationFilter
   mt_billing_period?: Prisma.XOR<Prisma.Mt_billing_periodScalarRelationFilter, Prisma.mt_billing_periodWhereInput>
   users_bills_created_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   meter_readings?: Prisma.XOR<Prisma.Meter_readingsNullableScalarRelationFilter, Prisma.meter_readingsWhereInput> | null
@@ -518,6 +521,7 @@ export type billsCreateInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -549,6 +553,7 @@ export type billsUncheckedCreateInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -570,6 +575,7 @@ export type billsUpdateInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -601,6 +607,7 @@ export type billsUncheckedUpdateInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -776,6 +783,11 @@ export type billsSumOrderByAggregateInput = {
   updated_by?: Prisma.SortOrder
 }
 
+export type BillsNullableScalarRelationFilter = {
+  is?: Prisma.billsWhereInput | null
+  isNot?: Prisma.billsWhereInput | null
+}
+
 export type billsCreateNestedManyWithoutUsers_bills_created_byTousersInput = {
   create?: Prisma.XOR<Prisma.billsCreateWithoutUsers_bills_created_byTousersInput, Prisma.billsUncheckedCreateWithoutUsers_bills_created_byTousersInput> | Prisma.billsCreateWithoutUsers_bills_created_byTousersInput[] | Prisma.billsUncheckedCreateWithoutUsers_bills_created_byTousersInput[]
   connectOrCreate?: Prisma.billsCreateOrConnectWithoutUsers_bills_created_byTousersInput | Prisma.billsCreateOrConnectWithoutUsers_bills_created_byTousersInput[]
@@ -900,6 +912,22 @@ export type billsUpdateOneRequiredWithoutBill_penaltiesNestedInput = {
   upsert?: Prisma.billsUpsertWithoutBill_penaltiesInput
   connect?: Prisma.billsWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.billsUpdateToOneWithWhereWithoutBill_penaltiesInput, Prisma.billsUpdateWithoutBill_penaltiesInput>, Prisma.billsUncheckedUpdateWithoutBill_penaltiesInput>
+}
+
+export type billsCreateNestedOneWithoutConnection_feesInput = {
+  create?: Prisma.XOR<Prisma.billsCreateWithoutConnection_feesInput, Prisma.billsUncheckedCreateWithoutConnection_feesInput>
+  connectOrCreate?: Prisma.billsCreateOrConnectWithoutConnection_feesInput
+  connect?: Prisma.billsWhereUniqueInput
+}
+
+export type billsUpdateOneWithoutConnection_feesNestedInput = {
+  create?: Prisma.XOR<Prisma.billsCreateWithoutConnection_feesInput, Prisma.billsUncheckedCreateWithoutConnection_feesInput>
+  connectOrCreate?: Prisma.billsCreateOrConnectWithoutConnection_feesInput
+  upsert?: Prisma.billsUpsertWithoutConnection_feesInput
+  disconnect?: Prisma.billsWhereInput | boolean
+  delete?: Prisma.billsWhereInput | boolean
+  connect?: Prisma.billsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.billsUpdateToOneWithWhereWithoutConnection_feesInput, Prisma.billsUpdateWithoutConnection_feesInput>, Prisma.billsUncheckedUpdateWithoutConnection_feesInput>
 }
 
 export type billsCreateNestedManyWithoutMeter_readingsInput = {
@@ -1060,6 +1088,7 @@ export type billsCreateWithoutUsers_bills_created_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutBillsInput
@@ -1089,6 +1118,7 @@ export type billsUncheckedCreateWithoutUsers_bills_created_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1120,6 +1150,7 @@ export type billsCreateWithoutUsers_bills_updated_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -1149,6 +1180,7 @@ export type billsUncheckedCreateWithoutUsers_bills_updated_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1236,6 +1268,7 @@ export type billsCreateWithoutBill_adjustmentsInput = {
   updated_at?: Date | string | null
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -1266,6 +1299,7 @@ export type billsUncheckedCreateWithoutBill_adjustmentsInput = {
   updated_at?: Date | string | null
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1302,6 +1336,7 @@ export type billsUpdateWithoutBill_adjustmentsInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -1332,6 +1367,7 @@ export type billsUncheckedUpdateWithoutBill_adjustmentsInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -1352,6 +1388,7 @@ export type billsCreateWithoutBill_detailsInput = {
   updated_at?: Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -1382,6 +1419,7 @@ export type billsUncheckedCreateWithoutBill_detailsInput = {
   updated_at?: Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1418,6 +1456,7 @@ export type billsUpdateWithoutBill_detailsInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -1448,6 +1487,7 @@ export type billsUncheckedUpdateWithoutBill_detailsInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -1468,6 +1508,7 @@ export type billsCreateWithoutBill_penaltiesInput = {
   updated_at?: Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -1498,6 +1539,7 @@ export type billsUncheckedCreateWithoutBill_penaltiesInput = {
   updated_at?: Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1534,6 +1576,7 @@ export type billsUpdateWithoutBill_penaltiesInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -1564,6 +1607,127 @@ export type billsUncheckedUpdateWithoutBill_penaltiesInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
+  payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
+}
+
+export type billsCreateWithoutConnection_feesInput = {
+  bill_id?: bigint | number
+  bill_no: string
+  bill_date?: Date | string
+  due_date?: Date | string | null
+  water_consumption_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  penalty_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  connection_fee_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  adjustment_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total_amount_due?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: string
+  remarks?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
+  bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
+  bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
+  users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
+  meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
+  service_accounts: Prisma.service_accountsCreateNestedOneWithoutBillsInput
+  users_bills_updated_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_updated_byTousersInput
+  payment_allocations?: Prisma.payment_allocationsCreateNestedManyWithoutBillsInput
+}
+
+export type billsUncheckedCreateWithoutConnection_feesInput = {
+  bill_id?: bigint | number
+  bill_no: string
+  service_account_id: bigint | number
+  billing_period_id: bigint | number
+  reading_id?: bigint | number | null
+  bill_date?: Date | string
+  due_date?: Date | string | null
+  water_consumption_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  penalty_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  connection_fee_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  adjustment_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total_amount_due?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: string
+  remarks?: string | null
+  created_by?: bigint | number | null
+  updated_by?: bigint | number | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
+  bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
+  bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
+}
+
+export type billsCreateOrConnectWithoutConnection_feesInput = {
+  where: Prisma.billsWhereUniqueInput
+  create: Prisma.XOR<Prisma.billsCreateWithoutConnection_feesInput, Prisma.billsUncheckedCreateWithoutConnection_feesInput>
+}
+
+export type billsUpsertWithoutConnection_feesInput = {
+  update: Prisma.XOR<Prisma.billsUpdateWithoutConnection_feesInput, Prisma.billsUncheckedUpdateWithoutConnection_feesInput>
+  create: Prisma.XOR<Prisma.billsCreateWithoutConnection_feesInput, Prisma.billsUncheckedCreateWithoutConnection_feesInput>
+  where?: Prisma.billsWhereInput
+}
+
+export type billsUpdateToOneWithWhereWithoutConnection_feesInput = {
+  where?: Prisma.billsWhereInput
+  data: Prisma.XOR<Prisma.billsUpdateWithoutConnection_feesInput, Prisma.billsUncheckedUpdateWithoutConnection_feesInput>
+}
+
+export type billsUpdateWithoutConnection_feesInput = {
+  bill_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_no?: Prisma.StringFieldUpdateOperationsInput | string
+  bill_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  water_consumption_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  penalty_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  connection_fee_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  adjustment_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total_amount_due?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
+  bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
+  bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
+  users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
+  meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutBillsNestedInput
+  users_bills_updated_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_updated_byTousersNestedInput
+  payment_allocations?: Prisma.payment_allocationsUpdateManyWithoutBillsNestedInput
+}
+
+export type billsUncheckedUpdateWithoutConnection_feesInput = {
+  bill_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_no?: Prisma.StringFieldUpdateOperationsInput | string
+  service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  billing_period_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  reading_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  bill_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  due_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  water_consumption_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  previous_balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  penalty_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  connection_fee_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  adjustment_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total_amount_due?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
+  bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
+  bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -1585,6 +1749,7 @@ export type billsCreateWithoutMeter_readingsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutBillsInput
@@ -1614,6 +1779,7 @@ export type billsUncheckedCreateWithoutMeter_readingsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1661,6 +1827,7 @@ export type billsCreateWithoutMt_billing_periodInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutBillsInput
@@ -1690,6 +1857,7 @@ export type billsUncheckedCreateWithoutMt_billing_periodInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1737,6 +1905,7 @@ export type billsCreateWithoutPayment_allocationsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -1767,6 +1936,7 @@ export type billsUncheckedCreateWithoutPayment_allocationsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
 }
 
 export type billsCreateOrConnectWithoutPayment_allocationsInput = {
@@ -1803,6 +1973,7 @@ export type billsUpdateWithoutPayment_allocationsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -1833,6 +2004,7 @@ export type billsUncheckedUpdateWithoutPayment_allocationsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
 }
 
 export type billsCreateWithoutService_accountsInput = {
@@ -1853,6 +2025,7 @@ export type billsCreateWithoutService_accountsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutBillsInput
   mt_billing_period: Prisma.mt_billing_periodCreateNestedOneWithoutBillsInput
   users_bills_created_byTousers?: Prisma.usersCreateNestedOneWithoutBills_bills_created_byTousersInput
   meter_readings?: Prisma.meter_readingsCreateNestedOneWithoutBillsInput
@@ -1882,6 +2055,7 @@ export type billsUncheckedCreateWithoutService_accountsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedCreateNestedManyWithoutBillsInput
   bill_details?: Prisma.bill_detailsUncheckedCreateNestedManyWithoutBillsInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedCreateNestedManyWithoutBillsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutBillsInput
   payment_allocations?: Prisma.payment_allocationsUncheckedCreateNestedManyWithoutBillsInput
 }
 
@@ -1971,6 +2145,7 @@ export type billsUpdateWithoutUsers_bills_created_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutBillsNestedInput
@@ -2000,6 +2175,7 @@ export type billsUncheckedUpdateWithoutUsers_bills_created_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -2042,6 +2218,7 @@ export type billsUpdateWithoutUsers_bills_updated_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -2071,6 +2248,7 @@ export type billsUncheckedUpdateWithoutUsers_bills_updated_byTousersInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -2134,6 +2312,7 @@ export type billsUpdateWithoutMeter_readingsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutBillsNestedInput
@@ -2163,6 +2342,7 @@ export type billsUncheckedUpdateWithoutMeter_readingsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -2226,6 +2406,7 @@ export type billsUpdateWithoutMt_billing_periodInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutBillsNestedInput
@@ -2255,6 +2436,7 @@ export type billsUncheckedUpdateWithoutMt_billing_periodInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -2318,6 +2500,7 @@ export type billsUpdateWithoutService_accountsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutBillsNestedInput
   mt_billing_period?: Prisma.mt_billing_periodUpdateOneRequiredWithoutBillsNestedInput
   users_bills_created_byTousers?: Prisma.usersUpdateOneWithoutBills_bills_created_byTousersNestedInput
   meter_readings?: Prisma.meter_readingsUpdateOneWithoutBillsNestedInput
@@ -2347,6 +2530,7 @@ export type billsUncheckedUpdateWithoutService_accountsInput = {
   bill_adjustments?: Prisma.bill_adjustmentsUncheckedUpdateManyWithoutBillsNestedInput
   bill_details?: Prisma.bill_detailsUncheckedUpdateManyWithoutBillsNestedInput
   bill_penalties?: Prisma.bill_penaltiesUncheckedUpdateManyWithoutBillsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutBillsNestedInput
   payment_allocations?: Prisma.payment_allocationsUncheckedUpdateManyWithoutBillsNestedInput
 }
 
@@ -2380,6 +2564,7 @@ export type BillsCountOutputType = {
   bill_adjustments: number
   bill_details: number
   bill_penalties: number
+  connection_fees: number
   payment_allocations: number
 }
 
@@ -2387,6 +2572,7 @@ export type BillsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   bill_adjustments?: boolean | BillsCountOutputTypeCountBill_adjustmentsArgs
   bill_details?: boolean | BillsCountOutputTypeCountBill_detailsArgs
   bill_penalties?: boolean | BillsCountOutputTypeCountBill_penaltiesArgs
+  connection_fees?: boolean | BillsCountOutputTypeCountConnection_feesArgs
   payment_allocations?: boolean | BillsCountOutputTypeCountPayment_allocationsArgs
 }
 
@@ -2424,6 +2610,13 @@ export type BillsCountOutputTypeCountBill_penaltiesArgs<ExtArgs extends runtime.
 /**
  * BillsCountOutputType without action
  */
+export type BillsCountOutputTypeCountConnection_feesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.connection_feesWhereInput
+}
+
+/**
+ * BillsCountOutputType without action
+ */
 export type BillsCountOutputTypeCountPayment_allocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.payment_allocationsWhereInput
 }
@@ -2452,6 +2645,7 @@ export type billsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   bill_adjustments?: boolean | Prisma.bills$bill_adjustmentsArgs<ExtArgs>
   bill_details?: boolean | Prisma.bills$bill_detailsArgs<ExtArgs>
   bill_penalties?: boolean | Prisma.bills$bill_penaltiesArgs<ExtArgs>
+  connection_fees?: boolean | Prisma.bills$connection_feesArgs<ExtArgs>
   mt_billing_period?: boolean | Prisma.mt_billing_periodDefaultArgs<ExtArgs>
   users_bills_created_byTousers?: boolean | Prisma.bills$users_bills_created_byTousersArgs<ExtArgs>
   meter_readings?: boolean | Prisma.bills$meter_readingsArgs<ExtArgs>
@@ -2542,6 +2736,7 @@ export type billsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   bill_adjustments?: boolean | Prisma.bills$bill_adjustmentsArgs<ExtArgs>
   bill_details?: boolean | Prisma.bills$bill_detailsArgs<ExtArgs>
   bill_penalties?: boolean | Prisma.bills$bill_penaltiesArgs<ExtArgs>
+  connection_fees?: boolean | Prisma.bills$connection_feesArgs<ExtArgs>
   mt_billing_period?: boolean | Prisma.mt_billing_periodDefaultArgs<ExtArgs>
   users_bills_created_byTousers?: boolean | Prisma.bills$users_bills_created_byTousersArgs<ExtArgs>
   meter_readings?: boolean | Prisma.bills$meter_readingsArgs<ExtArgs>
@@ -2571,6 +2766,7 @@ export type $billsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     bill_adjustments: Prisma.$bill_adjustmentsPayload<ExtArgs>[]
     bill_details: Prisma.$bill_detailsPayload<ExtArgs>[]
     bill_penalties: Prisma.$bill_penaltiesPayload<ExtArgs>[]
+    connection_fees: Prisma.$connection_feesPayload<ExtArgs>[]
     mt_billing_period: Prisma.$mt_billing_periodPayload<ExtArgs>
     users_bills_created_byTousers: Prisma.$usersPayload<ExtArgs> | null
     meter_readings: Prisma.$meter_readingsPayload<ExtArgs> | null
@@ -2995,6 +3191,7 @@ export interface Prisma__billsClient<T, Null = never, ExtArgs extends runtime.Ty
   bill_adjustments<T extends Prisma.bills$bill_adjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bills$bill_adjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$bill_adjustmentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bill_details<T extends Prisma.bills$bill_detailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bills$bill_detailsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$bill_detailsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bill_penalties<T extends Prisma.bills$bill_penaltiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bills$bill_penaltiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$bill_penaltiesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  connection_fees<T extends Prisma.bills$connection_feesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bills$connection_feesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$connection_feesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mt_billing_period<T extends Prisma.mt_billing_periodDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.mt_billing_periodDefaultArgs<ExtArgs>>): Prisma.Prisma__mt_billing_periodClient<runtime.Types.Result.GetResult<Prisma.$mt_billing_periodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   users_bills_created_byTousers<T extends Prisma.bills$users_bills_created_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bills$users_bills_created_byTousersArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   meter_readings<T extends Prisma.bills$meter_readingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bills$meter_readingsArgs<ExtArgs>>): Prisma.Prisma__meter_readingsClient<runtime.Types.Result.GetResult<Prisma.$meter_readingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -3519,6 +3716,30 @@ export type bills$bill_penaltiesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.Bill_penaltiesScalarFieldEnum | Prisma.Bill_penaltiesScalarFieldEnum[]
+}
+
+/**
+ * bills.connection_fees
+ */
+export type bills$connection_feesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the connection_fees
+   */
+  select?: Prisma.connection_feesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the connection_fees
+   */
+  omit?: Prisma.connection_feesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.connection_feesInclude<ExtArgs> | null
+  where?: Prisma.connection_feesWhereInput
+  orderBy?: Prisma.connection_feesOrderByWithRelationInput | Prisma.connection_feesOrderByWithRelationInput[]
+  cursor?: Prisma.connection_feesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Connection_feesScalarFieldEnum | Prisma.Connection_feesScalarFieldEnum[]
 }
 
 /**

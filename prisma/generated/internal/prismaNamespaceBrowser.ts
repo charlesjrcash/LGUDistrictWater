@@ -56,6 +56,7 @@ export const ModelName = {
   user_roles: 'user_roles',
   users: 'users',
   user_sessions: 'user_sessions',
+  password_reset_codes: 'password_reset_codes',
   audit_logs: 'audit_logs',
   bill_adjustments: 'bill_adjustments',
   bill_details: 'bill_details',
@@ -197,6 +198,21 @@ export const User_sessionsScalarFieldEnum = {
 export type User_sessionsScalarFieldEnum = (typeof User_sessionsScalarFieldEnum)[keyof typeof User_sessionsScalarFieldEnum]
 
 
+export const Password_reset_codesScalarFieldEnum = {
+  reset_id: 'reset_id',
+  user_id: 'user_id',
+  code_hash: 'code_hash',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  verified_at: 'verified_at',
+  consumed_at: 'consumed_at',
+  attempts: 'attempts',
+  created_at: 'created_at'
+} as const
+
+export type Password_reset_codesScalarFieldEnum = (typeof Password_reset_codesScalarFieldEnum)[keyof typeof Password_reset_codesScalarFieldEnum]
+
+
 export const Audit_logsScalarFieldEnum = {
   audit_id: 'audit_id',
   user_id: 'user_id',
@@ -286,6 +302,7 @@ export const Connection_feesScalarFieldEnum = {
   connection_fee_id: 'connection_fee_id',
   service_account_id: 'service_account_id',
   fee_id: 'fee_id',
+  bill_id: 'bill_id',
   assessed_amount: 'assessed_amount',
   amount_paid: 'amount_paid',
   balance_amount: 'balance_amount',
@@ -970,6 +987,7 @@ export type Reconnection_ordersScalarFieldEnum = (typeof Reconnection_ordersScal
 
 export const Service_accountsScalarFieldEnum = {
   service_account_id: 'service_account_id',
+  application_id: 'application_id',
   customer_id: 'customer_id',
   control_no: 'control_no',
   classification_id: 'classification_id',

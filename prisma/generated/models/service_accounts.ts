@@ -28,6 +28,7 @@ export type AggregateService_accounts = {
 
 export type Service_accountsAvgAggregateOutputType = {
   service_account_id: number | null
+  application_id: number | null
   customer_id: number | null
   classification_id: number | null
   connection_type_id: number | null
@@ -40,6 +41,7 @@ export type Service_accountsAvgAggregateOutputType = {
 
 export type Service_accountsSumAggregateOutputType = {
   service_account_id: bigint | null
+  application_id: bigint | null
   customer_id: bigint | null
   classification_id: bigint | null
   connection_type_id: bigint | null
@@ -52,6 +54,7 @@ export type Service_accountsSumAggregateOutputType = {
 
 export type Service_accountsMinAggregateOutputType = {
   service_account_id: bigint | null
+  application_id: bigint | null
   customer_id: bigint | null
   control_no: string | null
   classification_id: bigint | null
@@ -69,6 +72,7 @@ export type Service_accountsMinAggregateOutputType = {
 
 export type Service_accountsMaxAggregateOutputType = {
   service_account_id: bigint | null
+  application_id: bigint | null
   customer_id: bigint | null
   control_no: string | null
   classification_id: bigint | null
@@ -86,6 +90,7 @@ export type Service_accountsMaxAggregateOutputType = {
 
 export type Service_accountsCountAggregateOutputType = {
   service_account_id: number
+  application_id: number
   customer_id: number
   control_no: number
   classification_id: number
@@ -105,6 +110,7 @@ export type Service_accountsCountAggregateOutputType = {
 
 export type Service_accountsAvgAggregateInputType = {
   service_account_id?: true
+  application_id?: true
   customer_id?: true
   classification_id?: true
   connection_type_id?: true
@@ -117,6 +123,7 @@ export type Service_accountsAvgAggregateInputType = {
 
 export type Service_accountsSumAggregateInputType = {
   service_account_id?: true
+  application_id?: true
   customer_id?: true
   classification_id?: true
   connection_type_id?: true
@@ -129,6 +136,7 @@ export type Service_accountsSumAggregateInputType = {
 
 export type Service_accountsMinAggregateInputType = {
   service_account_id?: true
+  application_id?: true
   customer_id?: true
   control_no?: true
   classification_id?: true
@@ -146,6 +154,7 @@ export type Service_accountsMinAggregateInputType = {
 
 export type Service_accountsMaxAggregateInputType = {
   service_account_id?: true
+  application_id?: true
   customer_id?: true
   control_no?: true
   classification_id?: true
@@ -163,6 +172,7 @@ export type Service_accountsMaxAggregateInputType = {
 
 export type Service_accountsCountAggregateInputType = {
   service_account_id?: true
+  application_id?: true
   customer_id?: true
   control_no?: true
   classification_id?: true
@@ -267,6 +277,7 @@ export type service_accountsGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type Service_accountsGroupByOutputType = {
   service_account_id: bigint
+  application_id: bigint | null
   customer_id: bigint
   control_no: string
   classification_id: bigint
@@ -307,6 +318,7 @@ export type service_accountsWhereInput = {
   OR?: Prisma.service_accountsWhereInput[]
   NOT?: Prisma.service_accountsWhereInput | Prisma.service_accountsWhereInput[]
   service_account_id?: Prisma.BigIntFilter<"service_accounts"> | bigint | number
+  application_id?: Prisma.BigIntNullableFilter<"service_accounts"> | bigint | number | null
   customer_id?: Prisma.BigIntFilter<"service_accounts"> | bigint | number
   control_no?: Prisma.StringFilter<"service_accounts"> | string
   classification_id?: Prisma.BigIntFilter<"service_accounts"> | bigint | number
@@ -328,6 +340,7 @@ export type service_accountsWhereInput = {
   meters?: Prisma.MetersListRelationFilter
   payments?: Prisma.PaymentsListRelationFilter
   reconnection_orders?: Prisma.Reconnection_ordersListRelationFilter
+  service_applications?: Prisma.XOR<Prisma.Service_applicationsNullableScalarRelationFilter, Prisma.service_applicationsWhereInput> | null
   mt_customer_classification?: Prisma.XOR<Prisma.Mt_customer_classificationScalarRelationFilter, Prisma.mt_customer_classificationWhereInput>
   mt_connection_status?: Prisma.XOR<Prisma.Mt_connection_statusNullableScalarRelationFilter, Prisma.mt_connection_statusWhereInput> | null
   mt_connection_type?: Prisma.XOR<Prisma.Mt_connection_typeNullableScalarRelationFilter, Prisma.mt_connection_typeWhereInput> | null
@@ -341,6 +354,7 @@ export type service_accountsWhereInput = {
 
 export type service_accountsOrderByWithRelationInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrderInput | Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   control_no?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
@@ -362,6 +376,7 @@ export type service_accountsOrderByWithRelationInput = {
   meters?: Prisma.metersOrderByRelationAggregateInput
   payments?: Prisma.paymentsOrderByRelationAggregateInput
   reconnection_orders?: Prisma.reconnection_ordersOrderByRelationAggregateInput
+  service_applications?: Prisma.service_applicationsOrderByWithRelationInput
   mt_customer_classification?: Prisma.mt_customer_classificationOrderByWithRelationInput
   mt_connection_status?: Prisma.mt_connection_statusOrderByWithRelationInput
   mt_connection_type?: Prisma.mt_connection_typeOrderByWithRelationInput
@@ -375,6 +390,7 @@ export type service_accountsOrderByWithRelationInput = {
 
 export type service_accountsWhereUniqueInput = Prisma.AtLeast<{
   service_account_id?: bigint | number
+  application_id?: bigint | number
   control_no?: string
   AND?: Prisma.service_accountsWhereInput | Prisma.service_accountsWhereInput[]
   OR?: Prisma.service_accountsWhereInput[]
@@ -399,6 +415,7 @@ export type service_accountsWhereUniqueInput = Prisma.AtLeast<{
   meters?: Prisma.MetersListRelationFilter
   payments?: Prisma.PaymentsListRelationFilter
   reconnection_orders?: Prisma.Reconnection_ordersListRelationFilter
+  service_applications?: Prisma.XOR<Prisma.Service_applicationsNullableScalarRelationFilter, Prisma.service_applicationsWhereInput> | null
   mt_customer_classification?: Prisma.XOR<Prisma.Mt_customer_classificationScalarRelationFilter, Prisma.mt_customer_classificationWhereInput>
   mt_connection_status?: Prisma.XOR<Prisma.Mt_connection_statusNullableScalarRelationFilter, Prisma.mt_connection_statusWhereInput> | null
   mt_connection_type?: Prisma.XOR<Prisma.Mt_connection_typeNullableScalarRelationFilter, Prisma.mt_connection_typeWhereInput> | null
@@ -408,10 +425,11 @@ export type service_accountsWhereUniqueInput = Prisma.AtLeast<{
   mt_service_type?: Prisma.XOR<Prisma.Mt_service_typeNullableScalarRelationFilter, Prisma.mt_service_typeWhereInput> | null
   users_service_accounts_updated_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   service_installations?: Prisma.Service_installationsListRelationFilter
-}, "service_account_id" | "control_no">
+}, "service_account_id" | "application_id" | "control_no">
 
 export type service_accountsOrderByWithAggregationInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrderInput | Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   control_no?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
@@ -437,6 +455,7 @@ export type service_accountsScalarWhereWithAggregatesInput = {
   OR?: Prisma.service_accountsScalarWhereWithAggregatesInput[]
   NOT?: Prisma.service_accountsScalarWhereWithAggregatesInput | Prisma.service_accountsScalarWhereWithAggregatesInput[]
   service_account_id?: Prisma.BigIntWithAggregatesFilter<"service_accounts"> | bigint | number
+  application_id?: Prisma.BigIntNullableWithAggregatesFilter<"service_accounts"> | bigint | number | null
   customer_id?: Prisma.BigIntWithAggregatesFilter<"service_accounts"> | bigint | number
   control_no?: Prisma.StringWithAggregatesFilter<"service_accounts"> | string
   classification_id?: Prisma.BigIntWithAggregatesFilter<"service_accounts"> | bigint | number
@@ -467,6 +486,7 @@ export type service_accountsCreateInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -480,6 +500,7 @@ export type service_accountsCreateInput = {
 
 export type service_accountsUncheckedCreateInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -519,6 +540,7 @@ export type service_accountsUpdateInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -532,6 +554,7 @@ export type service_accountsUpdateInput = {
 
 export type service_accountsUncheckedUpdateInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -558,6 +581,7 @@ export type service_accountsUncheckedUpdateInput = {
 
 export type service_accountsCreateManyInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -584,6 +608,7 @@ export type service_accountsUpdateManyMutationInput = {
 
 export type service_accountsUncheckedUpdateManyInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -616,6 +641,7 @@ export type Service_accountsScalarRelationFilter = {
 
 export type service_accountsCountOrderByAggregateInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   control_no?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
@@ -633,6 +659,7 @@ export type service_accountsCountOrderByAggregateInput = {
 
 export type service_accountsAvgOrderByAggregateInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
   connection_type_id?: Prisma.SortOrder
@@ -645,6 +672,7 @@ export type service_accountsAvgOrderByAggregateInput = {
 
 export type service_accountsMaxOrderByAggregateInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   control_no?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
@@ -662,6 +690,7 @@ export type service_accountsMaxOrderByAggregateInput = {
 
 export type service_accountsMinOrderByAggregateInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   control_no?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
@@ -679,6 +708,7 @@ export type service_accountsMinOrderByAggregateInput = {
 
 export type service_accountsSumOrderByAggregateInput = {
   service_account_id?: Prisma.SortOrder
+  application_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   classification_id?: Prisma.SortOrder
   connection_type_id?: Prisma.SortOrder
@@ -687,6 +717,11 @@ export type service_accountsSumOrderByAggregateInput = {
   route_id?: Prisma.SortOrder
   created_by?: Prisma.SortOrder
   updated_by?: Prisma.SortOrder
+}
+
+export type Service_accountsNullableScalarRelationFilter = {
+  is?: Prisma.service_accountsWhereInput | null
+  isNot?: Prisma.service_accountsWhereInput | null
 }
 
 export type service_accountsCreateNestedManyWithoutCustomersInput = {
@@ -1137,6 +1172,38 @@ export type service_accountsUpdateOneRequiredWithoutReconnection_ordersNestedInp
   update?: Prisma.XOR<Prisma.XOR<Prisma.service_accountsUpdateToOneWithWhereWithoutReconnection_ordersInput, Prisma.service_accountsUpdateWithoutReconnection_ordersInput>, Prisma.service_accountsUncheckedUpdateWithoutReconnection_ordersInput>
 }
 
+export type service_accountsCreateNestedOneWithoutService_applicationsInput = {
+  create?: Prisma.XOR<Prisma.service_accountsCreateWithoutService_applicationsInput, Prisma.service_accountsUncheckedCreateWithoutService_applicationsInput>
+  connectOrCreate?: Prisma.service_accountsCreateOrConnectWithoutService_applicationsInput
+  connect?: Prisma.service_accountsWhereUniqueInput
+}
+
+export type service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput = {
+  create?: Prisma.XOR<Prisma.service_accountsCreateWithoutService_applicationsInput, Prisma.service_accountsUncheckedCreateWithoutService_applicationsInput>
+  connectOrCreate?: Prisma.service_accountsCreateOrConnectWithoutService_applicationsInput
+  connect?: Prisma.service_accountsWhereUniqueInput
+}
+
+export type service_accountsUpdateOneWithoutService_applicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.service_accountsCreateWithoutService_applicationsInput, Prisma.service_accountsUncheckedCreateWithoutService_applicationsInput>
+  connectOrCreate?: Prisma.service_accountsCreateOrConnectWithoutService_applicationsInput
+  upsert?: Prisma.service_accountsUpsertWithoutService_applicationsInput
+  disconnect?: Prisma.service_accountsWhereInput | boolean
+  delete?: Prisma.service_accountsWhereInput | boolean
+  connect?: Prisma.service_accountsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.service_accountsUpdateToOneWithWhereWithoutService_applicationsInput, Prisma.service_accountsUpdateWithoutService_applicationsInput>, Prisma.service_accountsUncheckedUpdateWithoutService_applicationsInput>
+}
+
+export type service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.service_accountsCreateWithoutService_applicationsInput, Prisma.service_accountsUncheckedCreateWithoutService_applicationsInput>
+  connectOrCreate?: Prisma.service_accountsCreateOrConnectWithoutService_applicationsInput
+  upsert?: Prisma.service_accountsUpsertWithoutService_applicationsInput
+  disconnect?: Prisma.service_accountsWhereInput | boolean
+  delete?: Prisma.service_accountsWhereInput | boolean
+  connect?: Prisma.service_accountsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.service_accountsUpdateToOneWithWhereWithoutService_applicationsInput, Prisma.service_accountsUpdateWithoutService_applicationsInput>, Prisma.service_accountsUncheckedUpdateWithoutService_applicationsInput>
+}
+
 export type service_accountsCreateNestedOneWithoutService_installationsInput = {
   create?: Prisma.XOR<Prisma.service_accountsCreateWithoutService_installationsInput, Prisma.service_accountsUncheckedCreateWithoutService_installationsInput>
   connectOrCreate?: Prisma.service_accountsCreateOrConnectWithoutService_installationsInput
@@ -1166,6 +1233,7 @@ export type service_accountsCreateWithoutCustomersInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1178,6 +1246,7 @@ export type service_accountsCreateWithoutCustomersInput = {
 
 export type service_accountsUncheckedCreateWithoutCustomersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   control_no: string
   classification_id: bigint | number
   connection_type_id?: bigint | number | null
@@ -1232,6 +1301,7 @@ export type service_accountsScalarWhereInput = {
   OR?: Prisma.service_accountsScalarWhereInput[]
   NOT?: Prisma.service_accountsScalarWhereInput | Prisma.service_accountsScalarWhereInput[]
   service_account_id?: Prisma.BigIntFilter<"service_accounts"> | bigint | number
+  application_id?: Prisma.BigIntNullableFilter<"service_accounts"> | bigint | number | null
   customer_id?: Prisma.BigIntFilter<"service_accounts"> | bigint | number
   control_no?: Prisma.StringFilter<"service_accounts"> | string
   classification_id?: Prisma.BigIntFilter<"service_accounts"> | bigint | number
@@ -1262,6 +1332,7 @@ export type service_accountsCreateWithoutUsers_service_accounts_created_byTouser
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1274,6 +1345,7 @@ export type service_accountsCreateWithoutUsers_service_accounts_created_byTouser
 
 export type service_accountsUncheckedCreateWithoutUsers_service_accounts_created_byTousersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1322,6 +1394,7 @@ export type service_accountsCreateWithoutUsers_service_accounts_updated_byTouser
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1334,6 +1407,7 @@ export type service_accountsCreateWithoutUsers_service_accounts_updated_byTouser
 
 export type service_accountsUncheckedCreateWithoutUsers_service_accounts_updated_byTousersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1413,6 +1487,7 @@ export type service_accountsCreateWithoutBillsInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1426,6 +1501,7 @@ export type service_accountsCreateWithoutBillsInput = {
 
 export type service_accountsUncheckedCreateWithoutBillsInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1479,6 +1555,7 @@ export type service_accountsUpdateWithoutBillsInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -1492,6 +1569,7 @@ export type service_accountsUpdateWithoutBillsInput = {
 
 export type service_accountsUncheckedUpdateWithoutBillsInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -1529,6 +1607,7 @@ export type service_accountsCreateWithoutConnection_feesInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1542,6 +1621,7 @@ export type service_accountsCreateWithoutConnection_feesInput = {
 
 export type service_accountsUncheckedCreateWithoutConnection_feesInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1595,6 +1675,7 @@ export type service_accountsUpdateWithoutConnection_feesInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -1608,6 +1689,7 @@ export type service_accountsUpdateWithoutConnection_feesInput = {
 
 export type service_accountsUncheckedUpdateWithoutConnection_feesInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -1645,6 +1727,7 @@ export type service_accountsCreateWithoutDisconnection_ordersInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1658,6 +1741,7 @@ export type service_accountsCreateWithoutDisconnection_ordersInput = {
 
 export type service_accountsUncheckedCreateWithoutDisconnection_ordersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1711,6 +1795,7 @@ export type service_accountsUpdateWithoutDisconnection_ordersInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -1724,6 +1809,7 @@ export type service_accountsUpdateWithoutDisconnection_ordersInput = {
 
 export type service_accountsUncheckedUpdateWithoutDisconnection_ordersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -1761,6 +1847,7 @@ export type service_accountsCreateWithoutMeter_installationsInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1774,6 +1861,7 @@ export type service_accountsCreateWithoutMeter_installationsInput = {
 
 export type service_accountsUncheckedCreateWithoutMeter_installationsInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1827,6 +1915,7 @@ export type service_accountsUpdateWithoutMeter_installationsInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -1840,6 +1929,7 @@ export type service_accountsUpdateWithoutMeter_installationsInput = {
 
 export type service_accountsUncheckedUpdateWithoutMeter_installationsInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -1877,6 +1967,7 @@ export type service_accountsCreateWithoutMeter_readingsInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -1890,6 +1981,7 @@ export type service_accountsCreateWithoutMeter_readingsInput = {
 
 export type service_accountsUncheckedCreateWithoutMeter_readingsInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -1943,6 +2035,7 @@ export type service_accountsUpdateWithoutMeter_readingsInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -1956,6 +2049,7 @@ export type service_accountsUpdateWithoutMeter_readingsInput = {
 
 export type service_accountsUncheckedUpdateWithoutMeter_readingsInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -1993,6 +2087,7 @@ export type service_accountsCreateWithoutMetersInput = {
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -2006,6 +2101,7 @@ export type service_accountsCreateWithoutMetersInput = {
 
 export type service_accountsUncheckedCreateWithoutMetersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2059,6 +2155,7 @@ export type service_accountsUpdateWithoutMetersInput = {
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -2072,6 +2169,7 @@ export type service_accountsUpdateWithoutMetersInput = {
 
 export type service_accountsUncheckedUpdateWithoutMetersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -2110,6 +2208,7 @@ export type service_accountsCreateWithoutMt_connection_statusInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
   users_service_accounts_created_byTousers?: Prisma.usersCreateNestedOneWithoutService_accounts_service_accounts_created_byTousersInput
@@ -2122,6 +2221,7 @@ export type service_accountsCreateWithoutMt_connection_statusInput = {
 
 export type service_accountsUncheckedCreateWithoutMt_connection_statusInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2186,6 +2286,7 @@ export type service_accountsCreateWithoutMt_connection_typeInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   users_service_accounts_created_byTousers?: Prisma.usersCreateNestedOneWithoutService_accounts_service_accounts_created_byTousersInput
@@ -2198,6 +2299,7 @@ export type service_accountsCreateWithoutMt_connection_typeInput = {
 
 export type service_accountsUncheckedCreateWithoutMt_connection_typeInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2262,6 +2364,7 @@ export type service_accountsCreateWithoutMt_customer_classificationInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
   users_service_accounts_created_byTousers?: Prisma.usersCreateNestedOneWithoutService_accounts_service_accounts_created_byTousersInput
@@ -2274,6 +2377,7 @@ export type service_accountsCreateWithoutMt_customer_classificationInput = {
 
 export type service_accountsUncheckedCreateWithoutMt_customer_classificationInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   connection_type_id?: bigint | number | null
@@ -2338,6 +2442,7 @@ export type service_accountsCreateWithoutMt_reading_routeInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -2350,6 +2455,7 @@ export type service_accountsCreateWithoutMt_reading_routeInput = {
 
 export type service_accountsUncheckedCreateWithoutMt_reading_routeInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2414,6 +2520,7 @@ export type service_accountsCreateWithoutMt_service_typeInput = {
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -2426,6 +2533,7 @@ export type service_accountsCreateWithoutMt_service_typeInput = {
 
 export type service_accountsUncheckedCreateWithoutMt_service_typeInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2489,6 +2597,7 @@ export type service_accountsCreateWithoutPaymentsInput = {
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutService_accountsInput
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -2502,6 +2611,7 @@ export type service_accountsCreateWithoutPaymentsInput = {
 
 export type service_accountsUncheckedCreateWithoutPaymentsInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2555,6 +2665,7 @@ export type service_accountsUpdateWithoutPaymentsInput = {
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutService_accountsNestedInput
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -2568,6 +2679,7 @@ export type service_accountsUpdateWithoutPaymentsInput = {
 
 export type service_accountsUncheckedUpdateWithoutPaymentsInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -2605,6 +2717,7 @@ export type service_accountsCreateWithoutReconnection_ordersInput = {
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutService_accountsInput
   meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
   payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
   mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
   mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
   mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
@@ -2618,6 +2731,7 @@ export type service_accountsCreateWithoutReconnection_ordersInput = {
 
 export type service_accountsUncheckedCreateWithoutReconnection_ordersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2671,6 +2785,7 @@ export type service_accountsUpdateWithoutReconnection_ordersInput = {
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutService_accountsNestedInput
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -2684,6 +2799,7 @@ export type service_accountsUpdateWithoutReconnection_ordersInput = {
 
 export type service_accountsUncheckedUpdateWithoutReconnection_ordersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -2707,7 +2823,7 @@ export type service_accountsUncheckedUpdateWithoutReconnection_ordersInput = {
   service_installations?: Prisma.service_installationsUncheckedUpdateManyWithoutService_accountsNestedInput
 }
 
-export type service_accountsCreateWithoutService_installationsInput = {
+export type service_accountsCreateWithoutService_applicationsInput = {
   service_account_id?: bigint | number
   control_no: string
   date_connected?: Date | string | null
@@ -2730,10 +2846,132 @@ export type service_accountsCreateWithoutService_installationsInput = {
   mt_reading_route?: Prisma.mt_reading_routeCreateNestedOneWithoutService_accountsInput
   mt_service_type?: Prisma.mt_service_typeCreateNestedOneWithoutService_accountsInput
   users_service_accounts_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_accounts_service_accounts_updated_byTousersInput
+  service_installations?: Prisma.service_installationsCreateNestedManyWithoutService_accountsInput
+}
+
+export type service_accountsUncheckedCreateWithoutService_applicationsInput = {
+  service_account_id?: bigint | number
+  customer_id: bigint | number
+  control_no: string
+  classification_id: bigint | number
+  connection_type_id?: bigint | number | null
+  connection_status_id?: bigint | number | null
+  service_type_id?: bigint | number | null
+  route_id?: bigint | number | null
+  date_connected?: Date | string | null
+  address?: string | null
+  created_by?: bigint | number | null
+  updated_by?: bigint | number | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  bills?: Prisma.billsUncheckedCreateNestedManyWithoutService_accountsInput
+  connection_fees?: Prisma.connection_feesUncheckedCreateNestedManyWithoutService_accountsInput
+  disconnection_orders?: Prisma.disconnection_ordersUncheckedCreateNestedManyWithoutService_accountsInput
+  meter_installations?: Prisma.meter_installationsUncheckedCreateNestedManyWithoutService_accountsInput
+  meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutService_accountsInput
+  meters?: Prisma.metersUncheckedCreateNestedManyWithoutService_accountsInput
+  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutService_accountsInput
+  reconnection_orders?: Prisma.reconnection_ordersUncheckedCreateNestedManyWithoutService_accountsInput
+  service_installations?: Prisma.service_installationsUncheckedCreateNestedManyWithoutService_accountsInput
+}
+
+export type service_accountsCreateOrConnectWithoutService_applicationsInput = {
+  where: Prisma.service_accountsWhereUniqueInput
+  create: Prisma.XOR<Prisma.service_accountsCreateWithoutService_applicationsInput, Prisma.service_accountsUncheckedCreateWithoutService_applicationsInput>
+}
+
+export type service_accountsUpsertWithoutService_applicationsInput = {
+  update: Prisma.XOR<Prisma.service_accountsUpdateWithoutService_applicationsInput, Prisma.service_accountsUncheckedUpdateWithoutService_applicationsInput>
+  create: Prisma.XOR<Prisma.service_accountsCreateWithoutService_applicationsInput, Prisma.service_accountsUncheckedCreateWithoutService_applicationsInput>
+  where?: Prisma.service_accountsWhereInput
+}
+
+export type service_accountsUpdateToOneWithWhereWithoutService_applicationsInput = {
+  where?: Prisma.service_accountsWhereInput
+  data: Prisma.XOR<Prisma.service_accountsUpdateWithoutService_applicationsInput, Prisma.service_accountsUncheckedUpdateWithoutService_applicationsInput>
+}
+
+export type service_accountsUpdateWithoutService_applicationsInput = {
+  service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  control_no?: Prisma.StringFieldUpdateOperationsInput | string
+  date_connected?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bills?: Prisma.billsUpdateManyWithoutService_accountsNestedInput
+  connection_fees?: Prisma.connection_feesUpdateManyWithoutService_accountsNestedInput
+  disconnection_orders?: Prisma.disconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  meter_installations?: Prisma.meter_installationsUpdateManyWithoutService_accountsNestedInput
+  meter_readings?: Prisma.meter_readingsUpdateManyWithoutService_accountsNestedInput
+  meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
+  reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
+  mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
+  mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
+  users_service_accounts_created_byTousers?: Prisma.usersUpdateOneWithoutService_accounts_service_accounts_created_byTousersNestedInput
+  customers?: Prisma.customersUpdateOneRequiredWithoutService_accountsNestedInput
+  mt_reading_route?: Prisma.mt_reading_routeUpdateOneWithoutService_accountsNestedInput
+  mt_service_type?: Prisma.mt_service_typeUpdateOneWithoutService_accountsNestedInput
+  users_service_accounts_updated_byTousers?: Prisma.usersUpdateOneWithoutService_accounts_service_accounts_updated_byTousersNestedInput
+  service_installations?: Prisma.service_installationsUpdateManyWithoutService_accountsNestedInput
+}
+
+export type service_accountsUncheckedUpdateWithoutService_applicationsInput = {
+  service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  control_no?: Prisma.StringFieldUpdateOperationsInput | string
+  classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  connection_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  connection_status_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  service_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  route_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  date_connected?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bills?: Prisma.billsUncheckedUpdateManyWithoutService_accountsNestedInput
+  connection_fees?: Prisma.connection_feesUncheckedUpdateManyWithoutService_accountsNestedInput
+  disconnection_orders?: Prisma.disconnection_ordersUncheckedUpdateManyWithoutService_accountsNestedInput
+  meter_installations?: Prisma.meter_installationsUncheckedUpdateManyWithoutService_accountsNestedInput
+  meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutService_accountsNestedInput
+  meters?: Prisma.metersUncheckedUpdateManyWithoutService_accountsNestedInput
+  payments?: Prisma.paymentsUncheckedUpdateManyWithoutService_accountsNestedInput
+  reconnection_orders?: Prisma.reconnection_ordersUncheckedUpdateManyWithoutService_accountsNestedInput
+  service_installations?: Prisma.service_installationsUncheckedUpdateManyWithoutService_accountsNestedInput
+}
+
+export type service_accountsCreateWithoutService_installationsInput = {
+  service_account_id?: bigint | number
+  control_no: string
+  date_connected?: Date | string | null
+  address?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  bills?: Prisma.billsCreateNestedManyWithoutService_accountsInput
+  connection_fees?: Prisma.connection_feesCreateNestedManyWithoutService_accountsInput
+  disconnection_orders?: Prisma.disconnection_ordersCreateNestedManyWithoutService_accountsInput
+  meter_installations?: Prisma.meter_installationsCreateNestedManyWithoutService_accountsInput
+  meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutService_accountsInput
+  meters?: Prisma.metersCreateNestedManyWithoutService_accountsInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutService_accountsInput
+  reconnection_orders?: Prisma.reconnection_ordersCreateNestedManyWithoutService_accountsInput
+  service_applications?: Prisma.service_applicationsCreateNestedOneWithoutService_accountsInput
+  mt_customer_classification: Prisma.mt_customer_classificationCreateNestedOneWithoutService_accountsInput
+  mt_connection_status?: Prisma.mt_connection_statusCreateNestedOneWithoutService_accountsInput
+  mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_accountsInput
+  users_service_accounts_created_byTousers?: Prisma.usersCreateNestedOneWithoutService_accounts_service_accounts_created_byTousersInput
+  customers: Prisma.customersCreateNestedOneWithoutService_accountsInput
+  mt_reading_route?: Prisma.mt_reading_routeCreateNestedOneWithoutService_accountsInput
+  mt_service_type?: Prisma.mt_service_typeCreateNestedOneWithoutService_accountsInput
+  users_service_accounts_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_accounts_service_accounts_updated_byTousersInput
 }
 
 export type service_accountsUncheckedCreateWithoutService_installationsInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2788,6 +3026,7 @@ export type service_accountsUpdateWithoutService_installationsInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -2800,6 +3039,7 @@ export type service_accountsUpdateWithoutService_installationsInput = {
 
 export type service_accountsUncheckedUpdateWithoutService_installationsInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -2825,6 +3065,7 @@ export type service_accountsUncheckedUpdateWithoutService_installationsInput = {
 
 export type service_accountsCreateManyCustomersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   control_no: string
   classification_id: bigint | number
   connection_type_id?: bigint | number | null
@@ -2854,6 +3095,7 @@ export type service_accountsUpdateWithoutCustomersInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -2866,6 +3108,7 @@ export type service_accountsUpdateWithoutCustomersInput = {
 
 export type service_accountsUncheckedUpdateWithoutCustomersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   connection_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
@@ -2891,6 +3134,7 @@ export type service_accountsUncheckedUpdateWithoutCustomersInput = {
 
 export type service_accountsUncheckedUpdateManyWithoutCustomersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   connection_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
@@ -2907,6 +3151,7 @@ export type service_accountsUncheckedUpdateManyWithoutCustomersInput = {
 
 export type service_accountsCreateManyUsers_service_accounts_created_byTousersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2923,6 +3168,7 @@ export type service_accountsCreateManyUsers_service_accounts_created_byTousersIn
 
 export type service_accountsCreateManyUsers_service_accounts_updated_byTousersInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -2952,6 +3198,7 @@ export type service_accountsUpdateWithoutUsers_service_accounts_created_byTouser
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -2964,6 +3211,7 @@ export type service_accountsUpdateWithoutUsers_service_accounts_created_byTouser
 
 export type service_accountsUncheckedUpdateWithoutUsers_service_accounts_created_byTousersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -2989,6 +3237,7 @@ export type service_accountsUncheckedUpdateWithoutUsers_service_accounts_created
 
 export type service_accountsUncheckedUpdateManyWithoutUsers_service_accounts_created_byTousersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3018,6 +3267,7 @@ export type service_accountsUpdateWithoutUsers_service_accounts_updated_byTouser
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -3030,6 +3280,7 @@ export type service_accountsUpdateWithoutUsers_service_accounts_updated_byTouser
 
 export type service_accountsUncheckedUpdateWithoutUsers_service_accounts_updated_byTousersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3055,6 +3306,7 @@ export type service_accountsUncheckedUpdateWithoutUsers_service_accounts_updated
 
 export type service_accountsUncheckedUpdateManyWithoutUsers_service_accounts_updated_byTousersInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3071,6 +3323,7 @@ export type service_accountsUncheckedUpdateManyWithoutUsers_service_accounts_upd
 
 export type service_accountsCreateManyMt_connection_statusInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -3100,6 +3353,7 @@ export type service_accountsUpdateWithoutMt_connection_statusInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
   users_service_accounts_created_byTousers?: Prisma.usersUpdateOneWithoutService_accounts_service_accounts_created_byTousersNestedInput
@@ -3112,6 +3366,7 @@ export type service_accountsUpdateWithoutMt_connection_statusInput = {
 
 export type service_accountsUncheckedUpdateWithoutMt_connection_statusInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3137,6 +3392,7 @@ export type service_accountsUncheckedUpdateWithoutMt_connection_statusInput = {
 
 export type service_accountsUncheckedUpdateManyWithoutMt_connection_statusInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3153,6 +3409,7 @@ export type service_accountsUncheckedUpdateManyWithoutMt_connection_statusInput 
 
 export type service_accountsCreateManyMt_connection_typeInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -3182,6 +3439,7 @@ export type service_accountsUpdateWithoutMt_connection_typeInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   users_service_accounts_created_byTousers?: Prisma.usersUpdateOneWithoutService_accounts_service_accounts_created_byTousersNestedInput
@@ -3194,6 +3452,7 @@ export type service_accountsUpdateWithoutMt_connection_typeInput = {
 
 export type service_accountsUncheckedUpdateWithoutMt_connection_typeInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3219,6 +3478,7 @@ export type service_accountsUncheckedUpdateWithoutMt_connection_typeInput = {
 
 export type service_accountsUncheckedUpdateManyWithoutMt_connection_typeInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3235,6 +3495,7 @@ export type service_accountsUncheckedUpdateManyWithoutMt_connection_typeInput = 
 
 export type service_accountsCreateManyMt_customer_classificationInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   connection_type_id?: bigint | number | null
@@ -3264,6 +3525,7 @@ export type service_accountsUpdateWithoutMt_customer_classificationInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
   users_service_accounts_created_byTousers?: Prisma.usersUpdateOneWithoutService_accounts_service_accounts_created_byTousersNestedInput
@@ -3276,6 +3538,7 @@ export type service_accountsUpdateWithoutMt_customer_classificationInput = {
 
 export type service_accountsUncheckedUpdateWithoutMt_customer_classificationInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   connection_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
@@ -3301,6 +3564,7 @@ export type service_accountsUncheckedUpdateWithoutMt_customer_classificationInpu
 
 export type service_accountsUncheckedUpdateManyWithoutMt_customer_classificationInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   connection_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
@@ -3317,6 +3581,7 @@ export type service_accountsUncheckedUpdateManyWithoutMt_customer_classification
 
 export type service_accountsCreateManyMt_reading_routeInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -3346,6 +3611,7 @@ export type service_accountsUpdateWithoutMt_reading_routeInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -3358,6 +3624,7 @@ export type service_accountsUpdateWithoutMt_reading_routeInput = {
 
 export type service_accountsUncheckedUpdateWithoutMt_reading_routeInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3383,6 +3650,7 @@ export type service_accountsUncheckedUpdateWithoutMt_reading_routeInput = {
 
 export type service_accountsUncheckedUpdateManyWithoutMt_reading_routeInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3399,6 +3667,7 @@ export type service_accountsUncheckedUpdateManyWithoutMt_reading_routeInput = {
 
 export type service_accountsCreateManyMt_service_typeInput = {
   service_account_id?: bigint | number
+  application_id?: bigint | number | null
   customer_id: bigint | number
   control_no: string
   classification_id: bigint | number
@@ -3428,6 +3697,7 @@ export type service_accountsUpdateWithoutMt_service_typeInput = {
   meters?: Prisma.metersUpdateManyWithoutService_accountsNestedInput
   payments?: Prisma.paymentsUpdateManyWithoutService_accountsNestedInput
   reconnection_orders?: Prisma.reconnection_ordersUpdateManyWithoutService_accountsNestedInput
+  service_applications?: Prisma.service_applicationsUpdateOneWithoutService_accountsNestedInput
   mt_customer_classification?: Prisma.mt_customer_classificationUpdateOneRequiredWithoutService_accountsNestedInput
   mt_connection_status?: Prisma.mt_connection_statusUpdateOneWithoutService_accountsNestedInput
   mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_accountsNestedInput
@@ -3440,6 +3710,7 @@ export type service_accountsUpdateWithoutMt_service_typeInput = {
 
 export type service_accountsUncheckedUpdateWithoutMt_service_typeInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3465,6 +3736,7 @@ export type service_accountsUncheckedUpdateWithoutMt_service_typeInput = {
 
 export type service_accountsUncheckedUpdateManyWithoutMt_service_typeInput = {
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   control_no?: Prisma.StringFieldUpdateOperationsInput | string
   classification_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
@@ -3584,6 +3856,7 @@ export type Service_accountsCountOutputTypeCountService_installationsArgs<ExtArg
 
 export type service_accountsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   service_account_id?: boolean
+  application_id?: boolean
   customer_id?: boolean
   control_no?: boolean
   classification_id?: boolean
@@ -3605,6 +3878,7 @@ export type service_accountsSelect<ExtArgs extends runtime.Types.Extensions.Inte
   meters?: boolean | Prisma.service_accounts$metersArgs<ExtArgs>
   payments?: boolean | Prisma.service_accounts$paymentsArgs<ExtArgs>
   reconnection_orders?: boolean | Prisma.service_accounts$reconnection_ordersArgs<ExtArgs>
+  service_applications?: boolean | Prisma.service_accounts$service_applicationsArgs<ExtArgs>
   mt_customer_classification?: boolean | Prisma.mt_customer_classificationDefaultArgs<ExtArgs>
   mt_connection_status?: boolean | Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>
   mt_connection_type?: boolean | Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>
@@ -3619,6 +3893,7 @@ export type service_accountsSelect<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type service_accountsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   service_account_id?: boolean
+  application_id?: boolean
   customer_id?: boolean
   control_no?: boolean
   classification_id?: boolean
@@ -3632,6 +3907,7 @@ export type service_accountsSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
+  service_applications?: boolean | Prisma.service_accounts$service_applicationsArgs<ExtArgs>
   mt_customer_classification?: boolean | Prisma.mt_customer_classificationDefaultArgs<ExtArgs>
   mt_connection_status?: boolean | Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>
   mt_connection_type?: boolean | Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>
@@ -3644,6 +3920,7 @@ export type service_accountsSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
 
 export type service_accountsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   service_account_id?: boolean
+  application_id?: boolean
   customer_id?: boolean
   control_no?: boolean
   classification_id?: boolean
@@ -3657,6 +3934,7 @@ export type service_accountsSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
+  service_applications?: boolean | Prisma.service_accounts$service_applicationsArgs<ExtArgs>
   mt_customer_classification?: boolean | Prisma.mt_customer_classificationDefaultArgs<ExtArgs>
   mt_connection_status?: boolean | Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>
   mt_connection_type?: boolean | Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>
@@ -3669,6 +3947,7 @@ export type service_accountsSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
 
 export type service_accountsSelectScalar = {
   service_account_id?: boolean
+  application_id?: boolean
   customer_id?: boolean
   control_no?: boolean
   classification_id?: boolean
@@ -3684,7 +3963,7 @@ export type service_accountsSelectScalar = {
   updated_at?: boolean
 }
 
-export type service_accountsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"service_account_id" | "customer_id" | "control_no" | "classification_id" | "connection_type_id" | "connection_status_id" | "service_type_id" | "route_id" | "date_connected" | "address" | "created_by" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["service_accounts"]>
+export type service_accountsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"service_account_id" | "application_id" | "customer_id" | "control_no" | "classification_id" | "connection_type_id" | "connection_status_id" | "service_type_id" | "route_id" | "date_connected" | "address" | "created_by" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["service_accounts"]>
 export type service_accountsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bills?: boolean | Prisma.service_accounts$billsArgs<ExtArgs>
   connection_fees?: boolean | Prisma.service_accounts$connection_feesArgs<ExtArgs>
@@ -3694,6 +3973,7 @@ export type service_accountsInclude<ExtArgs extends runtime.Types.Extensions.Int
   meters?: boolean | Prisma.service_accounts$metersArgs<ExtArgs>
   payments?: boolean | Prisma.service_accounts$paymentsArgs<ExtArgs>
   reconnection_orders?: boolean | Prisma.service_accounts$reconnection_ordersArgs<ExtArgs>
+  service_applications?: boolean | Prisma.service_accounts$service_applicationsArgs<ExtArgs>
   mt_customer_classification?: boolean | Prisma.mt_customer_classificationDefaultArgs<ExtArgs>
   mt_connection_status?: boolean | Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>
   mt_connection_type?: boolean | Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>
@@ -3706,6 +3986,7 @@ export type service_accountsInclude<ExtArgs extends runtime.Types.Extensions.Int
   _count?: boolean | Prisma.Service_accountsCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type service_accountsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  service_applications?: boolean | Prisma.service_accounts$service_applicationsArgs<ExtArgs>
   mt_customer_classification?: boolean | Prisma.mt_customer_classificationDefaultArgs<ExtArgs>
   mt_connection_status?: boolean | Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>
   mt_connection_type?: boolean | Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>
@@ -3716,6 +3997,7 @@ export type service_accountsIncludeCreateManyAndReturn<ExtArgs extends runtime.T
   users_service_accounts_updated_byTousers?: boolean | Prisma.service_accounts$users_service_accounts_updated_byTousersArgs<ExtArgs>
 }
 export type service_accountsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  service_applications?: boolean | Prisma.service_accounts$service_applicationsArgs<ExtArgs>
   mt_customer_classification?: boolean | Prisma.mt_customer_classificationDefaultArgs<ExtArgs>
   mt_connection_status?: boolean | Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>
   mt_connection_type?: boolean | Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>
@@ -3737,6 +4019,7 @@ export type $service_accountsPayload<ExtArgs extends runtime.Types.Extensions.In
     meters: Prisma.$metersPayload<ExtArgs>[]
     payments: Prisma.$paymentsPayload<ExtArgs>[]
     reconnection_orders: Prisma.$reconnection_ordersPayload<ExtArgs>[]
+    service_applications: Prisma.$service_applicationsPayload<ExtArgs> | null
     mt_customer_classification: Prisma.$mt_customer_classificationPayload<ExtArgs>
     mt_connection_status: Prisma.$mt_connection_statusPayload<ExtArgs> | null
     mt_connection_type: Prisma.$mt_connection_typePayload<ExtArgs> | null
@@ -3749,6 +4032,7 @@ export type $service_accountsPayload<ExtArgs extends runtime.Types.Extensions.In
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     service_account_id: bigint
+    application_id: bigint | null
     customer_id: bigint
     control_no: string
     classification_id: bigint
@@ -4164,6 +4448,7 @@ export interface Prisma__service_accountsClient<T, Null = never, ExtArgs extends
   meters<T extends Prisma.service_accounts$metersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accounts$metersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$metersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.service_accounts$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accounts$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$paymentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reconnection_orders<T extends Prisma.service_accounts$reconnection_ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accounts$reconnection_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$reconnection_ordersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  service_applications<T extends Prisma.service_accounts$service_applicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accounts$service_applicationsArgs<ExtArgs>>): Prisma.Prisma__service_applicationsClient<runtime.Types.Result.GetResult<Prisma.$service_applicationsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   mt_customer_classification<T extends Prisma.mt_customer_classificationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.mt_customer_classificationDefaultArgs<ExtArgs>>): Prisma.Prisma__mt_customer_classificationClient<runtime.Types.Result.GetResult<Prisma.$mt_customer_classificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   mt_connection_status<T extends Prisma.service_accounts$mt_connection_statusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accounts$mt_connection_statusArgs<ExtArgs>>): Prisma.Prisma__mt_connection_statusClient<runtime.Types.Result.GetResult<Prisma.$mt_connection_statusPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   mt_connection_type<T extends Prisma.service_accounts$mt_connection_typeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accounts$mt_connection_typeArgs<ExtArgs>>): Prisma.Prisma__mt_connection_typeClient<runtime.Types.Result.GetResult<Prisma.$mt_connection_typePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -4203,6 +4488,7 @@ export interface Prisma__service_accountsClient<T, Null = never, ExtArgs extends
  */
 export interface service_accountsFieldRefs {
   readonly service_account_id: Prisma.FieldRef<"service_accounts", 'BigInt'>
+  readonly application_id: Prisma.FieldRef<"service_accounts", 'BigInt'>
   readonly customer_id: Prisma.FieldRef<"service_accounts", 'BigInt'>
   readonly control_no: Prisma.FieldRef<"service_accounts", 'String'>
   readonly classification_id: Prisma.FieldRef<"service_accounts", 'BigInt'>
@@ -4806,6 +5092,25 @@ export type service_accounts$reconnection_ordersArgs<ExtArgs extends runtime.Typ
   take?: number
   skip?: number
   distinct?: Prisma.Reconnection_ordersScalarFieldEnum | Prisma.Reconnection_ordersScalarFieldEnum[]
+}
+
+/**
+ * service_accounts.service_applications
+ */
+export type service_accounts$service_applicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the service_applications
+   */
+  select?: Prisma.service_applicationsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the service_applications
+   */
+  omit?: Prisma.service_applicationsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.service_applicationsInclude<ExtArgs> | null
+  where?: Prisma.service_applicationsWhereInput
 }
 
 /**

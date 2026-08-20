@@ -645,14 +645,6 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type mt_disconnection_ruleCreateWithoutUsers_mt_disconnection_rule_created_byTousersInput = {
   rule_id?: bigint | number
   rule_name: string

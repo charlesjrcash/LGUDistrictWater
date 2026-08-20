@@ -402,6 +402,7 @@ export const ModelName = {
   user_roles: 'user_roles',
   users: 'users',
   user_sessions: 'user_sessions',
+  password_reset_codes: 'password_reset_codes',
   audit_logs: 'audit_logs',
   bill_adjustments: 'bill_adjustments',
   bill_details: 'bill_details',
@@ -468,7 +469,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "customers" | "roles" | "user_roles" | "users" | "user_sessions" | "audit_logs" | "bill_adjustments" | "bill_details" | "bill_penalties" | "bills" | "connection_fees" | "disconnection_orders" | "document_attachments" | "meter_installations" | "meter_readings" | "meters" | "mt_application_status" | "mt_application_type" | "mt_barangay" | "mt_billing_cycle" | "mt_billing_period" | "mt_connection_status" | "mt_connection_type" | "mt_customer_classification" | "mt_disconnection_reason" | "mt_disconnection_rule" | "mt_document_series" | "mt_due_date_rule" | "mt_employee" | "mt_fees" | "mt_holiday" | "mt_material" | "mt_meter_brand" | "mt_meter_reader" | "mt_meter_size" | "mt_meter_type" | "mt_payment_method" | "mt_payment_type" | "mt_penalty_rates" | "mt_permission" | "mt_purok" | "mt_reading_route" | "mt_reading_status" | "mt_receipt_type" | "mt_role_permission" | "mt_service_type" | "mt_system_settings" | "mt_unit_of_measure" | "mt_water_rates" | "payment_allocations" | "payments" | "reconnection_orders" | "service_accounts" | "service_applications" | "service_installation_materials" | "service_installations"
+    modelProps: "customers" | "roles" | "user_roles" | "users" | "user_sessions" | "password_reset_codes" | "audit_logs" | "bill_adjustments" | "bill_details" | "bill_penalties" | "bills" | "connection_fees" | "disconnection_orders" | "document_attachments" | "meter_installations" | "meter_readings" | "meters" | "mt_application_status" | "mt_application_type" | "mt_barangay" | "mt_billing_cycle" | "mt_billing_period" | "mt_connection_status" | "mt_connection_type" | "mt_customer_classification" | "mt_disconnection_reason" | "mt_disconnection_rule" | "mt_document_series" | "mt_due_date_rule" | "mt_employee" | "mt_fees" | "mt_holiday" | "mt_material" | "mt_meter_brand" | "mt_meter_reader" | "mt_meter_size" | "mt_meter_type" | "mt_payment_method" | "mt_payment_type" | "mt_penalty_rates" | "mt_permission" | "mt_purok" | "mt_reading_route" | "mt_reading_status" | "mt_receipt_type" | "mt_role_permission" | "mt_service_type" | "mt_system_settings" | "mt_unit_of_measure" | "mt_water_rates" | "payment_allocations" | "payments" | "reconnection_orders" | "service_accounts" | "service_applications" | "service_installation_materials" | "service_installations"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -839,6 +840,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.user_sessionsCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.User_sessionsCountAggregateOutputType> | number
+        }
+      }
+    }
+    password_reset_codes: {
+      payload: Prisma.$password_reset_codesPayload<ExtArgs>
+      fields: Prisma.password_reset_codesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.password_reset_codesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.password_reset_codesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>
+        }
+        findFirst: {
+          args: Prisma.password_reset_codesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.password_reset_codesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>
+        }
+        findMany: {
+          args: Prisma.password_reset_codesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>[]
+        }
+        create: {
+          args: Prisma.password_reset_codesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>
+        }
+        createMany: {
+          args: Prisma.password_reset_codesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.password_reset_codesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>[]
+        }
+        delete: {
+          args: Prisma.password_reset_codesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>
+        }
+        update: {
+          args: Prisma.password_reset_codesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>
+        }
+        deleteMany: {
+          args: Prisma.password_reset_codesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.password_reset_codesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.password_reset_codesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>[]
+        }
+        upsert: {
+          args: Prisma.password_reset_codesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$password_reset_codesPayload>
+        }
+        aggregate: {
+          args: Prisma.Password_reset_codesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePassword_reset_codes>
+        }
+        groupBy: {
+          args: Prisma.password_reset_codesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Password_reset_codesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.password_reset_codesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Password_reset_codesCountAggregateOutputType> | number
         }
       }
     }
@@ -4727,6 +4802,21 @@ export const User_sessionsScalarFieldEnum = {
 export type User_sessionsScalarFieldEnum = (typeof User_sessionsScalarFieldEnum)[keyof typeof User_sessionsScalarFieldEnum]
 
 
+export const Password_reset_codesScalarFieldEnum = {
+  reset_id: 'reset_id',
+  user_id: 'user_id',
+  code_hash: 'code_hash',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  verified_at: 'verified_at',
+  consumed_at: 'consumed_at',
+  attempts: 'attempts',
+  created_at: 'created_at'
+} as const
+
+export type Password_reset_codesScalarFieldEnum = (typeof Password_reset_codesScalarFieldEnum)[keyof typeof Password_reset_codesScalarFieldEnum]
+
+
 export const Audit_logsScalarFieldEnum = {
   audit_id: 'audit_id',
   user_id: 'user_id',
@@ -4816,6 +4906,7 @@ export const Connection_feesScalarFieldEnum = {
   connection_fee_id: 'connection_fee_id',
   service_account_id: 'service_account_id',
   fee_id: 'fee_id',
+  bill_id: 'bill_id',
   assessed_amount: 'assessed_amount',
   amount_paid: 'amount_paid',
   balance_amount: 'balance_amount',
@@ -5500,6 +5591,7 @@ export type Reconnection_ordersScalarFieldEnum = (typeof Reconnection_ordersScal
 
 export const Service_accountsScalarFieldEnum = {
   service_account_id: 'service_account_id',
+  application_id: 'application_id',
   customer_id: 'customer_id',
   control_no: 'control_no',
   classification_id: 'classification_id',
@@ -5668,6 +5760,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -5692,20 +5798,6 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -5878,6 +5970,7 @@ export type GlobalOmitConfig = {
   user_roles?: Prisma.user_rolesOmit
   users?: Prisma.usersOmit
   user_sessions?: Prisma.user_sessionsOmit
+  password_reset_codes?: Prisma.password_reset_codesOmit
   audit_logs?: Prisma.audit_logsOmit
   bill_adjustments?: Prisma.bill_adjustmentsOmit
   bill_details?: Prisma.bill_detailsOmit

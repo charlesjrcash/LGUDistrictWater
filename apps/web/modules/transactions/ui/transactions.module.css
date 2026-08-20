@@ -640,6 +640,12 @@
   gap: 9px;
   margin-top: 22px;
 }
+.table td:first-child,
+.table td:nth-child(2),
+.table th:first-child,
+.table th:nth-child(2) {
+  white-space: nowrap;
+}
 .accountPicker { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
 .accountBrowseDialog { width:min(1040px,calc(100vw - 32px)); max-height:90vh; overflow:auto; background:#fff; border-radius:13px; padding:24px; box-shadow:0 24px 70px rgba(7,28,61,.25); }
 .dialogHeader { display:flex; justify-content:space-between; gap:16px; }
@@ -691,6 +697,59 @@
 .paymentSuccessActions {
   flex-wrap: wrap;
 }
+.billPreviewDialog {
+  width: min(900px, calc(100vw - 32px));
+  max-width: 100%;
+  max-height: calc(100vh - 32px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.billPreviewHeader,
+.billPreviewActions {
+  flex: 0 0 auto;
+}
+.billPreviewHeader {
+  padding-bottom: 9px;
+}
+.billPreviewBody {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.billPrintContent {
+  min-width: 0;
+  max-width: 100%;
+}
+.billPreviewActions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e8f0;
+}
+.billPreviewTableWrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.billPreviewTable {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+.billPreviewTable th,
+.billPreviewTable td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.billPreviewTable th:first-child,
+.billPreviewTable th:nth-child(2),
+.billPreviewTable td:first-child,
+.billPreviewTable td:nth-child(2) {
+  white-space: normal;
+}
 @media (max-width: 900px) {
   .summaryGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -734,13 +793,20 @@
   }
 }
 
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
 @media print {
   :global(body) * {
     visibility: hidden;
   }
   .accountPicker,.accountBrowseSearch,.accountBrowseFooter { flex-direction:column; align-items:stretch; }
   :global(#payment-print),
-  :global(#payment-print) * {
+  :global(#payment-print) *,
+  :global(#bill-print),
+  :global(#bill-print) * {
     visibility: visible;
   }
   :global(#payment-print) {
@@ -749,11 +815,118 @@
     width: 100%;
     color: #000;
   }
+  :global(#bill-print) {
+    position: static;
+    inset: auto;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #000;
+    font-size: 9pt;
+    line-height: 1.2;
+    overflow: visible;
+  }
+  .main:has(.billPreviewBackdrop) > *:not(.billPreviewBackdrop) {
+    display: none !important;
+  }
+  .page:has(.billPreviewBackdrop),
+  .page:has(.billPreviewBackdrop) .main {
+    width: auto;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .billPreviewBackdrop {
+    position: static;
+    display: block;
+    padding: 0;
+    background: transparent;
+  }
+  .billPreviewDialog,
+  .billPreviewBody {
+    display: block;
+    width: auto;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    padding: 0;
+    overflow: visible;
+  }
+  .billPreviewHeader,
+  .billPreviewActions {
+    display: none;
+  }
+  :global(#bill-print) .section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  :global(#bill-print) .section:last-child {
+    break-inside: auto;
+    page-break-inside: auto;
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  :global(#bill-print) .section + .section {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+  :global(#bill-print) .sectionTitle {
+    margin: 0 0 3px;
+    font-size: 10pt;
+    line-height: 1.15;
+  }
+  :global(#bill-print) .detailItems {
+    gap: 4px 10px;
+  }
+  :global(#bill-print) .detailItem span {
+    margin-bottom: 1px;
+    font-size: 7.5pt;
+  }
+  :global(#bill-print) .detailItem strong {
+    font-size: 9pt;
+    line-height: 1.2;
+  }
+  :global(#bill-print) .customerCard {
+    gap: 6px;
+    margin-top: 6px !important;
+    padding: 6px;
+  }
+  :global(#bill-print) .table {
+    width: 100%;
+    min-width: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  :global(#bill-print) .table th,
+  :global(#bill-print) .table td {
+    padding: 2px 4px;
+    font-size: 8pt;
+    line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (max-width: 640px) {
   .paymentSuccessDialog {
     padding: 18px;
+  }
+  .billPreviewDialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+    padding: 18px;
+  }
+  .billPreviewActions {
+    flex-wrap: wrap;
+  }
+  .billPreviewTable {
+    min-width: 640px;
   }
   .paymentSuccessTable th,
   .paymentSuccessTable td {

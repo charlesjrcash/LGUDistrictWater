@@ -347,6 +347,7 @@ export type service_applicationsWhereInput = {
   mt_application_status?: Prisma.XOR<Prisma.Mt_application_statusScalarRelationFilter, Prisma.mt_application_statusWhereInput>
   mt_application_type?: Prisma.XOR<Prisma.Mt_application_typeScalarRelationFilter, Prisma.mt_application_typeWhereInput>
   users_service_applications_updated_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
+  service_accounts?: Prisma.XOR<Prisma.Service_accountsNullableScalarRelationFilter, Prisma.service_accountsWhereInput> | null
 }
 
 export type service_applicationsOrderByWithRelationInput = {
@@ -374,6 +375,7 @@ export type service_applicationsOrderByWithRelationInput = {
   mt_application_status?: Prisma.mt_application_statusOrderByWithRelationInput
   mt_application_type?: Prisma.mt_application_typeOrderByWithRelationInput
   users_service_applications_updated_byTousers?: Prisma.usersOrderByWithRelationInput
+  service_accounts?: Prisma.service_accountsOrderByWithRelationInput
 }
 
 export type service_applicationsWhereUniqueInput = Prisma.AtLeast<{
@@ -404,6 +406,7 @@ export type service_applicationsWhereUniqueInput = Prisma.AtLeast<{
   mt_application_status?: Prisma.XOR<Prisma.Mt_application_statusScalarRelationFilter, Prisma.mt_application_statusWhereInput>
   mt_application_type?: Prisma.XOR<Prisma.Mt_application_typeScalarRelationFilter, Prisma.mt_application_typeWhereInput>
   users_service_applications_updated_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
+  service_accounts?: Prisma.XOR<Prisma.Service_accountsNullableScalarRelationFilter, Prisma.service_accountsWhereInput> | null
 }, "application_id" | "application_no">
 
 export type service_applicationsOrderByWithAggregationInput = {
@@ -472,6 +475,7 @@ export type service_applicationsCreateInput = {
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateInput = {
@@ -492,6 +496,7 @@ export type service_applicationsUncheckedCreateInput = {
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUpdateInput = {
@@ -512,6 +517,7 @@ export type service_applicationsUpdateInput = {
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateInput = {
@@ -532,6 +538,7 @@ export type service_applicationsUncheckedUpdateInput = {
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsCreateManyInput = {
@@ -595,6 +602,11 @@ export type Service_applicationsListRelationFilter = {
 
 export type service_applicationsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type Service_applicationsNullableScalarRelationFilter = {
+  is?: Prisma.service_applicationsWhereInput | null
+  isNot?: Prisma.service_applicationsWhereInput | null
 }
 
 export type service_applicationsCountOrderByAggregateInput = {
@@ -973,6 +985,22 @@ export type service_applicationsUncheckedUpdateManyWithoutMt_meter_sizeNestedInp
   deleteMany?: Prisma.service_applicationsScalarWhereInput | Prisma.service_applicationsScalarWhereInput[]
 }
 
+export type service_applicationsCreateNestedOneWithoutService_accountsInput = {
+  create?: Prisma.XOR<Prisma.service_applicationsCreateWithoutService_accountsInput, Prisma.service_applicationsUncheckedCreateWithoutService_accountsInput>
+  connectOrCreate?: Prisma.service_applicationsCreateOrConnectWithoutService_accountsInput
+  connect?: Prisma.service_applicationsWhereUniqueInput
+}
+
+export type service_applicationsUpdateOneWithoutService_accountsNestedInput = {
+  create?: Prisma.XOR<Prisma.service_applicationsCreateWithoutService_accountsInput, Prisma.service_applicationsUncheckedCreateWithoutService_accountsInput>
+  connectOrCreate?: Prisma.service_applicationsCreateOrConnectWithoutService_accountsInput
+  upsert?: Prisma.service_applicationsUpsertWithoutService_accountsInput
+  disconnect?: Prisma.service_applicationsWhereInput | boolean
+  delete?: Prisma.service_applicationsWhereInput | boolean
+  connect?: Prisma.service_applicationsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.service_applicationsUpdateToOneWithWhereWithoutService_accountsInput, Prisma.service_applicationsUpdateWithoutService_accountsInput>, Prisma.service_applicationsUncheckedUpdateWithoutService_accountsInput>
+}
+
 export type service_applicationsCreateWithoutCustomersInput = {
   application_id?: bigint | number
   application_no: string
@@ -990,6 +1018,7 @@ export type service_applicationsCreateWithoutCustomersInput = {
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutCustomersInput = {
@@ -1009,6 +1038,7 @@ export type service_applicationsUncheckedCreateWithoutCustomersInput = {
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutCustomersInput = {
@@ -1077,6 +1107,7 @@ export type service_applicationsCreateWithoutUsers_service_applications_created_
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutUsers_service_applications_created_byTousersInput = {
@@ -1096,6 +1127,7 @@ export type service_applicationsUncheckedCreateWithoutUsers_service_applications
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutUsers_service_applications_created_byTousersInput = {
@@ -1125,6 +1157,7 @@ export type service_applicationsCreateWithoutUsers_service_applications_updated_
   mt_meter_size?: Prisma.mt_meter_sizeCreateNestedOneWithoutService_applicationsInput
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutUsers_service_applications_updated_byTousersInput = {
@@ -1144,6 +1177,7 @@ export type service_applicationsUncheckedCreateWithoutUsers_service_applications
   created_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutUsers_service_applications_updated_byTousersInput = {
@@ -1205,6 +1239,7 @@ export type service_applicationsCreateWithoutMt_application_statusInput = {
   mt_meter_size?: Prisma.mt_meter_sizeCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutMt_application_statusInput = {
@@ -1224,6 +1259,7 @@ export type service_applicationsUncheckedCreateWithoutMt_application_statusInput
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutMt_application_statusInput = {
@@ -1269,6 +1305,7 @@ export type service_applicationsCreateWithoutMt_application_typeInput = {
   mt_meter_size?: Prisma.mt_meter_sizeCreateNestedOneWithoutService_applicationsInput
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutMt_application_typeInput = {
@@ -1288,6 +1325,7 @@ export type service_applicationsUncheckedCreateWithoutMt_application_typeInput =
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutMt_application_typeInput = {
@@ -1333,6 +1371,7 @@ export type service_applicationsCreateWithoutMt_connection_typeInput = {
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutMt_connection_typeInput = {
@@ -1352,6 +1391,7 @@ export type service_applicationsUncheckedCreateWithoutMt_connection_typeInput = 
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutMt_connection_typeInput = {
@@ -1397,6 +1437,7 @@ export type service_applicationsCreateWithoutMt_meter_sizeInput = {
   mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
   mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
   users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+  service_accounts?: Prisma.service_accountsCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsUncheckedCreateWithoutMt_meter_sizeInput = {
@@ -1416,6 +1457,7 @@ export type service_applicationsUncheckedCreateWithoutMt_meter_sizeInput = {
   updated_by?: bigint | number | null
   created_at?: Date | string
   updated_at?: Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedCreateNestedOneWithoutService_applicationsInput
 }
 
 export type service_applicationsCreateOrConnectWithoutMt_meter_sizeInput = {
@@ -1442,6 +1484,102 @@ export type service_applicationsUpdateWithWhereUniqueWithoutMt_meter_sizeInput =
 export type service_applicationsUpdateManyWithWhereWithoutMt_meter_sizeInput = {
   where: Prisma.service_applicationsScalarWhereInput
   data: Prisma.XOR<Prisma.service_applicationsUpdateManyMutationInput, Prisma.service_applicationsUncheckedUpdateManyWithoutMt_meter_sizeInput>
+}
+
+export type service_applicationsCreateWithoutService_accountsInput = {
+  application_id?: bigint | number
+  application_no: string
+  application_date?: Date | string
+  investigation_date?: Date | string | null
+  investigation_result?: string | null
+  inspection_date?: Date | string | null
+  inspection_result?: string | null
+  remarks?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  mt_connection_type?: Prisma.mt_connection_typeCreateNestedOneWithoutService_applicationsInput
+  users_service_applications_created_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_created_byTousersInput
+  customers: Prisma.customersCreateNestedOneWithoutService_applicationsInput
+  mt_meter_size?: Prisma.mt_meter_sizeCreateNestedOneWithoutService_applicationsInput
+  mt_application_status: Prisma.mt_application_statusCreateNestedOneWithoutService_applicationsInput
+  mt_application_type: Prisma.mt_application_typeCreateNestedOneWithoutService_applicationsInput
+  users_service_applications_updated_byTousers?: Prisma.usersCreateNestedOneWithoutService_applications_service_applications_updated_byTousersInput
+}
+
+export type service_applicationsUncheckedCreateWithoutService_accountsInput = {
+  application_id?: bigint | number
+  application_no: string
+  customer_id: bigint | number
+  application_type_id: bigint | number
+  application_status_id: bigint | number
+  application_date?: Date | string
+  connection_type_id?: bigint | number | null
+  requested_meter_size_id?: bigint | number | null
+  investigation_date?: Date | string | null
+  investigation_result?: string | null
+  inspection_date?: Date | string | null
+  inspection_result?: string | null
+  remarks?: string | null
+  created_by?: bigint | number | null
+  updated_by?: bigint | number | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+}
+
+export type service_applicationsCreateOrConnectWithoutService_accountsInput = {
+  where: Prisma.service_applicationsWhereUniqueInput
+  create: Prisma.XOR<Prisma.service_applicationsCreateWithoutService_accountsInput, Prisma.service_applicationsUncheckedCreateWithoutService_accountsInput>
+}
+
+export type service_applicationsUpsertWithoutService_accountsInput = {
+  update: Prisma.XOR<Prisma.service_applicationsUpdateWithoutService_accountsInput, Prisma.service_applicationsUncheckedUpdateWithoutService_accountsInput>
+  create: Prisma.XOR<Prisma.service_applicationsCreateWithoutService_accountsInput, Prisma.service_applicationsUncheckedCreateWithoutService_accountsInput>
+  where?: Prisma.service_applicationsWhereInput
+}
+
+export type service_applicationsUpdateToOneWithWhereWithoutService_accountsInput = {
+  where?: Prisma.service_applicationsWhereInput
+  data: Prisma.XOR<Prisma.service_applicationsUpdateWithoutService_accountsInput, Prisma.service_applicationsUncheckedUpdateWithoutService_accountsInput>
+}
+
+export type service_applicationsUpdateWithoutService_accountsInput = {
+  application_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_no?: Prisma.StringFieldUpdateOperationsInput | string
+  application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  investigation_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  investigation_result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspection_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  inspection_result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  mt_connection_type?: Prisma.mt_connection_typeUpdateOneWithoutService_applicationsNestedInput
+  users_service_applications_created_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_created_byTousersNestedInput
+  customers?: Prisma.customersUpdateOneRequiredWithoutService_applicationsNestedInput
+  mt_meter_size?: Prisma.mt_meter_sizeUpdateOneWithoutService_applicationsNestedInput
+  mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
+  mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
+  users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+}
+
+export type service_applicationsUncheckedUpdateWithoutService_accountsInput = {
+  application_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_no?: Prisma.StringFieldUpdateOperationsInput | string
+  customer_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_status_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connection_type_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  requested_meter_size_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  investigation_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  investigation_result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspection_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  inspection_result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type service_applicationsCreateManyCustomersInput = {
@@ -1480,6 +1618,7 @@ export type service_applicationsUpdateWithoutCustomersInput = {
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutCustomersInput = {
@@ -1499,6 +1638,7 @@ export type service_applicationsUncheckedUpdateWithoutCustomersInput = {
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutCustomersInput = {
@@ -1575,6 +1715,7 @@ export type service_applicationsUpdateWithoutUsers_service_applications_created_
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutUsers_service_applications_created_byTousersInput = {
@@ -1594,6 +1735,7 @@ export type service_applicationsUncheckedUpdateWithoutUsers_service_applications
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutUsers_service_applications_created_byTousersInput = {
@@ -1632,6 +1774,7 @@ export type service_applicationsUpdateWithoutUsers_service_applications_updated_
   mt_meter_size?: Prisma.mt_meter_sizeUpdateOneWithoutService_applicationsNestedInput
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutUsers_service_applications_updated_byTousersInput = {
@@ -1651,6 +1794,7 @@ export type service_applicationsUncheckedUpdateWithoutUsers_service_applications
   created_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutUsers_service_applications_updated_byTousersInput = {
@@ -1708,6 +1852,7 @@ export type service_applicationsUpdateWithoutMt_application_statusInput = {
   mt_meter_size?: Prisma.mt_meter_sizeUpdateOneWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutMt_application_statusInput = {
@@ -1727,6 +1872,7 @@ export type service_applicationsUncheckedUpdateWithoutMt_application_statusInput
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutMt_application_statusInput = {
@@ -1784,6 +1930,7 @@ export type service_applicationsUpdateWithoutMt_application_typeInput = {
   mt_meter_size?: Prisma.mt_meter_sizeUpdateOneWithoutService_applicationsNestedInput
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutMt_application_typeInput = {
@@ -1803,6 +1950,7 @@ export type service_applicationsUncheckedUpdateWithoutMt_application_typeInput =
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutMt_application_typeInput = {
@@ -1860,6 +2008,7 @@ export type service_applicationsUpdateWithoutMt_connection_typeInput = {
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutMt_connection_typeInput = {
@@ -1879,6 +2028,7 @@ export type service_applicationsUncheckedUpdateWithoutMt_connection_typeInput = 
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutMt_connection_typeInput = {
@@ -1936,6 +2086,7 @@ export type service_applicationsUpdateWithoutMt_meter_sizeInput = {
   mt_application_status?: Prisma.mt_application_statusUpdateOneRequiredWithoutService_applicationsNestedInput
   mt_application_type?: Prisma.mt_application_typeUpdateOneRequiredWithoutService_applicationsNestedInput
   users_service_applications_updated_byTousers?: Prisma.usersUpdateOneWithoutService_applications_service_applications_updated_byTousersNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateWithoutMt_meter_sizeInput = {
@@ -1955,6 +2106,7 @@ export type service_applicationsUncheckedUpdateWithoutMt_meter_sizeInput = {
   updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  service_accounts?: Prisma.service_accountsUncheckedUpdateOneWithoutService_applicationsNestedInput
 }
 
 export type service_applicationsUncheckedUpdateManyWithoutMt_meter_sizeInput = {
@@ -2003,6 +2155,7 @@ export type service_applicationsSelect<ExtArgs extends runtime.Types.Extensions.
   mt_application_status?: boolean | Prisma.mt_application_statusDefaultArgs<ExtArgs>
   mt_application_type?: boolean | Prisma.mt_application_typeDefaultArgs<ExtArgs>
   users_service_applications_updated_byTousers?: boolean | Prisma.service_applications$users_service_applications_updated_byTousersArgs<ExtArgs>
+  service_accounts?: boolean | Prisma.service_applications$service_accountsArgs<ExtArgs>
 }, ExtArgs["result"]["service_applications"]>
 
 export type service_applicationsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2088,6 +2241,7 @@ export type service_applicationsInclude<ExtArgs extends runtime.Types.Extensions
   mt_application_status?: boolean | Prisma.mt_application_statusDefaultArgs<ExtArgs>
   mt_application_type?: boolean | Prisma.mt_application_typeDefaultArgs<ExtArgs>
   users_service_applications_updated_byTousers?: boolean | Prisma.service_applications$users_service_applications_updated_byTousersArgs<ExtArgs>
+  service_accounts?: boolean | Prisma.service_applications$service_accountsArgs<ExtArgs>
 }
 export type service_applicationsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   mt_connection_type?: boolean | Prisma.service_applications$mt_connection_typeArgs<ExtArgs>
@@ -2118,6 +2272,7 @@ export type $service_applicationsPayload<ExtArgs extends runtime.Types.Extension
     mt_application_status: Prisma.$mt_application_statusPayload<ExtArgs>
     mt_application_type: Prisma.$mt_application_typePayload<ExtArgs>
     users_service_applications_updated_byTousers: Prisma.$usersPayload<ExtArgs> | null
+    service_accounts: Prisma.$service_accountsPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     application_id: bigint
@@ -2538,6 +2693,7 @@ export interface Prisma__service_applicationsClient<T, Null = never, ExtArgs ext
   mt_application_status<T extends Prisma.mt_application_statusDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.mt_application_statusDefaultArgs<ExtArgs>>): Prisma.Prisma__mt_application_statusClient<runtime.Types.Result.GetResult<Prisma.$mt_application_statusPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   mt_application_type<T extends Prisma.mt_application_typeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.mt_application_typeDefaultArgs<ExtArgs>>): Prisma.Prisma__mt_application_typeClient<runtime.Types.Result.GetResult<Prisma.$mt_application_typePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   users_service_applications_updated_byTousers<T extends Prisma.service_applications$users_service_applications_updated_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_applications$users_service_applications_updated_byTousersArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  service_accounts<T extends Prisma.service_applications$service_accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_applications$service_accountsArgs<ExtArgs>>): Prisma.Prisma__service_accountsClient<runtime.Types.Result.GetResult<Prisma.$service_accountsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3058,6 +3214,25 @@ export type service_applications$users_service_applications_updated_byTousersArg
    */
   include?: Prisma.usersInclude<ExtArgs> | null
   where?: Prisma.usersWhereInput
+}
+
+/**
+ * service_applications.service_accounts
+ */
+export type service_applications$service_accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the service_accounts
+   */
+  select?: Prisma.service_accountsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the service_accounts
+   */
+  omit?: Prisma.service_accountsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.service_accountsInclude<ExtArgs> | null
+  where?: Prisma.service_accountsWhereInput
 }
 
 /**

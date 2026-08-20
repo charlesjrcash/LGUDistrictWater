@@ -30,6 +30,7 @@ export type Connection_feesAvgAggregateOutputType = {
   connection_fee_id: number | null
   service_account_id: number | null
   fee_id: number | null
+  bill_id: number | null
   assessed_amount: runtime.Decimal | null
   amount_paid: runtime.Decimal | null
   balance_amount: runtime.Decimal | null
@@ -41,6 +42,7 @@ export type Connection_feesSumAggregateOutputType = {
   connection_fee_id: bigint | null
   service_account_id: bigint | null
   fee_id: bigint | null
+  bill_id: bigint | null
   assessed_amount: runtime.Decimal | null
   amount_paid: runtime.Decimal | null
   balance_amount: runtime.Decimal | null
@@ -52,6 +54,7 @@ export type Connection_feesMinAggregateOutputType = {
   connection_fee_id: bigint | null
   service_account_id: bigint | null
   fee_id: bigint | null
+  bill_id: bigint | null
   assessed_amount: runtime.Decimal | null
   amount_paid: runtime.Decimal | null
   balance_amount: runtime.Decimal | null
@@ -68,6 +71,7 @@ export type Connection_feesMaxAggregateOutputType = {
   connection_fee_id: bigint | null
   service_account_id: bigint | null
   fee_id: bigint | null
+  bill_id: bigint | null
   assessed_amount: runtime.Decimal | null
   amount_paid: runtime.Decimal | null
   balance_amount: runtime.Decimal | null
@@ -84,6 +88,7 @@ export type Connection_feesCountAggregateOutputType = {
   connection_fee_id: number
   service_account_id: number
   fee_id: number
+  bill_id: number
   assessed_amount: number
   amount_paid: number
   balance_amount: number
@@ -102,6 +107,7 @@ export type Connection_feesAvgAggregateInputType = {
   connection_fee_id?: true
   service_account_id?: true
   fee_id?: true
+  bill_id?: true
   assessed_amount?: true
   amount_paid?: true
   balance_amount?: true
@@ -113,6 +119,7 @@ export type Connection_feesSumAggregateInputType = {
   connection_fee_id?: true
   service_account_id?: true
   fee_id?: true
+  bill_id?: true
   assessed_amount?: true
   amount_paid?: true
   balance_amount?: true
@@ -124,6 +131,7 @@ export type Connection_feesMinAggregateInputType = {
   connection_fee_id?: true
   service_account_id?: true
   fee_id?: true
+  bill_id?: true
   assessed_amount?: true
   amount_paid?: true
   balance_amount?: true
@@ -140,6 +148,7 @@ export type Connection_feesMaxAggregateInputType = {
   connection_fee_id?: true
   service_account_id?: true
   fee_id?: true
+  bill_id?: true
   assessed_amount?: true
   amount_paid?: true
   balance_amount?: true
@@ -156,6 +165,7 @@ export type Connection_feesCountAggregateInputType = {
   connection_fee_id?: true
   service_account_id?: true
   fee_id?: true
+  bill_id?: true
   assessed_amount?: true
   amount_paid?: true
   balance_amount?: true
@@ -259,6 +269,7 @@ export type Connection_feesGroupByOutputType = {
   connection_fee_id: bigint
   service_account_id: bigint
   fee_id: bigint
+  bill_id: bigint | null
   assessed_amount: runtime.Decimal
   amount_paid: runtime.Decimal
   balance_amount: runtime.Decimal
@@ -298,6 +309,7 @@ export type connection_feesWhereInput = {
   connection_fee_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
   service_account_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
   fee_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
+  bill_id?: Prisma.BigIntNullableFilter<"connection_fees"> | bigint | number | null
   assessed_amount?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -310,6 +322,7 @@ export type connection_feesWhereInput = {
   updated_at?: Prisma.DateTimeNullableFilter<"connection_fees"> | Date | string | null
   users_connection_fees_created_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   mt_fees?: Prisma.XOR<Prisma.Mt_feesScalarRelationFilter, Prisma.mt_feesWhereInput>
+  bills?: Prisma.XOR<Prisma.BillsNullableScalarRelationFilter, Prisma.billsWhereInput> | null
   service_accounts?: Prisma.XOR<Prisma.Service_accountsScalarRelationFilter, Prisma.service_accountsWhereInput>
   users_connection_fees_updated_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
 }
@@ -318,6 +331,7 @@ export type connection_feesOrderByWithRelationInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrderInput | Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -330,6 +344,7 @@ export type connection_feesOrderByWithRelationInput = {
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   users_connection_fees_created_byTousers?: Prisma.usersOrderByWithRelationInput
   mt_fees?: Prisma.mt_feesOrderByWithRelationInput
+  bills?: Prisma.billsOrderByWithRelationInput
   service_accounts?: Prisma.service_accountsOrderByWithRelationInput
   users_connection_fees_updated_byTousers?: Prisma.usersOrderByWithRelationInput
 }
@@ -341,6 +356,7 @@ export type connection_feesWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.connection_feesWhereInput | Prisma.connection_feesWhereInput[]
   service_account_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
   fee_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
+  bill_id?: Prisma.BigIntNullableFilter<"connection_fees"> | bigint | number | null
   assessed_amount?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -353,6 +369,7 @@ export type connection_feesWhereUniqueInput = Prisma.AtLeast<{
   updated_at?: Prisma.DateTimeNullableFilter<"connection_fees"> | Date | string | null
   users_connection_fees_created_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
   mt_fees?: Prisma.XOR<Prisma.Mt_feesScalarRelationFilter, Prisma.mt_feesWhereInput>
+  bills?: Prisma.XOR<Prisma.BillsNullableScalarRelationFilter, Prisma.billsWhereInput> | null
   service_accounts?: Prisma.XOR<Prisma.Service_accountsScalarRelationFilter, Prisma.service_accountsWhereInput>
   users_connection_fees_updated_byTousers?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.usersWhereInput> | null
 }, "connection_fee_id">
@@ -361,6 +378,7 @@ export type connection_feesOrderByWithAggregationInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrderInput | Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -385,6 +403,7 @@ export type connection_feesScalarWhereWithAggregatesInput = {
   connection_fee_id?: Prisma.BigIntWithAggregatesFilter<"connection_fees"> | bigint | number
   service_account_id?: Prisma.BigIntWithAggregatesFilter<"connection_fees"> | bigint | number
   fee_id?: Prisma.BigIntWithAggregatesFilter<"connection_fees"> | bigint | number
+  bill_id?: Prisma.BigIntNullableWithAggregatesFilter<"connection_fees"> | bigint | number | null
   assessed_amount?: Prisma.DecimalWithAggregatesFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalWithAggregatesFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalWithAggregatesFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -409,6 +428,7 @@ export type connection_feesCreateInput = {
   updated_at?: Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_created_byTousersInput
   mt_fees: Prisma.mt_feesCreateNestedOneWithoutConnection_feesInput
+  bills?: Prisma.billsCreateNestedOneWithoutConnection_feesInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutConnection_feesInput
   users_connection_fees_updated_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_updated_byTousersInput
 }
@@ -417,6 +437,7 @@ export type connection_feesUncheckedCreateInput = {
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -441,6 +462,7 @@ export type connection_feesUpdateInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_created_byTousersNestedInput
   mt_fees?: Prisma.mt_feesUpdateOneRequiredWithoutConnection_feesNestedInput
+  bills?: Prisma.billsUpdateOneWithoutConnection_feesNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutConnection_feesNestedInput
   users_connection_fees_updated_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_updated_byTousersNestedInput
 }
@@ -449,6 +471,7 @@ export type connection_feesUncheckedUpdateInput = {
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -465,6 +488,7 @@ export type connection_feesCreateManyInput = {
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -493,6 +517,7 @@ export type connection_feesUncheckedUpdateManyInput = {
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -519,6 +544,7 @@ export type connection_feesCountOrderByAggregateInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -535,6 +561,7 @@ export type connection_feesAvgOrderByAggregateInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -546,6 +573,7 @@ export type connection_feesMaxOrderByAggregateInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -562,6 +590,7 @@ export type connection_feesMinOrderByAggregateInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -578,6 +607,7 @@ export type connection_feesSumOrderByAggregateInput = {
   connection_fee_id?: Prisma.SortOrder
   service_account_id?: Prisma.SortOrder
   fee_id?: Prisma.SortOrder
+  bill_id?: Prisma.SortOrder
   assessed_amount?: Prisma.SortOrder
   amount_paid?: Prisma.SortOrder
   balance_amount?: Prisma.SortOrder
@@ -666,6 +696,48 @@ export type connection_feesUncheckedUpdateManyWithoutUsers_connection_fees_updat
   connect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
   update?: Prisma.connection_feesUpdateWithWhereUniqueWithoutUsers_connection_fees_updated_byTousersInput | Prisma.connection_feesUpdateWithWhereUniqueWithoutUsers_connection_fees_updated_byTousersInput[]
   updateMany?: Prisma.connection_feesUpdateManyWithWhereWithoutUsers_connection_fees_updated_byTousersInput | Prisma.connection_feesUpdateManyWithWhereWithoutUsers_connection_fees_updated_byTousersInput[]
+  deleteMany?: Prisma.connection_feesScalarWhereInput | Prisma.connection_feesScalarWhereInput[]
+}
+
+export type connection_feesCreateNestedManyWithoutBillsInput = {
+  create?: Prisma.XOR<Prisma.connection_feesCreateWithoutBillsInput, Prisma.connection_feesUncheckedCreateWithoutBillsInput> | Prisma.connection_feesCreateWithoutBillsInput[] | Prisma.connection_feesUncheckedCreateWithoutBillsInput[]
+  connectOrCreate?: Prisma.connection_feesCreateOrConnectWithoutBillsInput | Prisma.connection_feesCreateOrConnectWithoutBillsInput[]
+  createMany?: Prisma.connection_feesCreateManyBillsInputEnvelope
+  connect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+}
+
+export type connection_feesUncheckedCreateNestedManyWithoutBillsInput = {
+  create?: Prisma.XOR<Prisma.connection_feesCreateWithoutBillsInput, Prisma.connection_feesUncheckedCreateWithoutBillsInput> | Prisma.connection_feesCreateWithoutBillsInput[] | Prisma.connection_feesUncheckedCreateWithoutBillsInput[]
+  connectOrCreate?: Prisma.connection_feesCreateOrConnectWithoutBillsInput | Prisma.connection_feesCreateOrConnectWithoutBillsInput[]
+  createMany?: Prisma.connection_feesCreateManyBillsInputEnvelope
+  connect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+}
+
+export type connection_feesUpdateManyWithoutBillsNestedInput = {
+  create?: Prisma.XOR<Prisma.connection_feesCreateWithoutBillsInput, Prisma.connection_feesUncheckedCreateWithoutBillsInput> | Prisma.connection_feesCreateWithoutBillsInput[] | Prisma.connection_feesUncheckedCreateWithoutBillsInput[]
+  connectOrCreate?: Prisma.connection_feesCreateOrConnectWithoutBillsInput | Prisma.connection_feesCreateOrConnectWithoutBillsInput[]
+  upsert?: Prisma.connection_feesUpsertWithWhereUniqueWithoutBillsInput | Prisma.connection_feesUpsertWithWhereUniqueWithoutBillsInput[]
+  createMany?: Prisma.connection_feesCreateManyBillsInputEnvelope
+  set?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  disconnect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  delete?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  connect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  update?: Prisma.connection_feesUpdateWithWhereUniqueWithoutBillsInput | Prisma.connection_feesUpdateWithWhereUniqueWithoutBillsInput[]
+  updateMany?: Prisma.connection_feesUpdateManyWithWhereWithoutBillsInput | Prisma.connection_feesUpdateManyWithWhereWithoutBillsInput[]
+  deleteMany?: Prisma.connection_feesScalarWhereInput | Prisma.connection_feesScalarWhereInput[]
+}
+
+export type connection_feesUncheckedUpdateManyWithoutBillsNestedInput = {
+  create?: Prisma.XOR<Prisma.connection_feesCreateWithoutBillsInput, Prisma.connection_feesUncheckedCreateWithoutBillsInput> | Prisma.connection_feesCreateWithoutBillsInput[] | Prisma.connection_feesUncheckedCreateWithoutBillsInput[]
+  connectOrCreate?: Prisma.connection_feesCreateOrConnectWithoutBillsInput | Prisma.connection_feesCreateOrConnectWithoutBillsInput[]
+  upsert?: Prisma.connection_feesUpsertWithWhereUniqueWithoutBillsInput | Prisma.connection_feesUpsertWithWhereUniqueWithoutBillsInput[]
+  createMany?: Prisma.connection_feesCreateManyBillsInputEnvelope
+  set?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  disconnect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  delete?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  connect?: Prisma.connection_feesWhereUniqueInput | Prisma.connection_feesWhereUniqueInput[]
+  update?: Prisma.connection_feesUpdateWithWhereUniqueWithoutBillsInput | Prisma.connection_feesUpdateWithWhereUniqueWithoutBillsInput[]
+  updateMany?: Prisma.connection_feesUpdateManyWithWhereWithoutBillsInput | Prisma.connection_feesUpdateManyWithWhereWithoutBillsInput[]
   deleteMany?: Prisma.connection_feesScalarWhereInput | Prisma.connection_feesScalarWhereInput[]
 }
 
@@ -764,6 +836,7 @@ export type connection_feesCreateWithoutUsers_connection_fees_created_byTousersI
   created_at?: Date | string
   updated_at?: Date | string | null
   mt_fees: Prisma.mt_feesCreateNestedOneWithoutConnection_feesInput
+  bills?: Prisma.billsCreateNestedOneWithoutConnection_feesInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutConnection_feesInput
   users_connection_fees_updated_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_updated_byTousersInput
 }
@@ -772,6 +845,7 @@ export type connection_feesUncheckedCreateWithoutUsers_connection_fees_created_b
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -805,6 +879,7 @@ export type connection_feesCreateWithoutUsers_connection_fees_updated_byTousersI
   updated_at?: Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_created_byTousersInput
   mt_fees: Prisma.mt_feesCreateNestedOneWithoutConnection_feesInput
+  bills?: Prisma.billsCreateNestedOneWithoutConnection_feesInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutConnection_feesInput
 }
 
@@ -812,6 +887,7 @@ export type connection_feesUncheckedCreateWithoutUsers_connection_fees_updated_b
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -856,6 +932,7 @@ export type connection_feesScalarWhereInput = {
   connection_fee_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
   service_account_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
   fee_id?: Prisma.BigIntFilter<"connection_fees"> | bigint | number
+  bill_id?: Prisma.BigIntNullableFilter<"connection_fees"> | bigint | number | null
   assessed_amount?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFilter<"connection_fees"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -884,6 +961,64 @@ export type connection_feesUpdateManyWithWhereWithoutUsers_connection_fees_updat
   data: Prisma.XOR<Prisma.connection_feesUpdateManyMutationInput, Prisma.connection_feesUncheckedUpdateManyWithoutUsers_connection_fees_updated_byTousersInput>
 }
 
+export type connection_feesCreateWithoutBillsInput = {
+  connection_fee_id?: bigint | number
+  assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  assessment_date?: Date | string
+  status?: string
+  remarks?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  users_connection_fees_created_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_created_byTousersInput
+  mt_fees: Prisma.mt_feesCreateNestedOneWithoutConnection_feesInput
+  service_accounts: Prisma.service_accountsCreateNestedOneWithoutConnection_feesInput
+  users_connection_fees_updated_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_updated_byTousersInput
+}
+
+export type connection_feesUncheckedCreateWithoutBillsInput = {
+  connection_fee_id?: bigint | number
+  service_account_id: bigint | number
+  fee_id: bigint | number
+  assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  assessment_date?: Date | string
+  status?: string
+  remarks?: string | null
+  created_by?: bigint | number | null
+  updated_by?: bigint | number | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+}
+
+export type connection_feesCreateOrConnectWithoutBillsInput = {
+  where: Prisma.connection_feesWhereUniqueInput
+  create: Prisma.XOR<Prisma.connection_feesCreateWithoutBillsInput, Prisma.connection_feesUncheckedCreateWithoutBillsInput>
+}
+
+export type connection_feesCreateManyBillsInputEnvelope = {
+  data: Prisma.connection_feesCreateManyBillsInput | Prisma.connection_feesCreateManyBillsInput[]
+  skipDuplicates?: boolean
+}
+
+export type connection_feesUpsertWithWhereUniqueWithoutBillsInput = {
+  where: Prisma.connection_feesWhereUniqueInput
+  update: Prisma.XOR<Prisma.connection_feesUpdateWithoutBillsInput, Prisma.connection_feesUncheckedUpdateWithoutBillsInput>
+  create: Prisma.XOR<Prisma.connection_feesCreateWithoutBillsInput, Prisma.connection_feesUncheckedCreateWithoutBillsInput>
+}
+
+export type connection_feesUpdateWithWhereUniqueWithoutBillsInput = {
+  where: Prisma.connection_feesWhereUniqueInput
+  data: Prisma.XOR<Prisma.connection_feesUpdateWithoutBillsInput, Prisma.connection_feesUncheckedUpdateWithoutBillsInput>
+}
+
+export type connection_feesUpdateManyWithWhereWithoutBillsInput = {
+  where: Prisma.connection_feesScalarWhereInput
+  data: Prisma.XOR<Prisma.connection_feesUpdateManyMutationInput, Prisma.connection_feesUncheckedUpdateManyWithoutBillsInput>
+}
+
 export type connection_feesCreateWithoutMt_feesInput = {
   connection_fee_id?: bigint | number
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -895,6 +1030,7 @@ export type connection_feesCreateWithoutMt_feesInput = {
   created_at?: Date | string
   updated_at?: Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_created_byTousersInput
+  bills?: Prisma.billsCreateNestedOneWithoutConnection_feesInput
   service_accounts: Prisma.service_accountsCreateNestedOneWithoutConnection_feesInput
   users_connection_fees_updated_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_updated_byTousersInput
 }
@@ -902,6 +1038,7 @@ export type connection_feesCreateWithoutMt_feesInput = {
 export type connection_feesUncheckedCreateWithoutMt_feesInput = {
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -952,12 +1089,14 @@ export type connection_feesCreateWithoutService_accountsInput = {
   updated_at?: Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_created_byTousersInput
   mt_fees: Prisma.mt_feesCreateNestedOneWithoutConnection_feesInput
+  bills?: Prisma.billsCreateNestedOneWithoutConnection_feesInput
   users_connection_fees_updated_byTousers?: Prisma.usersCreateNestedOneWithoutConnection_fees_connection_fees_updated_byTousersInput
 }
 
 export type connection_feesUncheckedCreateWithoutService_accountsInput = {
   connection_fee_id?: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1000,6 +1139,7 @@ export type connection_feesCreateManyUsers_connection_fees_created_byTousersInpu
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1015,6 +1155,7 @@ export type connection_feesCreateManyUsers_connection_fees_updated_byTousersInpu
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1037,6 +1178,7 @@ export type connection_feesUpdateWithoutUsers_connection_fees_created_byTousersI
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   mt_fees?: Prisma.mt_feesUpdateOneRequiredWithoutConnection_feesNestedInput
+  bills?: Prisma.billsUpdateOneWithoutConnection_feesNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutConnection_feesNestedInput
   users_connection_fees_updated_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_updated_byTousersNestedInput
 }
@@ -1045,6 +1187,7 @@ export type connection_feesUncheckedUpdateWithoutUsers_connection_fees_created_b
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1060,6 +1203,7 @@ export type connection_feesUncheckedUpdateManyWithoutUsers_connection_fees_creat
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1083,6 +1227,7 @@ export type connection_feesUpdateWithoutUsers_connection_fees_updated_byTousersI
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_created_byTousersNestedInput
   mt_fees?: Prisma.mt_feesUpdateOneRequiredWithoutConnection_feesNestedInput
+  bills?: Prisma.billsUpdateOneWithoutConnection_feesNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutConnection_feesNestedInput
 }
 
@@ -1090,6 +1235,7 @@ export type connection_feesUncheckedUpdateWithoutUsers_connection_fees_updated_b
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1105,6 +1251,7 @@ export type connection_feesUncheckedUpdateManyWithoutUsers_connection_fees_updat
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1116,9 +1263,74 @@ export type connection_feesUncheckedUpdateManyWithoutUsers_connection_fees_updat
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+export type connection_feesCreateManyBillsInput = {
+  connection_fee_id?: bigint | number
+  service_account_id: bigint | number
+  fee_id: bigint | number
+  assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  assessment_date?: Date | string
+  status?: string
+  remarks?: string | null
+  created_by?: bigint | number | null
+  updated_by?: bigint | number | null
+  created_at?: Date | string
+  updated_at?: Date | string | null
+}
+
+export type connection_feesUpdateWithoutBillsInput = {
+  connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  assessment_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  users_connection_fees_created_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_created_byTousersNestedInput
+  mt_fees?: Prisma.mt_feesUpdateOneRequiredWithoutConnection_feesNestedInput
+  service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutConnection_feesNestedInput
+  users_connection_fees_updated_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_updated_byTousersNestedInput
+}
+
+export type connection_feesUncheckedUpdateWithoutBillsInput = {
+  connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  assessment_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type connection_feesUncheckedUpdateManyWithoutBillsInput = {
+  connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  assessment_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  updated_by?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
 export type connection_feesCreateManyMt_feesInput = {
   connection_fee_id?: bigint | number
   service_account_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1142,6 +1354,7 @@ export type connection_feesUpdateWithoutMt_feesInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_created_byTousersNestedInput
+  bills?: Prisma.billsUpdateOneWithoutConnection_feesNestedInput
   service_accounts?: Prisma.service_accountsUpdateOneRequiredWithoutConnection_feesNestedInput
   users_connection_fees_updated_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_updated_byTousersNestedInput
 }
@@ -1149,6 +1362,7 @@ export type connection_feesUpdateWithoutMt_feesInput = {
 export type connection_feesUncheckedUpdateWithoutMt_feesInput = {
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1164,6 +1378,7 @@ export type connection_feesUncheckedUpdateWithoutMt_feesInput = {
 export type connection_feesUncheckedUpdateManyWithoutMt_feesInput = {
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   service_account_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1179,6 +1394,7 @@ export type connection_feesUncheckedUpdateManyWithoutMt_feesInput = {
 export type connection_feesCreateManyService_accountsInput = {
   connection_fee_id?: bigint | number
   fee_id: bigint | number
+  bill_id?: bigint | number | null
   assessed_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1203,12 +1419,14 @@ export type connection_feesUpdateWithoutService_accountsInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   users_connection_fees_created_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_created_byTousersNestedInput
   mt_fees?: Prisma.mt_feesUpdateOneRequiredWithoutConnection_feesNestedInput
+  bills?: Prisma.billsUpdateOneWithoutConnection_feesNestedInput
   users_connection_fees_updated_byTousers?: Prisma.usersUpdateOneWithoutConnection_fees_connection_fees_updated_byTousersNestedInput
 }
 
 export type connection_feesUncheckedUpdateWithoutService_accountsInput = {
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1224,6 +1442,7 @@ export type connection_feesUncheckedUpdateWithoutService_accountsInput = {
 export type connection_feesUncheckedUpdateManyWithoutService_accountsInput = {
   connection_fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fee_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  bill_id?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   assessed_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amount_paid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balance_amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1242,6 +1461,7 @@ export type connection_feesSelect<ExtArgs extends runtime.Types.Extensions.Inter
   connection_fee_id?: boolean
   service_account_id?: boolean
   fee_id?: boolean
+  bill_id?: boolean
   assessed_amount?: boolean
   amount_paid?: boolean
   balance_amount?: boolean
@@ -1254,6 +1474,7 @@ export type connection_feesSelect<ExtArgs extends runtime.Types.Extensions.Inter
   updated_at?: boolean
   users_connection_fees_created_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>
   mt_fees?: boolean | Prisma.mt_feesDefaultArgs<ExtArgs>
+  bills?: boolean | Prisma.connection_fees$billsArgs<ExtArgs>
   service_accounts?: boolean | Prisma.service_accountsDefaultArgs<ExtArgs>
   users_connection_fees_updated_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>
 }, ExtArgs["result"]["connection_fees"]>
@@ -1262,6 +1483,7 @@ export type connection_feesSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   connection_fee_id?: boolean
   service_account_id?: boolean
   fee_id?: boolean
+  bill_id?: boolean
   assessed_amount?: boolean
   amount_paid?: boolean
   balance_amount?: boolean
@@ -1274,6 +1496,7 @@ export type connection_feesSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   updated_at?: boolean
   users_connection_fees_created_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>
   mt_fees?: boolean | Prisma.mt_feesDefaultArgs<ExtArgs>
+  bills?: boolean | Prisma.connection_fees$billsArgs<ExtArgs>
   service_accounts?: boolean | Prisma.service_accountsDefaultArgs<ExtArgs>
   users_connection_fees_updated_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>
 }, ExtArgs["result"]["connection_fees"]>
@@ -1282,6 +1505,7 @@ export type connection_feesSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   connection_fee_id?: boolean
   service_account_id?: boolean
   fee_id?: boolean
+  bill_id?: boolean
   assessed_amount?: boolean
   amount_paid?: boolean
   balance_amount?: boolean
@@ -1294,6 +1518,7 @@ export type connection_feesSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   updated_at?: boolean
   users_connection_fees_created_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>
   mt_fees?: boolean | Prisma.mt_feesDefaultArgs<ExtArgs>
+  bills?: boolean | Prisma.connection_fees$billsArgs<ExtArgs>
   service_accounts?: boolean | Prisma.service_accountsDefaultArgs<ExtArgs>
   users_connection_fees_updated_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>
 }, ExtArgs["result"]["connection_fees"]>
@@ -1302,6 +1527,7 @@ export type connection_feesSelectScalar = {
   connection_fee_id?: boolean
   service_account_id?: boolean
   fee_id?: boolean
+  bill_id?: boolean
   assessed_amount?: boolean
   amount_paid?: boolean
   balance_amount?: boolean
@@ -1314,22 +1540,25 @@ export type connection_feesSelectScalar = {
   updated_at?: boolean
 }
 
-export type connection_feesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"connection_fee_id" | "service_account_id" | "fee_id" | "assessed_amount" | "amount_paid" | "balance_amount" | "assessment_date" | "status" | "remarks" | "created_by" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["connection_fees"]>
+export type connection_feesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"connection_fee_id" | "service_account_id" | "fee_id" | "bill_id" | "assessed_amount" | "amount_paid" | "balance_amount" | "assessment_date" | "status" | "remarks" | "created_by" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["connection_fees"]>
 export type connection_feesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users_connection_fees_created_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>
   mt_fees?: boolean | Prisma.mt_feesDefaultArgs<ExtArgs>
+  bills?: boolean | Prisma.connection_fees$billsArgs<ExtArgs>
   service_accounts?: boolean | Prisma.service_accountsDefaultArgs<ExtArgs>
   users_connection_fees_updated_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>
 }
 export type connection_feesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users_connection_fees_created_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>
   mt_fees?: boolean | Prisma.mt_feesDefaultArgs<ExtArgs>
+  bills?: boolean | Prisma.connection_fees$billsArgs<ExtArgs>
   service_accounts?: boolean | Prisma.service_accountsDefaultArgs<ExtArgs>
   users_connection_fees_updated_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>
 }
 export type connection_feesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users_connection_fees_created_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>
   mt_fees?: boolean | Prisma.mt_feesDefaultArgs<ExtArgs>
+  bills?: boolean | Prisma.connection_fees$billsArgs<ExtArgs>
   service_accounts?: boolean | Prisma.service_accountsDefaultArgs<ExtArgs>
   users_connection_fees_updated_byTousers?: boolean | Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>
 }
@@ -1339,6 +1568,7 @@ export type $connection_feesPayload<ExtArgs extends runtime.Types.Extensions.Int
   objects: {
     users_connection_fees_created_byTousers: Prisma.$usersPayload<ExtArgs> | null
     mt_fees: Prisma.$mt_feesPayload<ExtArgs>
+    bills: Prisma.$billsPayload<ExtArgs> | null
     service_accounts: Prisma.$service_accountsPayload<ExtArgs>
     users_connection_fees_updated_byTousers: Prisma.$usersPayload<ExtArgs> | null
   }
@@ -1346,6 +1576,7 @@ export type $connection_feesPayload<ExtArgs extends runtime.Types.Extensions.Int
     connection_fee_id: bigint
     service_account_id: bigint
     fee_id: bigint
+    bill_id: bigint | null
     assessed_amount: runtime.Decimal
     amount_paid: runtime.Decimal
     balance_amount: runtime.Decimal
@@ -1752,6 +1983,7 @@ export interface Prisma__connection_feesClient<T, Null = never, ExtArgs extends 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users_connection_fees_created_byTousers<T extends Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   mt_fees<T extends Prisma.mt_feesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.mt_feesDefaultArgs<ExtArgs>>): Prisma.Prisma__mt_feesClient<runtime.Types.Result.GetResult<Prisma.$mt_feesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  bills<T extends Prisma.connection_fees$billsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.connection_fees$billsArgs<ExtArgs>>): Prisma.Prisma__billsClient<runtime.Types.Result.GetResult<Prisma.$billsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   service_accounts<T extends Prisma.service_accountsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.service_accountsDefaultArgs<ExtArgs>>): Prisma.Prisma__service_accountsClient<runtime.Types.Result.GetResult<Prisma.$service_accountsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   users_connection_fees_updated_byTousers<T extends Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.connection_fees$users_connection_fees_updated_byTousersArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1786,6 +2018,7 @@ export interface connection_feesFieldRefs {
   readonly connection_fee_id: Prisma.FieldRef<"connection_fees", 'BigInt'>
   readonly service_account_id: Prisma.FieldRef<"connection_fees", 'BigInt'>
   readonly fee_id: Prisma.FieldRef<"connection_fees", 'BigInt'>
+  readonly bill_id: Prisma.FieldRef<"connection_fees", 'BigInt'>
   readonly assessed_amount: Prisma.FieldRef<"connection_fees", 'Decimal'>
   readonly amount_paid: Prisma.FieldRef<"connection_fees", 'Decimal'>
   readonly balance_amount: Prisma.FieldRef<"connection_fees", 'Decimal'>
@@ -2213,6 +2446,25 @@ export type connection_fees$users_connection_fees_created_byTousersArgs<ExtArgs 
    */
   include?: Prisma.usersInclude<ExtArgs> | null
   where?: Prisma.usersWhereInput
+}
+
+/**
+ * connection_fees.bills
+ */
+export type connection_fees$billsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the bills
+   */
+  select?: Prisma.billsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the bills
+   */
+  omit?: Prisma.billsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.billsInclude<ExtArgs> | null
+  where?: Prisma.billsWhereInput
 }
 
 /**
