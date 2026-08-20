@@ -370,6 +370,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
   const [query, setQuery] = useState("");
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const firstName = data.userName.trim().split(/\s+/)[0] || "Administrator";
   const initials =
     data.userName
@@ -503,7 +504,9 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
     }
   }
   return (
-    <div className={styles.dashboard}>
+    <div
+      className={`${styles.dashboard} ${sidebarCollapsed ? styles.collapsedDashboard : ""}`}
+    >
       <div className={styles.mobileNav}>
         <label htmlFor="dashboard-section">Dashboard section</label>
         <select
@@ -522,7 +525,9 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
           ))}
         </select>
       </div>
-      <aside className={styles.subnav}>
+      <aside
+        className={`${styles.subnav} ${sidebarCollapsed ? styles.collapsedSidebar : ""}`}
+      >
         <div className={styles.adminTitle}>
           <div className={styles.adminMark}>
             <AdminBrandMark />
@@ -532,6 +537,17 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <strong>{data.userName}</strong>
           </div>
         </div>
+        <button
+          type="button"
+          className={styles.sidebarToggle}
+          onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={sidebarCollapsed ? "m9 6 6 6-6 6" : "m15 6-6 6 6 6"} />
+          </svg>
+        </button>
         {groups.map((group) => (
           <div className={styles.navGroup} key={group.label}>
             <h2>{group.label}</h2>
@@ -539,6 +555,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               <button
                 type="button"
                 key={item.id}
+                title={sidebarCollapsed ? item.label : undefined}
                 className={section === item.id ? styles.active : undefined}
                 onClick={() => setSection(item.id)}
               >

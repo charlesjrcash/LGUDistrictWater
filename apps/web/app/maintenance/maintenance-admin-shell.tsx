@@ -57,6 +57,7 @@ export function MaintenanceAdminShell({
   const router = useRouter();
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   function openSection(section: string) {
     window.sessionStorage.setItem("admin-dashboard-section", section);
     router.push("/dashboard");
@@ -72,8 +73,12 @@ export function MaintenanceAdminShell({
     }
   }
   return (
-    <div className={styles.adminFormShell}>
-      <aside className={`${styles.subnav} ${styles.formSidebar}`}>
+    <div
+      className={`${styles.adminFormShell} ${sidebarCollapsed ? styles.collapsedShell : ""}`}
+    >
+      <aside
+        className={`${styles.subnav} ${styles.formSidebar} ${sidebarCollapsed ? styles.collapsedSidebar : ""}`}
+      >
         <div className={styles.adminTitle}>
           <div className={styles.adminMark}>
             <AdminBrandMark />
@@ -83,6 +88,17 @@ export function MaintenanceAdminShell({
             <strong>Bagamanoc</strong>
           </div>
         </div>
+        <button
+          type="button"
+          className={styles.sidebarToggle}
+          onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={sidebarCollapsed ? "m9 6 6 6-6 6" : "m15 6-6 6 6 6"} />
+          </svg>
+        </button>
         {groups.map((group) => (
           <div className={styles.navGroup} key={group.label}>
             <h2>{group.label}</h2>
@@ -90,6 +106,7 @@ export function MaintenanceAdminShell({
               <button
                 type="button"
                 key={item.id}
+                title={sidebarCollapsed ? item.label : undefined}
                 className={
                   item.id === activeSection ? styles.active : undefined
                 }

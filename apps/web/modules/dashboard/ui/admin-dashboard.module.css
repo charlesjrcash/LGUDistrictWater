@@ -3304,3 +3304,166 @@
     padding-top: 0;
   }
 }
+
+/* Expandable navy navigation shared by dashboard, maintenance, and transactions. */
+.dashboard {
+  grid-template-columns: 312px minmax(0, 1fr);
+  transition: grid-template-columns 180ms ease;
+}
+.subnav {
+  width: 312px;
+  padding-inline: 22px;
+  background: #061d30;
+  color: #fff;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: width 180ms ease;
+}
+.adminFormContent {
+  margin-left: 312px;
+  transition: margin-left 180ms ease;
+}
+.adminTitle {
+  position: relative;
+  padding-right: 52px;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+.adminTitle span,
+.adminTitle strong,
+.adminTitle > div:last-child::before,
+.adminTitle > div:last-child::after {
+  color: #fff;
+}
+.adminTitle > div:last-child {
+  margin-left: 7px;
+}
+.navGroup h2 {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 10px;
+}
+.navGroup button {
+  color: rgba(255, 255, 255, 0.82);
+  padding: 14px 28px;
+  font-size: 14px;
+}
+.navGroup button svg {
+  width: 22px;
+  height: 22px;
+}
+.navGroup button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.navGroup button.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+.navFooter span,
+.navFooter small {
+  color: rgba(255, 255, 255, 0.62);
+}
+.sidebarToggle {
+  position: absolute;
+  top: 40px;
+  right: 18px;
+  width: 44px;
+  height: 42px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  cursor: pointer;
+}
+.sidebarToggle:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.sidebarToggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.logoutButton {
+  color: rgba(255, 255, 255, 0.82);
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.14);
+  font-size: 14px;
+}
+.logoutButton svg {
+  width: 22px;
+  height: 22px;
+}
+.collapsedDashboard {
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+.collapsedShell .adminFormContent {
+  margin-left: 76px;
+}
+.collapsedSidebar {
+  width: 76px;
+  padding-inline: 10px;
+}
+.collapsedSidebar .adminTitle {
+  justify-content: center;
+  padding: 4px 0 12px;
+  border-bottom: 0;
+}
+.collapsedSidebar .adminTitle > div:last-child,
+.collapsedSidebar .navGroup h2,
+.collapsedSidebar .navGroup button span,
+.collapsedSidebar .logoutButton span,
+.collapsedSidebar .navFooter {
+  display: none;
+}
+.collapsedSidebar .adminMark,
+.collapsedSidebar .adminMark svg {
+  width: 44px;
+}
+.collapsedSidebar .sidebarToggle {
+  position: static;
+  margin: 0 auto 8px;
+}
+.collapsedSidebar .navGroup {
+  margin-inline: 0;
+  margin-block: 0;
+}
+.collapsedSidebar .navGroup + .navGroup {
+  margin-top: 0;
+}
+.collapsedSidebar .navGroup button,
+.collapsedSidebar .logoutButton {
+  width: 44px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  justify-content: center;
+  margin-inline: auto;
+}
+.collapsedSidebar .navGroup button {
+  margin-bottom: 6px;
+}
+.collapsedSidebar .navGroup button svg,
+.collapsedSidebar .logoutButton svg {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+.collapsedSidebar .logoutButton {
+  margin-top: 0;
+}
+@media (max-width: 760px) {
+  .dashboard,
+  .collapsedDashboard {
+    grid-template-columns: 1fr;
+  }
+  .adminFormContent,
+  .collapsedShell .adminFormContent {
+    margin-left: 0;
+  }
+}
