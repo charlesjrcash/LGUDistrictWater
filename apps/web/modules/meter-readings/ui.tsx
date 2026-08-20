@@ -84,7 +84,12 @@ export function MeterReadingsPage({
       reader: "",
     }),
     [loading, setLoading] = useState(true),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [generationPeriod, setGenerationPeriod] = useState(""),
+    [confirmGeneration, setConfirmGeneration] = useState(false),
+    [generating, setGenerating] = useState(false),
+    [generation, setGeneration] = useState<Record<string, string | number> | null>(null),
+    [generationError, setGenerationError] = useState("");
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -121,6 +126,11 @@ export function MeterReadingsPage({
         )
       : rows;
   }, [rows, query]);
+  const selectedPeriod = options?.periods.find((period) => period.id === generationPeriod);
+  async function generate() {
+    setGenerating(true); setGenerationError("");
+    try { const response = await fetch("/api/meter-readings/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ billing_period_id: generationPeriod }) }), body = await response.json(); if (!response.ok) throw new Error(body.message); setGeneration(body.data); setConfirmGeneration(false); setFilters((value) => ({ ...value, billingPeriod: generationPeriod })); await load(); } catch (e) { setGenerationError(e instanceof Error ? e.message : "Meter reading generation could not be completed."); } finally { setGenerating(false); }
+  }
   return (
     <TransactionShell active="meter-readings">
       <div className={styles.headingRow}>
@@ -131,15 +141,8 @@ export function MeterReadingsPage({
             Capture and review readings for the current billing cycle.
           </p>
         </div>
-        {canCreate && (
-          <Link
-            className={styles.button}
-            href="/transactions/meter-readings/new"
-          >
-            ＋ New Reading
-          </Link>
-        )}
       </div>
+      {canCreate && <section className={styles.panel}><div className={styles.cardHeading}><div><h2>Reading Generation</h2><p className={styles.subtitle}>Generate missing readings for eligible active service accounts. Existing readings are never overwritten.</p></div><div className={styles.formActions}><select className={styles.select} value={generationPeriod} onChange={(e) => setGenerationPeriod(e.target.value)}><option value="">Select billing period</option>{options?.periods.map((period) => <option key={period.id} value={period.id}>{period.code} — {period.name}</option>)}</select><button className={styles.button} disabled={!generationPeriod || generating} onClick={() => setConfirmGeneration(true)}>Generate Readings</button></div></div>{generationError && <div className={styles.notice}>{generationError}</div>}{generation && <div className={styles.detailItems}>{[["Active Accounts", generation.total_active_count], ["Generated", generation.generated_count], ["Already Generated", generation.existing_count], ["Not Eligible", generation.not_eligible_count], ["No Route", generation.no_route_count], ["No Reader", generation.no_reader_count], ["No Active Meter", generation.no_meter_count]].map(([label, value]) => <div className={styles.detailItem} key={String(label)}><span>{label}</span><strong>{value ?? 0}</strong></div>)}</div>}</section>}
       <section className={styles.panel}>
         <div
           className={styles.filters}
@@ -202,6 +205,7 @@ export function MeterReadingsPage({
                     "Previous",
                     "Present",
                     "Consumption",
+                    "Workflow",
                     "Status",
                     "Reader",
                     "Actions",
@@ -222,6 +226,7 @@ export function MeterReadingsPage({
                     <td>{num(r.previousReading)}</td>
                     <td>{num(r.presentReading)}</td>
                     <td>{num(r.consumption)}</td>
+                    <td>{badge(r.readingStatus ? "COMPLETED" : "FOR_READ")}</td>
                     <td>{badge(r.readingStatus)}</td>
                     <td>{r.meterReader || "—"}</td>
                     <td>
@@ -251,6 +256,7 @@ export function MeterReadingsPage({
           </div>
         )}
       </section>
+      {confirmGeneration && <div className={styles.dialogBackdrop} role="presentation"><div className={styles.dialog} role="dialog" aria-modal="true" aria-label="Generate meter readings"><h2>Generate Meter Readings?</h2><p>Billing Period: {selectedPeriod ? `${selectedPeriod.code} — ${selectedPeriod.name}` : "—"}</p><p>The system will generate readings for eligible active service accounts. Existing readings will not be overwritten.</p><div className={styles.dialogActions}><button className={styles.secondaryButton} onClick={() => setConfirmGeneration(false)} disabled={generating}>Cancel</button><button className={styles.button} onClick={() => void generate()} disabled={generating}>{generating ? "Generating…" : "Generate"}</button></div></div></div>}
     </TransactionShell>
   );
 }

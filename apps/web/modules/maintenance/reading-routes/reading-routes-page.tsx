@@ -9,12 +9,15 @@ type Route = {
   sequence_no: number | null;
   description: string | null;
   is_active: boolean;
+  employee_id: string | null;
+  employeeName: string | null;
 };
 type Barangay = {
   barangay_id: string;
   barangay_name: string;
   is_active: boolean;
 };
+type Employee = { employee_id: string; employee_name: string; position: string | null; is_active: boolean };
 type Form = {
   route_code: string;
   route_name: string;
@@ -22,6 +25,7 @@ type Form = {
   sequence_no: string;
   description: string;
   is_active: boolean;
+  employee_id: string;
 };
 const empty: Form = {
   route_code: "",
@@ -30,10 +34,12 @@ const empty: Form = {
   sequence_no: "",
   description: "",
   is_active: true,
+  employee_id: "",
 };
 export default function ReadingRoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([]),
     [barangays, setBarangays] = useState<Barangay[]>([]),
+    [employees, setEmployees] = useState<Employee[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [editing, setEditing] = useState<string | null>(null),
@@ -47,17 +53,21 @@ export default function ReadingRoutesPage() {
     try {
       setLoading(true);
       setError("");
-      const [a, b] = await Promise.all([
+      const [a, b, c] = await Promise.all([
         fetch("/api/reading-routes"),
         fetch("/api/barangays"),
+        fetch("/api/employee"),
       ]);
-      const [ar, br] = await Promise.all([a.json(), b.json()]);
+      const [ar, br, cr] = await Promise.all([a.json(), b.json(), c.json()]);
       if (!a.ok || !ar.success)
         throw new Error(ar.message || "Failed to load reading routes.");
       if (!b.ok || !br.success)
         throw new Error(br.message || "Failed to load barangays.");
+      if (!c.ok || !cr.success)
+        throw new Error(cr.message || "Failed to load meter readers.");
       setRoutes(ar.data);
       setBarangays(br.data);
+      setEmployees(cr.data);
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Unable to load reading routes.",
@@ -77,7 +87,8 @@ export default function ReadingRoutesPage() {
         (!q ||
           r.route_code.toLowerCase().includes(q) ||
           r.route_name.toLowerCase().includes(q) ||
-          (r.barangay_name ?? "").toLowerCase().includes(q)) &&
+          (r.barangay_name ?? "").toLowerCase().includes(q) ||
+          (r.employeeName ?? "").toLowerCase().includes(q)) &&
         (status === "all" ||
           (status === "active" && r.is_active) ||
           (status === "inactive" && !r.is_active)),
@@ -101,6 +112,7 @@ export default function ReadingRoutesPage() {
       sequence_no: r.sequence_no === null ? "" : String(r.sequence_no),
       description: r.description ?? "",
       is_active: r.is_active,
+      employee_id: r.employee_id ?? "",
     });
     setFormError("");
     setOpen(true);
@@ -121,6 +133,7 @@ export default function ReadingRoutesPage() {
           sequence_no: form.sequence_no || null,
           description: form.description || null,
           is_active: form.is_active,
+          employee_id: form.employee_id || null,
         }),
       });
       const d = await r.json();
@@ -141,6 +154,7 @@ export default function ReadingRoutesPage() {
   const options = barangays.filter(
     (b) => b.is_active || b.barangay_id === form.barangay_id,
   );
+  const readers = employees.filter((employee) => employee.is_active && employee.position?.trim().toLowerCase() === "meter reader");
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto max-w-7xl">
@@ -195,6 +209,7 @@ export default function ReadingRoutesPage() {
                       "Barangay",
                       "Sequence",
                       "Description",
+                      "Meter Reader",
                       "Status",
                       "Actions",
                     ].map((x) => (
@@ -214,6 +229,7 @@ export default function ReadingRoutesPage() {
                       </td>
                       <td className="px-6 py-4">{r.sequence_no ?? "—"}</td>
                       <td className="px-6 py-4">{r.description ?? "—"}</td>
+                      <td className="px-6 py-4">{r.employeeName ?? "No Meter Reader"}</td>
                       <td className="px-6 py-4">
                         {r.is_active ? "Active" : "Inactive"}
                       </td>
@@ -230,7 +246,7 @@ export default function ReadingRoutesPage() {
                   {!filtered.length && (
                     <tr>
                       <td
-                        colSpan={7}
+                        colSpan={8}
                         className="p-12 text-center text-gray-500"
                       >
                         No reading routes found.
@@ -291,6 +307,21 @@ export default function ReadingRoutesPage() {
                 type="number"
                 step="1"
               />
+              <label className="block">
+                Meter Reader
+                <select
+                  value={form.employee_id}
+                  onChange={(e) => update("employee_id", e.target.value)}
+                  className="mt-1 w-full rounded border px-3 py-2"
+                >
+                  <option value="">-- No Meter Reader --</option>
+                  {readers.map((employee) => (
+                    <option key={employee.employee_id} value={employee.employee_id}>
+                      {employee.employee_name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <label className="block">
                 Description
                 <textarea
