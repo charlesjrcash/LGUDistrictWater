@@ -640,6 +640,57 @@
   gap: 9px;
   margin-top: 22px;
 }
+.accountPicker { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.accountBrowseDialog { width:min(1040px,calc(100vw - 32px)); max-height:90vh; overflow:auto; background:#fff; border-radius:13px; padding:24px; box-shadow:0 24px 70px rgba(7,28,61,.25); }
+.dialogHeader { display:flex; justify-content:space-between; gap:16px; }
+.dialogClose { border:0; background:transparent; font-size:28px; cursor:pointer; }
+.accountBrowseSearch { display:flex; gap:10px; margin:18px 0; }
+.accountBrowseSearch input { flex:1; }
+.accountBrowseTableWrap { overflow-x:auto; border:1px solid #dfe8f1; border-radius:8px; }
+.accountBrowseTableWrap .table { min-width:820px; }
+.selectableRow,.selectedRow { cursor:pointer; }
+.selectedRow { background:#e8f3ff; box-shadow:inset 3px 0 #0874e8; }
+.accountBrowseFooter { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+.paymentSuccessDialog {
+  width: min(720px, calc(100vw - 32px));
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.paymentSuccessContent,
+.paymentSuccessDetails,
+.paymentSuccessDetails > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.paymentSuccessDetails strong {
+  overflow-wrap: anywhere;
+}
+.paymentSuccessContent .sectionTitle {
+  margin-top: 20px;
+}
+.paymentSuccessTableWrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #e0e8f0;
+  border-radius: 8px;
+}
+.paymentSuccessTable {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+}
+.paymentSuccessTable th,
+.paymentSuccessTable td {
+  overflow-wrap: anywhere;
+}
+.paymentSuccessActions {
+  flex-wrap: wrap;
+}
 @media (max-width: 900px) {
   .summaryGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -680,5 +731,40 @@
   .pagination {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media print {
+  :global(body) * {
+    visibility: hidden;
+  }
+  .accountPicker,.accountBrowseSearch,.accountBrowseFooter { flex-direction:column; align-items:stretch; }
+  :global(#payment-print),
+  :global(#payment-print) * {
+    visibility: visible;
+  }
+  :global(#payment-print) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    color: #000;
+  }
+}
+
+@media (max-width: 640px) {
+  .paymentSuccessDialog {
+    padding: 18px;
+  }
+  .paymentSuccessTable th,
+  .paymentSuccessTable td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+  .paymentSuccessActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .paymentSuccessActions > * {
+    width: 100%;
   }
 }

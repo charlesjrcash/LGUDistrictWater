@@ -108,9 +108,11 @@ function useFetch<T>(url: string) {
 export function BillsPage({
   canCreate,
   canEdit,
+  canCreatePayment = false,
 }: {
   canCreate: boolean;
   canEdit: boolean;
+  canCreatePayment?: boolean;
 }) {
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState(""),
@@ -133,6 +135,11 @@ export function BillsPage({
             Review and manage recorded bill amounts.
           </p>
         </div>
+        {canCreatePayment && (
+          <Link className={styles.secondaryButton} href="/transactions/payment">
+            New Payment
+          </Link>
+        )}
         {canCreate && (
           <Link className={styles.button} href="/transactions/bills/new">
             ＋ New Bill
