@@ -4,7 +4,7 @@ import { BillForm } from "@/modules/bills/ui";
 
 export default async function Page({
   params,
-}: PageProps<"/transactions/bills/[billNo]/edit">) {
+}: { params: Promise<{ billNo: string }> }) {
   const { billNo } = await params;
   if (!(await hasPermission("BILL_EDIT"))) redirect("/");
   return <BillForm billNo={decodeURIComponent(billNo)} />;

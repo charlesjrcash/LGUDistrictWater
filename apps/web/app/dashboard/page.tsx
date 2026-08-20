@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { getSessionUser } from "@/lib/server-session";
+import { getCurrentUserPermissions } from "@/lib/permissions";
 import {
   AdminDashboard,
   type DashboardData,
@@ -9,10 +9,10 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const user = await getSessionUser();
-  if (!user) redirect("/login?next=/dashboard");
-  if (!user.roles.some((role) => role.toLowerCase().includes("admin")))
-    redirect("/");
+  const auth = await getCurrentUserPermissions();
+  if (auth.response) redirect("/login?next=/dashboard");
+  if (!auth.permissions.includes("DASHBOARD_VIEW")) redirect("/");
+  const user = auth.user;
 
   const [metricsResult, masterResult, auditResult, reportResult] =
     await Promise.all([
@@ -126,5 +126,13 @@ export default async function DashboardPage() {
     })),
   };
 
-  return <AdminDashboard data={data} />;
+  return (
+    <AdminDashboard
+      data={data}
+      permissions={auth.permissions}
+      systemAdministrator={user.roles.some(
+        (role) => role.toLowerCase() === "system administrator",
+      )}
+    />
+  );
 }

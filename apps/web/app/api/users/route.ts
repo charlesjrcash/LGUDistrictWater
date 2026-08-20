@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { hashPassword } from "@/lib/auth";
 import { sendTemporaryCredentialsEmail } from "@/lib/mailer";
+import { requirePermission } from "@/lib/permissions";
 
 export const runtime = "nodejs";
 
@@ -55,6 +56,9 @@ function clean(value: unknown) {
  * - user_roles INSERT
  */
 export async function POST(request: Request) {
+  const auth = await requirePermission("USER_CREATE");
+  if (auth.response) return auth.response;
+
   try {
     // ---------------------------------------------------------
     // 1. Read request body

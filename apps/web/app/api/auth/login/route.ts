@@ -77,15 +77,9 @@ export async function POST(request: Request) {
       "UPDATE users SET last_login_at = NOW() WHERE user_id = $1",
       [user.user_id],
     );
-    const roleResult = await pool.query<{ role_name: string }>(
-      "SELECT r.role_name FROM user_roles ur INNER JOIN roles r ON r.role_id = ur.role_id WHERE ur.user_id = $1 AND r.is_active = TRUE",
-      [user.user_id],
-    );
-    const redirectTo = roleResult.rows.some((role) =>
-      role.role_name.toLowerCase().includes("admin"),
-    )
-      ? "/dashboard"
-      : "/";
+    // The dashboard performs the permission check. Do not route by role name:
+    // users can hold multiple roles and receive DASHBOARD_VIEW from any of them.
+    const redirectTo = "/dashboard";
 
     const cookieStore = await cookies();
     cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {

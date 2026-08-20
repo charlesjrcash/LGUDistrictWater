@@ -2989,7 +2989,7 @@
   border-right: 0;
 }
 .metric:first-of-type {
-  background: #123b63;
+  background: #fff;
 }
 .metricIcon {
   position: absolute;
@@ -3025,13 +3025,13 @@
 }
 .metric:first-of-type span,
 .metric:first-of-type small {
-  color: #c8d8e7;
+  color: #647385;
 }
 .metric:first-of-type strong {
-  color: #fff;
+  color: #163b61;
 }
 .metric:first-of-type .metricIcon {
-  color: #bcd0e1;
+  color: #718398;
 }
 .metric:after {
   display: none;

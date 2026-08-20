@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getSessionUser } from "@/lib/server-session";
+import { getCurrentUserPermissions } from "@/lib/permissions";
+import { accessNavigation, maintenanceNavigation } from "@/lib/permission-navigation";
 import { MaintenanceAdminShell } from "./maintenance-admin-shell";
 
 export default async function MaintenanceLayout({
@@ -9,12 +10,19 @@ export default async function MaintenanceLayout({
 }: {
   children: ReactNode;
 }) {
-  const user = await getSessionUser();
-  if (!user) redirect("/login");
-  if (!user.roles.some((role) => role.toLowerCase().includes("admin")))
-    redirect("/");
+  const auth = await getCurrentUserPermissions();
+  if (auth.response) redirect("/login");
+  const permissionSet = new Set(auth.permissions);
+  if (![...maintenanceNavigation, ...accessNavigation].some((item) =>
+    item.permissions.some((permission) => permissionSet.has(permission)))) redirect("/");
   return (
-    <MaintenanceAdminShell>
+    <MaintenanceAdminShell
+      permissions={auth.permissions}
+      userName={auth.user.name || auth.user.username}
+      systemAdministrator={auth.user.roles.some(
+        (role) => role.toLowerCase() === "system administrator",
+      )}
+    >
       <div className="px-8 pt-6">
         <Link
           href="/dashboard"

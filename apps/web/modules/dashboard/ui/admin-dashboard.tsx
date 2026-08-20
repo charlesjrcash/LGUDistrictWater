@@ -9,6 +9,11 @@ import {
   transactionsByCategory,
 } from "@/modules/transactions/registry";
 import styles from "./admin-dashboard.module.css";
+import {
+  accessNavigation,
+  maintenanceNavigation,
+  visibleNavigation,
+} from "@/lib/permission-navigation";
 
 type Section =
   | "overview"
@@ -45,7 +50,7 @@ export type DashboardData = {
   }[];
 };
 
-const groups: { label: string; items: { id: Section; label: string }[] }[] = [
+const adminGroups: { label: string; items: { id: Section; label: string }[] }[] = [
   {
     label: "Overview",
     items: [{ id: "overview", label: "Dashboard Overview" }],
@@ -75,7 +80,7 @@ const groups: { label: string; items: { id: Section; label: string }[] }[] = [
   },
 ];
 const labels = Object.fromEntries(
-  groups.flatMap((group) => group.items.map((item) => [item.id, item.label])),
+  adminGroups.flatMap((group) => group.items.map((item) => [item.id, item.label])),
 ) as Record<Section, string>;
 const money = new Intl.NumberFormat("en-PH", {
   style: "currency",
@@ -362,7 +367,11 @@ function BillingStatus({ total, unpaid }: { total: number; unpaid: number }) {
   );
 }
 
-export function AdminDashboard({ data }: { data: DashboardData }) {
+export function AdminDashboard({ data, permissions, systemAdministrator }: {
+  data: DashboardData;
+  permissions: readonly string[];
+  systemAdministrator: boolean;
+}) {
   const router = useRouter();
   const [section, setSection] = useState<Section>("overview");
   const m = data.metrics;
@@ -371,6 +380,24 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const permissionSet = new Set(permissions);
+  const canAny = (...codes: string[]) => codes.some((code) => permissionSet.has(code));
+  const visibleMaintenance = visibleNavigation(maintenanceNavigation, permissionSet);
+  const visibleAccess = visibleNavigation(accessNavigation, permissionSet);
+  const operationalTransactionsForUser = operationalTransactions.filter((item) => permissionSet.has(item.permission));
+  const billingTransactionsForUser = billingTransactions.filter((item) => permissionSet.has(item.permission));
+  const visibleSections = new Set<Section>([
+    ...(permissionSet.has("DASHBOARD_VIEW") ? ["overview" as const] : []),
+    ...(canAny("CUSTOMER_VIEW", "SERVICE_APPLICATION_VIEW", "SERVICE_ACCOUNT_VIEW", "METER_VIEW", "METER_INSTALLATION_VIEW", "METER_READING_VIEW") ? ["operational" as const, "service" as const] : []),
+    ...(canAny("BILLING_INQUIRY_VIEW", "BILLING_VIEW", "BILL_VIEW", "BILL_DETAIL_VIEW", "BILL_PENALTY_VIEW", "BILL_ADJUSTMENT_VIEW", "PAYMENT_VIEW", "REPORT_VIEW") ? ["billing" as const] : []),
+    ...(visibleMaintenance.length ? ["health" as const, "master" as const] : []),
+    ...(visibleMaintenance.length && systemAdministrator ? ["attention" as const] : []),
+    ...(visibleAccess.length ? ["access" as const, "activity" as const] : []),
+  ]);
+  const groups = adminGroups
+    .map((group) => ({ ...group, items: group.items.filter((item) => visibleSections.has(item.id)) }))
+    .filter((group) => group.items.length > 0);
+  const availableSectionKey = groups.flatMap((group) => group.items.map((item) => item.id)).join(",");
   const firstName = data.userName.trim().split(/\s+/)[0] || "Administrator";
   const initials =
     data.userName
@@ -380,6 +407,10 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
       .map((part) => part[0])
       .join("")
       .toUpperCase() || "SA";
+  const canVisit = (href: string) =>
+    systemAdministrator ||
+    visibleMaintenance.some((item) => item.href === href) ||
+    visibleAccess.some((item) => item.href === href);
   const health = [
     {
       label: "Billing Period",
@@ -408,7 +439,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
       value: m.active_settings,
       href: "/maintenance/system-settings",
     },
-  ];
+  ].filter((item) => !item.href || canVisit(item.href));
   const issues = [
     ...(m.open_periods === 0
       ? [
@@ -446,6 +477,12 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
           },
         ]
       : []),
+  ].filter((issue) => canVisit(issue.href));
+  const overviewMetrics = [
+    ...(permissionSet.has("USER_VIEW") ? [{ label: "Active Users", value: m.active_users }] : []),
+    ...(permissionSet.has("EMPLOYEE_VIEW") ? [{ label: "Active Employees", value: m.active_employees }] : []),
+    ...(permissionSet.has("SERVICE_ACCOUNT_VIEW") ? [{ label: "Service Accounts", value: m.service_accounts }] : []),
+    ...(visibleAccess.length ? [{ label: "Activities Today", value: m.activities_today }] : []),
   ];
   const iconBySection: Record<Section, Parameters<typeof Icon>[0]["name"]> = {
     overview: "overview",
@@ -471,6 +508,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
     : [];
   const masterResults = normalizedQuery
     ? data.masterData
+        .filter((item) => visibleMaintenance.some((entry) => entry.href === item.href))
         .filter((item) =>
           `${item.label} ${item.category}`
             .toLowerCase()
@@ -481,14 +519,12 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const saved = window.sessionStorage.getItem("admin-dashboard-section");
-      const valid = groups.some((group) =>
-        group.items.some((item) => item.id === saved),
-      );
+      const valid = availableSectionKey.split(",").includes(saved ?? "");
       if (valid) setSection(saved as Section);
       setSectionReady(true);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [availableSectionKey]);
   useEffect(() => {
     if (sectionReady)
       window.sessionStorage.setItem("admin-dashboard-section", section);
@@ -533,7 +569,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <AdminBrandMark />
           </div>
           <div>
-            <span>System Administrator</span>
+            <span>{systemAdministrator ? "System Administrator" : "Authorized workspace"}</span>
             <strong>{data.userName}</strong>
           </div>
         </div>
@@ -615,12 +651,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               copy="A concise view of access, personnel, service coverage, and system activity."
             />
             <MetricGrid
-              items={[
-                { label: "Active Users", value: m.active_users },
-                { label: "Active Employees", value: m.active_employees },
-                { label: "Service Accounts", value: m.service_accounts },
-                { label: "Activities Today", value: m.activities_today },
-              ]}
+              items={overviewMetrics}
             />
             <div className={styles.twoColumn}>
               <article className={styles.panel}>
@@ -677,7 +708,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               title="Operational Overview"
               copy="Current customer, application, account, and metering activity."
             />
-            <TransactionLinks transactions={operationalTransactions} />
+            <TransactionLinks transactions={operationalTransactionsForUser} />
             <MetricGrid
               items={[
                 { label: "Customers", value: m.customers },
@@ -700,7 +731,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               copy="Meaningful billing output, receivables, and posted collections."
             />
             <div className={styles.quickLinks}>
-              {billingTransactions.map((transaction) => (
+              {billingTransactionsForUser.map((transaction) => (
                 <Link
                   href={transactionHref(transaction)}
                   key={transaction.slug}
@@ -708,9 +739,10 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                   {transaction.label} →
                 </Link>
               ))}
-              <Link href="/maintenance/billing-periods">Billing periods →</Link>
-              <Link href="/maintenance/water-rates">Water rates →</Link>
-              <Link href="/maintenance/fees">Fees →</Link>
+              {visibleMaintenance
+                .filter((item) => ["/maintenance/billing-periods", "/maintenance/water-rates", "/maintenance/fees"].includes(item.href))
+                .map((item) => <Link href={item.href} key={item.href}>{item.label} →</Link>)}
+              {permissionSet.has("BILLING_INQUIRY_VIEW") && <Link href="/billing-inquiry">Billing inquiry →</Link>}
             </div>
             <MetricGrid
               items={[
@@ -731,7 +763,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               title="Service Operations"
               copy="Application, meter, reading, installation, and field-order workload."
             />
-            <TransactionLinks transactions={operationalTransactions} />
+            <TransactionLinks transactions={operationalTransactionsForUser} />
             <MetricGrid
               items={[
                 {
@@ -835,6 +867,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
                   <h3>{category}</h3>
                   {data.masterData
                     .filter((item) => item.category === category)
+                    .filter((item) => visibleMaintenance.some((entry) => entry.href === item.href))
                     .map((item) => (
                       <Link href={item.href} key={item.label}>
                         <span>{item.label}</span>
@@ -863,13 +896,9 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               ]}
             />
             <div className={styles.quickLinks}>
-              <Link href="/register">User management →</Link>
-              <Link href="/maintenance/roles">Roles →</Link>
-              <Link href="/maintenance/permissions">Permissions →</Link>
-              <Link href="/maintenance/role-permissions">
-                Role permissions →
-              </Link>
-              <Link href="/maintenance/system-modules">System modules →</Link>
+              {visibleAccess.map((item) => (
+                <Link href={item.href} key={item.href}>{item.label} →</Link>
+              ))}
             </div>
           </>
         )}
@@ -907,7 +936,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             </div>
           </>
         )}
-        {section === "overview" && (
+        {section === "overview" && canAny("REPORT_VIEW", "BILLING_VIEW", "BILL_VIEW", "PAYMENT_VIEW") && (
           <section className={styles.reportsSection}>
             <div className={styles.reportsHeading}>
               <div>

@@ -5,8 +5,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminBrandMark } from "@/modules/dashboard/ui/admin-brand-mark";
 import styles from "@/modules/dashboard/ui/admin-dashboard.module.css";
+import {
+  accessNavigation,
+  maintenanceNavigation,
+  transactionNavigation,
+} from "@/lib/permission-navigation";
 
-const groups = [
+const allGroups = [
   {
     label: "Overview",
     items: [{ id: "overview", label: "Dashboard Overview" }],
@@ -36,6 +41,13 @@ const groups = [
   },
 ] as const;
 
+const operationalPermissions = transactionNavigation
+  .filter((item) => !item.permissions.some((permission) => permission.startsWith("BILL")))
+  .flatMap((item) => item.permissions);
+const billingPermissions = transactionNavigation
+  .filter((item) => item.permissions.some((permission) => permission.startsWith("BILL")))
+  .flatMap((item) => item.permissions);
+
 function MenuIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -50,14 +62,43 @@ function MenuIcon() {
 export function MaintenanceAdminShell({
   children,
   activeSection = "master",
+  permissions,
+  userName = "Bagamanoc",
+  systemAdministrator = false,
 }: {
   children: ReactNode;
   activeSection?: string;
+  permissions: readonly string[];
+  userName?: string;
+  systemAdministrator?: boolean;
 }) {
   const router = useRouter();
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const permissionSet = new Set(permissions);
+  const hasAny = (codes: readonly string[]) =>
+    codes.some((permission) => permissionSet.has(permission));
+  const visibleSections = new Set([
+    ...(permissionSet.has("DASHBOARD_VIEW") ? ["overview"] : []),
+    ...(hasAny(operationalPermissions) ? ["operational", "service"] : []),
+    ...(hasAny([...billingPermissions, "PAYMENT_VIEW", "REPORT_VIEW"]) ? ["billing"] : []),
+    ...(hasAny(maintenanceNavigation.flatMap((item) => item.permissions))
+      ? ["health", "master"]
+      : []),
+    ...(hasAny(maintenanceNavigation.flatMap((item) => item.permissions)) && systemAdministrator
+      ? ["attention"]
+      : []),
+    ...(hasAny(accessNavigation.flatMap((item) => item.permissions))
+      ? ["access", "activity"]
+      : []),
+  ]);
+  const groups = allGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => visibleSections.has(item.id)),
+    }))
+    .filter((group) => group.items.length > 0);
   function openSection(section: string) {
     window.sessionStorage.setItem("admin-dashboard-section", section);
     router.push("/dashboard");
@@ -84,8 +125,8 @@ export function MaintenanceAdminShell({
             <AdminBrandMark />
           </div>
           <div>
-            <span>System Administrator</span>
-            <strong>Bagamanoc</strong>
+            <span>{systemAdministrator ? "System Administrator" : "Authorized workspace"}</span>
+            <strong>{userName}</strong>
           </div>
         </div>
         <button

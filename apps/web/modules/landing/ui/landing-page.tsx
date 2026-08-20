@@ -177,7 +177,6 @@ export function LandingPage() {
           <div>
             <h3>Resources</h3>
             <Link href="/login">Staff login</Link>
-            <Link href="/register">User registration</Link>
             <a href="#features">System overview</a>
           </div>
           <div className="contact-list">

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -16,6 +16,48 @@ export default function ForgotPasswordForm() {
     message: string;
   } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCooldown]);
+
+  async function resendCode() {
+    if (resending || resendCooldown > 0) return;
+    setResending(true);
+    setStatus(null);
+    try {
+      const response = await fetch("/api/auth/forgot-password/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const result = (await response.json()) as { message?: string };
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to send another code.");
+      }
+      setResendCooldown(60);
+      setStatus({
+        type: "success",
+        message: result.message || "A new verification code has been sent.",
+      });
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to send another code.",
+      });
+    } finally {
+      setResending(false);
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,6 +86,7 @@ export default function ForgotPasswordForm() {
         return;
       }
       setCodeSent(true);
+      setResendCooldown(60);
       setStatus({
         type: "success",
         message:
@@ -120,16 +163,31 @@ export default function ForgotPasswordForm() {
             : "Send verification code"}
       </button>
       {codeSent && (
-        <button
-          type="button"
-          className="mt-3 w-full text-sm font-semibold text-blue-700 hover:text-blue-800"
-          onClick={() => {
-            setCodeSent(false);
-            setStatus(null);
-          }}
-        >
-          Use a different email
-        </button>
+        <div className="mt-3 flex flex-col items-center gap-3 text-sm sm:flex-row sm:justify-between">
+          <button
+            type="button"
+            className="font-semibold text-blue-700 hover:text-blue-800 disabled:cursor-not-allowed disabled:text-slate-400"
+            disabled={submitting || resending || resendCooldown > 0}
+            onClick={() => void resendCode()}
+          >
+            {resending
+              ? "Sending code..."
+              : resendCooldown > 0
+                ? `Send code again in ${resendCooldown}s`
+                : "Send code again"}
+          </button>
+          <button
+            type="button"
+            className="font-semibold text-blue-700 hover:text-blue-800"
+            onClick={() => {
+              setCodeSent(false);
+              setResendCooldown(0);
+              setStatus(null);
+            }}
+          >
+            Use a different email
+          </button>
+        </div>
       )}
       <Link
         href="/login"

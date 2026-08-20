@@ -4,7 +4,7 @@ import { InstallationForm } from "@/modules/meter-installations/ui";
 
 export default async function Page({
   params,
-}: PageProps<"/transactions/meter-installations/[installationId]/edit">) {
+}: { params: Promise<{ installationId: string }> }) {
   const { installationId } = await params;
   if (!(await hasPermission("METER_INSTALLATION_EDIT"))) redirect("/");
   return (

@@ -48,13 +48,20 @@ export async function getCurrentUserPermissions(): Promise<CurrentUserPermission
     const result = await db.query<PermissionRow>(
       `SELECT DISTINCT p.permission_code
          FROM public.users u
-         INNER JOIN public.user_roles ur ON ur.user_id = u.user_id
-         INNER JOIN public.roles r ON r.role_id = ur.role_id
-         INNER JOIN public.mt_role_permission rp ON rp.role_id = r.role_id
-         INNER JOIN public.mt_permission p ON p.permission_id = rp.permission_id
+         INNER JOIN public.user_roles ur
+           ON ur.user_id = u.user_id
+         INNER JOIN public.roles r
+           ON r.role_id = ur.role_id
+         INNER JOIN public.mt_role_permission rp
+           ON rp.role_id = r.role_id
+         INNER JOIN public.mt_permission p
+           ON p.permission_id = rp.permission_id
+         INNER JOIN public.mt_system_module m
+           ON m.module_id = p.module_id
         WHERE u.user_id = $1
           AND r.is_active = TRUE
           AND p.is_active = TRUE
+          AND m.is_active = TRUE
         ORDER BY p.permission_code`,
       [auth.user.userId],
     );
