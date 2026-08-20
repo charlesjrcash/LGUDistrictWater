@@ -3067,7 +3067,18 @@
   width: 224px;
   height: 100vh;
   max-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(69, 92, 122, 0.42) transparent;
+}
+.subnav::-webkit-scrollbar {
+  width: 6px;
+}
+.subnav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(69, 92, 122, 0.42);
 }
 .content {
   grid-column: 2;
@@ -3093,6 +3104,7 @@
 }
 .formSidebar {
   z-index: 30;
+  padding-bottom: 84px;
 }
 .formSidebar .navGroup button svg {
   fill: none;
