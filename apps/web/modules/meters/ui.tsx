@@ -423,7 +423,7 @@ export function MeterDetail({
             <span>{meter.customerName}</span>
           </p>
         </div>
-        {canEdit && (
+        {canEdit && !isModal && (
           <Link
             className={styles.secondaryButton}
             href={`/transactions/meters/${encodeURIComponent(meter.meterNo)}/edit`}
@@ -432,8 +432,7 @@ export function MeterDetail({
           </Link>
         )}
       </header>
-      <div className={styles.detailGrid}>
-        <div>
+      <div>
           <section className={styles.detailCard}>
             <div className={styles.cardHeading}>
               <h2>Meter Information</h2>
@@ -475,7 +474,6 @@ export function MeterDetail({
               ))}
             </div>
           </section>
-        </div>
       </div>
     </TransactionShell>
   );

@@ -402,7 +402,7 @@ export function InstallationDetail({
             </span>
           </p>
         </div>
-        {canEdit && (
+        {canEdit && !isModal && (
           <Link
             className={styles.secondaryButton}
             href={`/transactions/meter-installations/${item.installationId}/edit`}
@@ -411,8 +411,7 @@ export function InstallationDetail({
           </Link>
         )}
       </header>
-      <div className={styles.detailGrid}>
-        <div>
+      <div>
           <section className={styles.detailCard}>
             <div className={styles.cardHeading}>
               <h2>Installation Information</h2>
@@ -496,7 +495,6 @@ export function InstallationDetail({
               </div>
             </div>
           </section>
-        </div>
       </div>
     </TransactionShell>
   );
