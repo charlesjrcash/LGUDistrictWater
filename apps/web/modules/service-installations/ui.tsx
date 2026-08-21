@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
 import styles from "@/modules/transactions/ui/transactions.module.css";
 const statuses = ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"] as const;
@@ -92,8 +93,31 @@ type ActivationResult = {
     meterInstallationCreated: boolean;
     alreadyActivated: boolean;
 };
+type MaterialLine = {
+    installationMaterialId: string;
+    installationId: string;
+    materialId: string;
+    materialCode: string;
+    materialName: string;
+    unitId: string;
+    unitCode: string;
+    unitName: string;
+    quantity: string;
+    unitCost: string;
+    amount: string;
+    createdAt: string;
+};
+type MaterialOption = {
+    materialId: string;
+    materialCode: string;
+    materialName: string;
+    unitId: string;
+    unitCode: string;
+    unitName: string;
+};
 const blank = (): Form => ({ serviceAccountId: "", scheduledDate: "", installationDate: "", meterId: "", inspectorId: "", installerId: "", installationStatus: "SCHEDULED", remarks: "" });
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : "—";
+const money = (value: string | number | null | undefined) => Number(value || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" });
 const badge = (value: Status) => `${styles.badge} ${value === "COMPLETED" ? styles.approved : value === "CANCELLED" ? styles.neutral : styles.pending}`;
 export function ServiceInstallationsPage({ canCreate, canEdit }: {
     canCreate: boolean;
@@ -199,6 +223,7 @@ function InstallationDialog({ row, onClose, onSaved }: {
     const editing = Boolean(row), completed = row?.status === "COMPLETED";
     const [form, setForm] = useState<Form>(() => row ? { serviceAccountId: row.serviceAccountId, scheduledDate: row.scheduledDate?.slice(0, 10) || "", installationDate: row.installationDate?.slice(0, 10) || "", meterId: row.meterId || "", inspectorId: row.inspectorId || "", installerId: row.installerId || "", installationStatus: row.status, remarks: row.remarks || "" } : blank());
     const [account, setAccount] = useState<Account | null>(row ? { serviceAccountId: row.serviceAccountId, controlNo: row.controlNo, customerName: row.customerName, address: row.address, status: row.connectionStatus, meterNo: row.meterNo || "—" } : null), [options, setOptions] = useState<Options>({ employees: [], meters: [] }), [browse, setBrowse] = useState(false), [errors, setErrors] = useState<Record<string, string>>({}), [error, setError] = useState(""), [saving, setSaving] = useState(false);
+    const completing = editing && (row?.status === "SCHEDULED" || row?.status === "IN_PROGRESS") && form.installationStatus === "COMPLETED";
     useEffect(() => { let cancelled = false; async function loadOptions() { try {
         const params = new URLSearchParams();
         if (form.serviceAccountId)
@@ -233,7 +258,241 @@ function InstallationDialog({ row, onClose, onSaved }: {
     finally {
         setSaving(false);
     } }
-    return <div className={styles.dialogBackdrop}><div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label={editing ? "Edit service installation" : "New service installation"}><div className={styles.dialogHeader}><div><h2>{editing ? `Service Installation #${row!.installationId}` : "New Service Installation"}</h2><p>{completed ? "Completed installation: core installation fields are protected." : "Fields marked with an asterisk are required."}</p></div><button type="button" className={styles.dialogClose} onClick={onClose} aria-label="Close">×</button></div><form onSubmit={save}>{error && <div className={styles.notice}>{error}</div>}<section className={styles.section}><h2 className={styles.sectionTitle}>Service Account</h2>{account ? <div className={styles.detailItems}><div className={styles.detailItem}><span>Control No.</span><strong>{account.controlNo}</strong></div><div className={styles.detailItem}><span>Customer</span><strong>{account.customerName}</strong></div><div className={styles.detailItem}><span>Service Address</span><strong>{account.address || "—"}</strong></div><div className={styles.detailItem}><span>Meter No.</span><strong>{account.meterNo || "—"}</strong></div><div className={styles.detailItem}><span>Connection Status</span><strong>{account.status || "—"}</strong></div></div> : <p>No service account selected.</p>}{!editing && <button type="button" className={styles.secondaryButton} onClick={() => setBrowse(true)}>Browse Service Accounts</button>}{errors.serviceAccountId && <div className={styles.fieldError}>{errors.serviceAccountId}</div>}</section><section className={styles.section}><div className={styles.fieldGrid}><Field label="Scheduled Date" type="date" value={form.scheduledDate} onChange={(value) => update("scheduledDate", value)} error={errors.scheduledDate}/><Field label="Installation Date" type="date" value={form.installationDate} disabled={completed} onChange={(value) => update("installationDate", value)} error={errors.installationDate}/><Select label="Meter" value={form.meterId} disabled={completed || !form.serviceAccountId} onChange={(value) => update("meterId", value)} error={errors.meterId} options={options.meters.map((meter) => ({ id: meter.id, label: `${meter.meterNo} — ${meter.meterSize} (${meter.status})` }))}/><Select label="Status" value={form.installationStatus} disabled={completed} onChange={(value) => update("installationStatus", value)} error={errors.installationStatus} options={statuses.map((item) => ({ id: item, label: item }))}/><Select label="Inspector" value={form.inspectorId} onChange={(value) => update("inspectorId", value)} error={errors.inspectorId} options={options.employees.map((employee) => ({ id: employee.id, label: employee.name }))}/><Select label="Installer" value={form.installerId} onChange={(value) => update("installerId", value)} error={errors.installerId} options={options.employees.map((employee) => ({ id: employee.id, label: employee.name }))}/><div className={styles.fullField}><label className={styles.label}>Remarks</label><textarea className={styles.textarea} value={form.remarks} onChange={(event) => update("remarks", event.target.value)}/></div></div></section><div className={styles.dialogActions}><button type="button" className={styles.secondaryButton} onClick={onClose} disabled={saving}>Close</button><button className={styles.button} disabled={saving || (!editing && !form.serviceAccountId)}>{saving ? "Saving…" : "Save Installation"}</button></div></form>{browse && <AccountBrowser onClose={() => setBrowse(false)} onChoose={chooseAccount}/>}</div></div>;
+    return <div className={styles.dialogBackdrop}>
+        <div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label={editing ? "Edit service installation" : "New service installation"}>
+            <div className={styles.dialogHeader}>
+                <div>
+                    <h2>{editing ? `Service Installation #${row!.installationId}` : "New Service Installation"}</h2>
+                    <p>{completed ? "Completed installation: core installation fields are protected." : "Fields marked with an asterisk are required."}</p>
+                </div>
+                <button type="button" className={styles.dialogClose} onClick={onClose} aria-label="Close">×</button>
+            </div>
+            <form onSubmit={save}>
+                {error && <div className={styles.notice}>{error}</div>}
+                {completing && <div className={styles.notice}>Completing this installation will lock Materials Used from further editing. Confirm the installation date, meter, installer, and materials before saving.</div>}
+                <section className={styles.section}>
+                    <h2 className={styles.sectionTitle}>Service Account</h2>
+                    {account ? <div className={styles.detailItems}>
+                        <div className={styles.detailItem}><span>Control No.</span><strong>{account.controlNo}</strong></div>
+                        <div className={styles.detailItem}><span>Customer</span><strong>{account.customerName}</strong></div>
+                        <div className={styles.detailItem}><span>Service Address</span><strong>{account.address || "—"}</strong></div>
+                        <div className={styles.detailItem}><span>Meter No.</span><strong>{account.meterNo || "—"}</strong></div>
+                        <div className={styles.detailItem}><span>Connection Status</span><strong>{account.status || "—"}</strong></div>
+                    </div> : <p>No service account selected.</p>}
+                    {!editing && <button type="button" className={styles.secondaryButton} onClick={() => setBrowse(true)}>Browse Service Accounts</button>}
+                    {errors.serviceAccountId && <div className={styles.fieldError}>{errors.serviceAccountId}</div>}
+                </section>
+                <section className={styles.section}>
+                    <div className={styles.fieldGrid}>
+                        <Field label="Scheduled Date" type="date" value={form.scheduledDate} onChange={(value) => update("scheduledDate", value)} error={errors.scheduledDate}/>
+                        <Field label="Installation Date" type="date" value={form.installationDate} disabled={completed} required={form.installationStatus === "COMPLETED"} onChange={(value) => update("installationDate", value)} error={errors.installationDate}/>
+                        <Select label="Meter" value={form.meterId} disabled={completed || !form.serviceAccountId} required={form.installationStatus === "COMPLETED"} onChange={(value) => update("meterId", value)} error={errors.meterId} options={options.meters.map((meter) => ({ id: meter.id, label: `${meter.meterNo} — ${meter.meterSize} (${meter.status})` }))}/>
+                        <Select label="Status" value={form.installationStatus} disabled={completed} onChange={(value) => update("installationStatus", value)} error={errors.installationStatus} options={statuses.map((item) => ({ id: item, label: item }))}/>
+                        <Select label="Inspector" value={form.inspectorId} onChange={(value) => update("inspectorId", value)} error={errors.inspectorId} options={options.employees.map((employee) => ({ id: employee.id, label: employee.name }))}/>
+                        <Select label="Installer" value={form.installerId} required={form.installationStatus === "COMPLETED"} onChange={(value) => update("installerId", value)} error={errors.installerId} options={options.employees.map((employee) => ({ id: employee.id, label: employee.name }))}/>
+                        <div className={styles.fullField}><label className={styles.label}>Remarks</label><textarea className={styles.textarea} value={form.remarks} onChange={(event) => update("remarks", event.target.value)}/></div>
+                    </div>
+                </section>
+                <MaterialsUsed installationId={row?.installationId} status={row?.status}/>
+                <div className={styles.dialogActions}>
+                    <button type="button" className={styles.secondaryButton} onClick={onClose} disabled={saving}>Close</button>
+                    <button className={styles.button} disabled={saving || (!editing && !form.serviceAccountId)}>{saving ? "Saving…" : "Save Installation"}</button>
+                </div>
+            </form>
+            {browse && <AccountBrowser onClose={() => setBrowse(false)} onChoose={chooseAccount}/>}
+        </div>
+    </div>;
+}
+
+function MaterialsUsed({ installationId, status }: {
+    installationId?: string;
+    status?: Status;
+}) {
+    const [lines, setLines] = useState<MaterialLine[]>([]);
+    const [totalMaterialCost, setTotalMaterialCost] = useState("0");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [editor, setEditor] = useState<MaterialLine | "add" | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const editable = status === "SCHEDULED" || status === "IN_PROGRESS";
+
+    const loadMaterials = useCallback(async () => {
+        if (!installationId) return;
+        setLoading(true);
+        setError("");
+        try {
+            const response = await fetch(`/api/service-installations/${installationId}/materials`, { cache: "no-store" });
+            const body = await response.json();
+            if (!response.ok) throw new Error(body.message || "Unable to load materials.");
+            setLines(Array.isArray(body.data) ? body.data : []);
+            setTotalMaterialCost(body.totalMaterialCost || "0");
+        } catch (caught) {
+            setError(caught instanceof Error ? caught.message : "Unable to load materials.");
+        } finally {
+            setLoading(false);
+        }
+    }, [installationId]);
+
+    useEffect(() => {
+        if (!installationId) return;
+        const timer = window.setTimeout(() => void loadMaterials(), 0);
+        return () => window.clearTimeout(timer);
+    }, [installationId, loadMaterials]);
+
+    const remove = async (line: MaterialLine) => {
+        if (!installationId || deletingId || !window.confirm(`Delete ${line.materialCode} from this installation?`)) return;
+        setDeletingId(line.installationMaterialId);
+        setError("");
+        try {
+            const response = await fetch(`/api/service-installations/${installationId}/materials/${line.installationMaterialId}`, { method: "DELETE" });
+            const body = await response.json();
+            if (!response.ok) throw new Error(body.message || "Unable to delete the material.");
+            await loadMaterials();
+        } catch (caught) {
+            setError(caught instanceof Error ? caught.message : "Unable to delete the material.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    return <section className={styles.section}>
+        <div className={styles.cardHeading}>
+            <h2 className={styles.sectionTitle}>MATERIALS USED</h2>
+            {installationId && editable && <button type="button" className={styles.secondaryButton} onClick={() => setEditor("add")}>+ Add Material</button>}
+        </div>
+        {!installationId ? <p>Save the Service Installation first before adding materials.</p> : <>
+            {!editable && status === "COMPLETED" && <p className={styles.sectionDescription}>Materials are locked because this installation is completed.</p>}
+            {!editable && status === "CANCELLED" && <p className={styles.sectionDescription}>Materials are locked because this installation is cancelled.</p>}
+            {error && <div className={styles.notice}>{error}</div>}
+            {loading ? <p>Loading materials...</p> : !lines.length ? <p>No materials added.</p> : <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                    <thead><tr><th>Code</th><th>Material</th><th>Unit</th><th>Quantity</th><th>Unit Cost</th><th>Amount</th>{editable && <th>Actions</th>}</tr></thead>
+                    <tbody>{lines.map((line) => <tr key={line.installationMaterialId}>
+                        <td>{line.materialCode}</td>
+                        <td>{line.materialName}</td>
+                        <td>{line.unitCode || line.unitName}</td>
+                        <td>{line.quantity}</td>
+                        <td>{money(line.unitCost)}</td>
+                        <td>{money(line.amount)}</td>
+                        {editable && <td><div className={styles.actionStack}>
+                            <button type="button" className={styles.secondaryButton} onClick={() => setEditor(line)} disabled={Boolean(deletingId)}>Edit</button>
+                            <button type="button" className={styles.secondaryButton} onClick={() => void remove(line)} disabled={Boolean(deletingId)}>{deletingId === line.installationMaterialId ? "Deleting..." : "Delete"}</button>
+                        </div></td>}
+                    </tr>)}</tbody>
+                </table>
+            </div>}
+            <div className={styles.detailItems}>
+                <div className={styles.detailItem}><span>Total Material Cost</span><strong>{money(totalMaterialCost)}</strong></div>
+            </div>
+        </>}
+        {editor && installationId && <MaterialEditor
+            key={editor === "add" ? "add" : editor.installationMaterialId}
+            installationId={installationId}
+            line={editor === "add" ? undefined : editor}
+            onClose={() => setEditor(null)}
+            onSaved={async () => { setEditor(null); await loadMaterials(); }}
+        />}
+    </section>;
+}
+
+function MaterialEditor({ installationId, line, onClose, onSaved }: {
+    installationId: string;
+    line?: MaterialLine;
+    onClose: () => void;
+    onSaved: () => Promise<void>;
+}) {
+    const editing = Boolean(line);
+    const [options, setOptions] = useState<MaterialOption[]>([]);
+    const [materialId, setMaterialId] = useState(line?.materialId || "");
+    const [quantity, setQuantity] = useState(line?.quantity || "");
+    const [unitCost, setUnitCost] = useState(line?.unitCost || "");
+    const [loadingOptions, setLoadingOptions] = useState(!editing);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+    const selected = options.find((option) => option.materialId === materialId);
+    const amountPreview = Number(quantity) * Number(unitCost);
+
+    useEffect(() => {
+        if (editing) return;
+        let cancelled = false;
+        void (async () => {
+            try {
+                const response = await fetch("/api/service-installations/materials/options", { cache: "no-store" });
+                const body = await response.json();
+                if (!response.ok) throw new Error(body.message || "Unable to load material options.");
+                if (!cancelled) setOptions(Array.isArray(body.data) ? body.data : []);
+            } catch (caught) {
+                if (!cancelled) setError(caught instanceof Error ? caught.message : "Unable to load material options.");
+            } finally {
+                if (!cancelled) setLoadingOptions(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [editing]);
+
+    const save = async () => {
+        if (saving) return;
+        if ((!editing && !materialId) || !Number.isFinite(Number(quantity)) || Number(quantity) <= 0 || !Number.isFinite(Number(unitCost)) || Number(unitCost) < 0) {
+            setError("Select a material, enter a quantity greater than zero, and enter a non-negative unit cost.");
+            return;
+        }
+        setSaving(true);
+        setError("");
+        try {
+            const response = await fetch(editing ? `/api/service-installations/${installationId}/materials/${line!.installationMaterialId}` : `/api/service-installations/${installationId}/materials`, {
+                method: editing ? "PATCH" : "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editing ? { quantity, unitCost } : { materialId, quantity, unitCost }),
+            });
+            const body = await response.json();
+            if (!response.ok) throw new Error(body.message || "Unable to save the material.");
+            await onSaved();
+        } catch (caught) {
+            setError(caught instanceof Error ? caught.message : "Unable to save the material.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (typeof document === "undefined") return null;
+    return createPortal(<div className={styles.dialogBackdrop} style={{ zIndex: 60 }} role="presentation">
+        <div className={styles.dialog} role="dialog" aria-modal="true" aria-label={editing ? "Edit installation material" : "Add installation material"}>
+            <div className={styles.dialogHeader}>
+                <div><h2>{editing ? "Edit Material" : "Add Material"}</h2><p>{editing ? "Update the recorded quantity or unit cost." : "Record a material used for this installation."}</p></div>
+                <button type="button" className={styles.dialogClose} onClick={onClose} aria-label="Close">×</button>
+            </div>
+            {error && <div className={styles.notice}>{error}</div>}
+            <div className={styles.fieldGrid}>
+                <div className={styles.fullField}>
+                    <label className={styles.label}>Material *</label>
+                    {editing ? <input className={styles.input} value={`${line!.materialCode} — ${line!.materialName}`} disabled/> : <select className={styles.select} value={materialId} disabled={loadingOptions} onChange={(event) => setMaterialId(event.target.value)}>
+                        <option value="">{loadingOptions ? "Loading materials..." : "Select material"}</option>
+                        {options.map((option) => <option key={option.materialId} value={option.materialId}>{option.materialCode} — {option.materialName}</option>)}
+                    </select>}
+                </div>
+                <div>
+                    <label className={styles.label}>Unit</label>
+                    <input className={styles.input} value={editing ? `${line!.unitCode} — ${line!.unitName}` : selected ? `${selected.unitCode} — ${selected.unitName}` : ""} disabled/>
+                </div>
+                <div>
+                    <label className={styles.label}>Quantity *</label>
+                    <input className={styles.input} inputMode="decimal" value={quantity} onChange={(event) => setQuantity(event.target.value)} placeholder="0.000"/>
+                </div>
+                <div>
+                    <label className={styles.label}>Unit Cost *</label>
+                    <input className={styles.input} inputMode="decimal" value={unitCost} onChange={(event) => setUnitCost(event.target.value)} placeholder="0.00"/>
+                </div>
+                <div>
+                    <label className={styles.label}>Amount</label>
+                    <input className={styles.input} value={Number.isFinite(amountPreview) ? money(amountPreview) : money(0)} disabled/>
+                </div>
+            </div>
+            <div className={styles.dialogActions}>
+                <button type="button" className={styles.secondaryButton} onClick={onClose} disabled={saving}>Cancel</button>
+                <button type="button" className={styles.button} onClick={() => void save()} disabled={saving || loadingOptions}>{saving ? "Saving..." : editing ? "Save Material" : "Add Material"}</button>
+            </div>
+        </div>
+    </div>, document.body);
 }
 
 function ReportModal({ installationId, loading, error, data, onClose }: {
@@ -243,6 +502,43 @@ function ReportModal({ installationId, loading, error, data, onClose }: {
     data: ReportData | null;
     onClose: () => void;
 }) {
+    const [materials, setMaterials] = useState<MaterialLine[]>([]);
+    const [materialsLoading, setMaterialsLoading] = useState(true);
+    const [materialsError, setMaterialsError] = useState("");
+    const [totalMaterialCost, setTotalMaterialCost] = useState("0");
+    const [materialsInstallationId, setMaterialsInstallationId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        void (async () => {
+            try {
+                const response = await fetch(`/api/service-installations/${installationId}/materials`, {
+                    cache: "no-store",
+                    signal: controller.signal,
+                });
+                const body = await response.json();
+                if (!response.ok) throw new Error(body.message || "Unable to load installation materials.");
+                if (!controller.signal.aborted) {
+                    setMaterials(Array.isArray(body.data) ? body.data : []);
+                    setTotalMaterialCost(body.totalMaterialCost || "0");
+                    setMaterialsError("");
+                    setMaterialsInstallationId(installationId);
+                }
+            } catch (caught) {
+                if (!controller.signal.aborted) {
+                    setMaterials([]);
+                    setTotalMaterialCost("0");
+                    setMaterialsError(caught instanceof Error ? caught.message : "Unable to load installation materials.");
+                    setMaterialsInstallationId(installationId);
+                }
+            } finally {
+                if (!controller.signal.aborted) setMaterialsLoading(false);
+            }
+        })();
+        return () => controller.abort();
+    }, [installationId]);
+
+    const materialsMatchInstallation = materialsInstallationId === installationId;
     return (
         <div className={styles.dialogBackdrop} role="presentation">
             <div
@@ -252,7 +548,7 @@ function ReportModal({ installationId, loading, error, data, onClose }: {
                 aria-label="Service Installation Report"
             >
                 <h2>Service Installation Report</h2>
-                {loading ? <p>Loading service installation report...</p> : error ? <p className={styles.fieldError}>{error}</p> : data ? <ReportHeader data={data}/> : <p>Installation ID: <strong>{installationId}</strong></p>}
+                {loading ? <p>Loading service installation report...</p> : error ? <p className={styles.fieldError}>{error}</p> : data ? <ReportHeader data={data} materials={materialsMatchInstallation ? materials : []} materialsLoading={materialsLoading || !materialsMatchInstallation} materialsError={materialsMatchInstallation ? materialsError : ""} totalMaterialCost={materialsMatchInstallation ? totalMaterialCost : "0"}/> : <p>Installation ID: <strong>{installationId}</strong></p>}
                 <div className={styles.dialogActions}>
                     <button type="button" className={styles.secondaryButton} onClick={onClose}>
                         Close
@@ -277,7 +573,13 @@ function ActivationModal({ installation, loading, error, result, onCancel, onAct
     return <div className={styles.dialogBackdrop} role="presentation"><div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label="Activate Service"><h2>{result ? "Service Activated Successfully" : "Activate Service"}</h2>{result ? <><div className={styles.detailItems}><div className={styles.detailItem}><span>Service Account Status</span><strong>{result.serviceStatus}</strong></div><div className={styles.detailItem}><span>Meter Status</span><strong>{result.meterStatus}</strong></div><div className={styles.detailItem}><span>Installation Date</span><strong>{date(result.installationDate)}</strong></div><div className={styles.detailItem}><span>Meter Installation History</span><strong>{result.meterInstallationCreated ? "Created" : "Not created"}</strong></div></div>{result.alreadyActivated && <p className={styles.notice}>This service was already activated. No duplicate meter installation history was created.</p>}</> : <><div className={styles.detailItems}>{[["Installation ID", installation.installationId], ["Control No.", installation.controlNo], ["Customer", installation.customerName], ["Meter No.", installation.meterNo || "—"], ["Installation Date", date(installation.installationDate)]].map(([label, value]) => <div className={styles.detailItem} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div><p>This will activate the service account, activate the installed meter, and create the initial meter installation history.</p>{error && <p className={styles.fieldError}>{error}</p>}</>}<div className={styles.dialogActions}><button type="button" className={styles.secondaryButton} onClick={onCancel} disabled={loading}>{result ? "Close" : "Cancel"}</button>{!result && <button type="button" className={styles.button} onClick={onActivate} disabled={loading}>{loading ? "Activating..." : "Activate Service"}</button>}</div></div></div>;
 }
 
-function ReportHeader({ data }: { data: ReportData }) {
+function ReportHeader({ data, materials, materialsLoading, materialsError, totalMaterialCost }: {
+    data: ReportData;
+    materials: MaterialLine[];
+    materialsLoading: boolean;
+    materialsError: string;
+    totalMaterialCost: string;
+}) {
     const organization = data.organization;
     const contacts = [["TIN", organization?.tin], ["VAT No.", organization?.vatNo], ["Contact", organization?.contactNo], ["Email", organization?.email], ["Website", organization?.website]].filter(([, value]) => Boolean(value));
     return <div id="service-installation-print" className={styles.reportContent}>
@@ -287,21 +589,32 @@ function ReportHeader({ data }: { data: ReportData }) {
         <section className={styles.section}><h3 className={styles.sectionTitle}>SERVICE ACCOUNT INFORMATION</h3><div className={styles.detailItems}>{[["Control No.", data.controlNo], ["Customer Name", data.customerName], ["Service Address", data.address], ["Classification", data.classification], ["Connection Status", data.connectionStatus]].map(([label, value]) => <div className={styles.detailItem} key={label}><span>{label}</span><strong>{value || "-"}</strong></div>)}</div></section>
         <section className={styles.section}><h3 className={styles.sectionTitle}>INSTALLATION DETAILS</h3><div className={styles.detailItems}><div className={styles.detailItem}><span>Scheduled Date</span><strong>{date(data.scheduledDate)}</strong></div><div className={styles.detailItem}><span>Installation Date</span><strong>{date(data.installationDate)}</strong></div><div className={styles.detailItem}><span>Installation Status</span><strong><span className={badge(data.status)}>{data.status || "-"}</span></strong></div><div className={`${styles.detailItem} ${styles.fullField}`}><span>Remarks</span><strong>{data.remarks || "-"}</strong></div></div></section>
         <section className={styles.section}><h3 className={styles.sectionTitle}>METER INFORMATION</h3><div className={styles.detailItems}>{[["Meter No.", data.meterNo], ["Meter Size", data.meterSize], ["Meter Status", data.meterStatus]].map(([label, value]) => <div className={styles.detailItem} key={label}><span>{label}</span><strong>{value || "-"}</strong></div>)}</div></section>
+        <section className={`${styles.section} ${styles.reportMaterialsSection}`}>
+            <h3 className={styles.sectionTitle}>MATERIALS USED</h3>
+            {materialsLoading ? <p>Loading installation materials...</p> : materialsError ? <p className={styles.fieldError}>{materialsError}</p> : !materials.length ? <p>No materials recorded.</p> : <div className={styles.tableWrap}>
+                <table className={`${styles.table} ${styles.reportMaterialsTable}`}>
+                    <thead><tr><th>Code</th><th>Material</th><th>Unit</th><th>Quantity</th><th>Unit Cost</th><th>Amount</th></tr></thead>
+                    <tbody>{materials.map((line) => <tr key={line.installationMaterialId}><td>{line.materialCode}</td><td>{line.materialName}</td><td>{line.unitCode || line.unitName}</td><td>{line.quantity}</td><td>{money(line.unitCost)}</td><td>{money(line.amount)}</td></tr>)}</tbody>
+                </table>
+            </div>}
+            {!materialsLoading && !materialsError && <div className={styles.detailItems}><div className={styles.detailItem}><span>Total Material Cost</span><strong>{money(totalMaterialCost)}</strong></div></div>}
+        </section>
         <section className={styles.section}><h3 className={styles.sectionTitle}>PERSONNEL</h3><div className={styles.detailItems}>{[["Inspector", data.inspector], ["Installer", data.installer]].map(([label, value]) => <div className={styles.detailItem} key={label}><span>{label}</span><strong>{value || "-"}</strong></div>)}</div></section>
         <section className={styles.section}><h3 className={styles.sectionTitle}>REPORT / AUDIT INFORMATION</h3><div className={styles.detailItems}><div className={styles.detailItem}><span>Prepared By</span><strong>{data.preparedBy || "-"}</strong></div><div className={styles.detailItem}><span>Created Date</span><strong>{date(data.createdAt)}</strong></div><div className={styles.detailItem}><span>Updated By</span><strong>{data.updatedBy || "-"}</strong></div><div className={styles.detailItem}><span>Updated Date</span><strong>{date(data.updatedAt)}</strong></div></div></section>
         {organization?.footerNote && <p className={styles.organizationFooterNote}>{organization.footerNote}</p>}
     </div>;
 }
 
-function Field({ label, value, onChange, type, error, disabled }: {
+function Field({ label, value, onChange, type, error, disabled, required }: {
     label: string;
     value: string;
     onChange: (value: string) => void;
     type?: string;
     error?: string;
     disabled?: boolean;
-}) { return <div><label className={styles.label}>{label}</label><input className={styles.input} type={type} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}/>{error && <div className={styles.fieldError}>{error}</div>}</div>; }
-function Select({ label, value, onChange, options, error, disabled }: {
+    required?: boolean;
+}) { return <div><label className={styles.label}>{label}{required && <span className={styles.required}> *</span>}</label><input className={styles.input} type={type} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}/>{error && <div className={styles.fieldError}>{error}</div>}</div>; }
+function Select({ label, value, onChange, options, error, disabled, required }: {
     label: string;
     value: string;
     onChange: (value: string) => void;
@@ -311,7 +624,8 @@ function Select({ label, value, onChange, options, error, disabled }: {
     }[];
     error?: string;
     disabled?: boolean;
-}) { return <div><label className={styles.label}>{label}</label><select className={styles.select} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}><option value="">Select {label.toLowerCase()}</option>{options.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select>{error && <div className={styles.fieldError}>{error}</div>}</div>; }
+    required?: boolean;
+}) { return <div><label className={styles.label}>{label}{required && <span className={styles.required}> *</span>}</label><select className={styles.select} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}><option value="">Select {label.toLowerCase()}</option>{options.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select>{error && <div className={styles.fieldError}>{error}</div>}</div>; }
 function AccountBrowser({ onClose, onChoose }: {
     onClose: () => void;
     onChoose: (account: Account) => void;

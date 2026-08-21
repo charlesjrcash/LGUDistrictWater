@@ -805,6 +805,9 @@
 .billPreviewTable td:nth-child(2) {
   white-space: normal;
 }
+.reportMaterialsTable {
+  min-width: 640px;
+}
 @media (max-width: 900px) {
   .summaryGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -899,6 +902,13 @@
     padding: 5px;
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+  :global(#service-installation-print) .reportMaterialsSection {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  :global(#service-installation-print) .reportMaterialsTable {
+    table-layout: fixed;
   }
   :global(#service-installation-print) .sectionTitle {
     margin: 4px 0;
