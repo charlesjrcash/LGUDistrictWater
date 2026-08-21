@@ -251,6 +251,33 @@
 .viewLink:hover {
   text-decoration: underline;
 }
+.iconActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.iconAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d5dfe3;
+  border-radius: 8px;
+  background: #fff;
+  color: #52657f;
+  cursor: pointer;
+  text-decoration: none;
+}
+.iconAction:hover {
+  background: #eef4fb;
+  color: #076bdc;
+  border-color: #b9cfe6;
+}
+.iconAction svg {
+  width: 16px;
+  height: 16px;
+}
 .badge {
   display: inline-flex;
   align-items: center;
