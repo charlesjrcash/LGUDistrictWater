@@ -1047,3 +1047,5 @@
     width: 100%;
   }
 }
+
+.connectionFeeDialog { width: min(680px, calc(100vw - 32px)); max-width: 100%; }

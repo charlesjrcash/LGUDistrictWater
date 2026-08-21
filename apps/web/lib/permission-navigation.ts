@@ -13,6 +13,7 @@ export const transactionNavigation: readonly PermissionNavigationItem[] = [
   { label: "Meter installations", href: "/transactions/meter-installations", permissions: ["METER_INSTALLATION_VIEW"] },
   { label: "Meter readings", href: "/transactions/meter-readings", permissions: ["METER_READING_VIEW"] },
   { label: "Bills", href: "/transactions/bills", permissions: ["BILL_VIEW"] },
+  { label: "Connection fees", href: "/transactions/connection-fees", permissions: ["BILL_VIEW"] },
   { label: "Bill adjustments", href: "/transactions/bill-adjustments", permissions: ["BILL_ADJUSTMENT_VIEW"] },
   { label: "Bill details", href: "/transactions/bill-details", permissions: ["BILL_DETAIL_VIEW"] },
   { label: "Bill penalties", href: "/transactions/bill-penalties", permissions: ["BILL_PENALTY_VIEW"] },
