@@ -40,6 +40,12 @@ export const transactionModules: readonly TransactionModule[] = [
     permission: "METER_INSTALLATION_VIEW",
   },
   {
+    slug: "disconnection-orders",
+    label: "Disconnection orders",
+    category: "operational",
+    permission: "METER_INSTALLATION_VIEW",
+  },
+  {
     slug: "meter-readings",
     label: "Meter readings",
     category: "operational",
