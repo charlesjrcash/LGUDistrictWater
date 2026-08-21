@@ -66,7 +66,7 @@ const adminGroups: { label: string; items: { id: Section; label: string }[] }[] 
   {
     label: "System Health",
     items: [
-      { id: "health", label: "Configuration Health" },
+      { id: "health", label: "Configuration Settings" },
       { id: "attention", label: "System Attention" },
     ],
   },

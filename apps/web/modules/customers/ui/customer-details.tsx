@@ -159,7 +159,7 @@ export function CustomerDetails({
         </div>
       </div>
       {tab === "overview" && (
-        <div className={styles.detailGrid}>
+        <>
           <section className={styles.detailCard}>
             <div className={styles.cardHeading}>
               <h2>Customer Information</h2>
@@ -173,7 +173,7 @@ export function CustomerDetails({
               ))}
             </div>
           </section>
-          <aside>
+          <div className={styles.detailGrid} style={{ marginTop: 18 }}>
             <section className={styles.detailCard}>
               <div className={styles.cardHeading}>
                 <h2>Customer Relationships</h2>
@@ -215,8 +215,8 @@ export function CustomerDetails({
                 </Link>
               </div>
             </section>
-          </aside>
-        </div>
+          </div>
+        </>
       )}
       {tab === "applications" && (
         <section className={styles.panel}>
