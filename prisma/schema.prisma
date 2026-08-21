@@ -82,7 +82,6 @@ model users {
   disconnection_orders_disconnection_orders_created_byTousers             disconnection_orders[]       @relation("disconnection_orders_created_byTousers")
   disconnection_orders_disconnection_orders_performed_byTousers           disconnection_orders[]       @relation("disconnection_orders_performed_byTousers")
   document_attachments                                                    document_attachments[]
-  meter_installations                                                     meter_installations[]
   meter_readings_meter_readings_created_byTousers                         meter_readings[]             @relation("meter_readings_created_byTousers")
   meter_readings_meter_readings_updated_byTousers                         meter_readings[]             @relation("meter_readings_updated_byTousers")
   meters_meters_created_byTousers                                         meters[]                     @relation("meters_created_byTousers")
@@ -160,8 +159,6 @@ model users {
   service_applications_service_applications_created_byTousers             service_applications[]       @relation("service_applications_created_byTousers")
   service_applications_service_applications_updated_byTousers             service_applications[]       @relation("service_applications_updated_byTousers")
   service_installations_service_installations_created_byTousers           service_installations[]      @relation("service_installations_created_byTousers")
-  service_installations_service_installations_inspector_idTousers         service_installations[]      @relation("service_installations_inspector_idTousers")
-  service_installations_service_installations_installer_idTousers         service_installations[]      @relation("service_installations_installer_idTousers")
   service_installations_service_installations_updated_byTousers           service_installations[]      @relation("service_installations_updated_byTousers")
   user_roles                                                              user_roles[]
   user_sessions                                                           user_sessions[]
@@ -366,7 +363,7 @@ model meter_installations {
   created_at         DateTime         @default(now()) @db.Timestamp(6)
   meters             meters           @relation(fields: [meter_id], references: [meter_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_meter")
   service_accounts   service_accounts @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_service")
-  users              users?           @relation(fields: [performed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_user")
+  mt_employee_meter_installations_performed_byTomt_employee mt_employee? @relation("meter_installations_performed_byTomt_employee", fields: [performed_by], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_installation_performed_by")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -410,7 +407,7 @@ model meters {
   serial_no                      String?               @db.VarChar(100)
   installation_date              DateTime?             @db.Date
   initial_reading                Decimal               @default(0) @db.Decimal(14, 3)
-  status                         String                @default("ACTIVE") @db.VarChar(30)
+  status                         String                @default("ASSIGNED") @db.VarChar(30)
   remarks                        String?
   created_by                     BigInt?
   updated_by                     BigInt?
@@ -642,6 +639,9 @@ model mt_employee {
   updated_at                          DateTime?         @db.Timestamp(6)
   users_mt_employee_created_byTousers users?            @relation("mt_employee_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_created_by")
   users_mt_employee_updated_byTousers users?            @relation("mt_employee_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_updated_by")
+  service_installations_service_installations_inspector_idTomt_employee service_installations[] @relation("service_installations_inspector_idTomt_employee")
+  service_installations_service_installations_installer_idTomt_employee service_installations[] @relation("service_installations_installer_idTomt_employee")
+  meter_installations_meter_installations_performed_byTomt_employee     meter_installations[] @relation("meter_installations_performed_byTomt_employee")
   mt_meter_reader                     mt_meter_reader[]
 }
 
@@ -1144,8 +1144,8 @@ model service_installations {
   service_installation_materials                  service_installation_materials[]
   service_accounts                                service_accounts                 @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_account")
   users_service_installations_created_byTousers   users?                           @relation("service_installations_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_created_by")
-  users_service_installations_inspector_idTousers users?                           @relation("service_installations_inspector_idTousers", fields: [inspector_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_inspector")
-  users_service_installations_installer_idTousers users?                           @relation("service_installations_installer_idTousers", fields: [installer_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_installer")
+  mt_employee_service_installations_inspector_idTomt_employee mt_employee?        @relation("service_installations_inspector_idTomt_employee", fields: [inspector_id], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_inspector")
+  mt_employee_service_installations_installer_idTomt_employee mt_employee?        @relation("service_installations_installer_idTomt_employee", fields: [installer_id], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_installer")
   users_service_installations_updated_byTousers   users?                           @relation("service_installations_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_updated_by")
   meters                                          meters?                          @relation(fields: [meter_id], references: [meter_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_meter")
 

@@ -488,7 +488,7 @@ export function MeterForm({ meterNo }: { meterNo?: string }) {
     serialNo: "",
     installationDate: "",
     initialReading: "0",
-    status: "ACTIVE",
+    status: "ASSIGNED",
     remarks: "",
   });
   const [loading, setLoading] = useState(true),
