@@ -418,6 +418,7 @@ model meters {
   updated_at                     DateTime?             @db.Timestamp(6)
   meter_installations            meter_installations[]
   meter_readings                 meter_readings[]
+  service_installations          service_installations[]
   mt_meter_brand                 mt_meter_brand?       @relation(fields: [meter_brand_id], references: [meter_brand_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_brand")
   users_meters_created_byTousers users?                @relation("meters_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_created_by")
   service_accounts               service_accounts      @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_meter_service_account")
@@ -1129,10 +1130,12 @@ model service_installation_materials {
 model service_installations {
   installation_id                                 BigInt                           @id @default(autoincrement())
   service_account_id                              BigInt
-  installation_date                               DateTime                         @db.Date
+  scheduled_date                                  DateTime?                        @db.Date
+  installation_date                               DateTime?                        @db.Date
+  meter_id                                        BigInt?
   inspector_id                                    BigInt?
   installer_id                                    BigInt?
-  installation_status                             String                           @default("COMPLETED") @db.VarChar(30)
+  installation_status                             String                           @default("SCHEDULED") @db.VarChar(30)
   remarks                                         String?
   created_by                                      BigInt?
   updated_by                                      BigInt?
@@ -1144,4 +1147,7 @@ model service_installations {
   users_service_installations_inspector_idTousers users?                           @relation("service_installations_inspector_idTousers", fields: [inspector_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_inspector")
   users_service_installations_installer_idTousers users?                           @relation("service_installations_installer_idTousers", fields: [installer_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_installer")
   users_service_installations_updated_byTousers   users?                           @relation("service_installations_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_updated_by")
+  meters                                          meters?                          @relation(fields: [meter_id], references: [meter_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_service_installation_meter")
+
+  @@index([meter_id], map: "idx_service_installation_meter")
 }
