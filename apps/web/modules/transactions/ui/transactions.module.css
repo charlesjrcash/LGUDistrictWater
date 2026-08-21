@@ -632,6 +632,11 @@
   max-height: calc(100vh - 32px);
   overflow-y: auto;
 }
+.reconnectionReportDialog {
+  width: min(820px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
 .dialog h2 {
   margin: 0 0 9px;
   font-size: 20px;
@@ -706,6 +711,35 @@
 .paymentSuccessActions {
   flex-wrap: wrap;
 }
+.paymentReceipt { display:none; }
+.paymentReceiptHeader { display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:start; border-bottom:2px solid #123a61; padding-bottom:12px; }
+.paymentReceiptLogo { width:54px; height:54px; object-fit:contain; }
+.paymentReceiptOrganization,.paymentReceiptMeta { display:grid; gap:3px; font-size:12px; line-height:1.25; }
+.paymentReceiptOrganization strong { font-size:17px; color:#123a61; }
+.paymentReceiptMeta { min-width:165px; text-align:right; }
+.paymentReceiptMeta strong { font-size:13px; color:#123a61; }
+.paymentReceiptTitle { margin:14px 0 10px; text-align:center; color:#123a61; font-size:16px; letter-spacing:.08em; }
+.paymentReceiptInfoGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.paymentReceiptSection { border:1px solid #cbd7e3; break-inside:avoid; page-break-inside:avoid; }
+.paymentReceiptSection h3 { margin:0; padding:6px 8px; background:#edf4fa; color:#123a61; font-size:10px; letter-spacing:.05em; }
+.paymentReceiptSection > div:not(.paymentReceiptDetails) { display:grid; grid-template-columns:120px 1fr; gap:8px; padding:4px 8px; font-size:12px; }
+.paymentReceiptSection span,.paymentReceiptDetails span,.paymentReceiptStatus span { color:#536577; }
+.paymentReceiptSection strong,.paymentReceiptDetails strong,.paymentReceiptStatus strong { overflow-wrap:anywhere; }
+.paymentReceiptDetails { display:grid; grid-template-columns:110px 1fr 110px 1fr 110px 1fr; gap:6px 8px; padding:8px; font-size:12px; }
+.paymentReceiptParticulars { margin-top:10px; border:1px solid #cbd7e3; break-inside:avoid; page-break-inside:avoid; }
+.paymentReceiptParticulars table,.paymentReceiptAllocations { width:100%; border-collapse:collapse; font-size:12px; }
+.paymentReceiptParticulars th,.paymentReceiptAllocations th { padding:7px 8px; background:#123a61; color:#fff; text-align:left; font-size:10px; letter-spacing:.04em; }
+.paymentReceiptParticulars th:last-child,.paymentReceiptParticulars td:last-child { text-align:right; }
+.paymentReceiptParticulars td,.paymentReceiptAllocations td { padding:7px 8px; border-top:1px solid #d9e2ea; }
+.paymentReceiptTotal { display:flex; justify-content:space-between; gap:12px; padding:9px 8px; border-top:2px solid #123a61; font-size:13px; }
+.paymentReceiptTotal strong { font-size:16px; color:#123a61; }
+.paymentReceiptParticulars p { margin:0; padding:8px; border-top:1px solid #d9e2ea; font-size:11px; line-height:1.4; }
+.paymentReceiptAllocations { margin:8px; width:calc(100% - 16px); }
+.paymentReceiptStatus { display:grid; grid-template-columns:120px 1fr 120px 1fr; gap:6px 8px; margin-top:10px; padding:8px; border:1px solid #cbd7e3; font-size:12px; break-inside:avoid; page-break-inside:avoid; }
+.paymentReceiptFooter { margin-top:18px; text-align:center; font-size:11px; break-inside:avoid; page-break-inside:avoid; }
+.paymentReceiptFooter p { margin:0 0 14px; }
+.paymentReceiptThankYou { font-weight:600; color:#123a61; }
+.paymentReceiptFooter div { display:inline-grid; gap:4px; }
 .billPreviewDialog {
   width: min(900px, calc(100vw - 32px));
   max-width: 100%;
@@ -862,6 +896,19 @@
 }
 
 @media print {
+  .main:has(:global(#reconnection-order-print)) > *:not(.dialogBackdrop) { display: none !important; }
+  .dialogBackdrop:has(:global(#reconnection-order-print)) { position: static; display: block; height: auto; max-height: none; padding: 0; background: transparent; overflow: visible; }
+  .dialogBackdrop:has(:global(#reconnection-order-print)) > *:not(.reconnectionReportDialog) { display: none !important; }
+  .reconnectionReportDialog { position: static; display: block; width: auto; height: auto; max-height: none; margin: 0; padding: 0; background: transparent; overflow: visible; box-shadow: none; }
+  .reconnectionReportDialog > h2, .reconnectionReportDialog > .dialogActions { display: none !important; }
+  :global(#reconnection-order-print), :global(#reconnection-order-print) * { visibility: visible; }
+  :global(#reconnection-order-print) { display: block; position: static; width: 100%; height: auto; max-height: none; margin: 0; padding: 0; color: #000; overflow: visible; }
+  :global(#reconnection-order-print) .section { margin: 5px 0 0; padding: 5px; break-inside: avoid; page-break-inside: avoid; }
+  :global(#reconnection-order-print) .sectionTitle { margin: 3px 0; font-size: 10pt; }
+  :global(#reconnection-order-print) .detailItems { gap: 4px 12px; }
+  :global(#reconnection-order-print) .detailItem span { font-size: 8pt; }
+  :global(#reconnection-order-print) .detailItem strong { font-size: 9pt; }
+  .page:has(:global(#reconnection-order-print)), .page:has(:global(#reconnection-order-print)) .main, .dialogBackdrop:has(:global(#reconnection-order-print)), .reconnectionReportDialog { visibility: visible; width: auto; min-height: 0; height: auto; margin: 0; padding: 0; overflow: visible; }
   .main:has(:global(#disconnection-order-print)) > *:not(.dialogBackdrop) { display: none !important; }
   .dialogBackdrop:has(:global(#disconnection-order-print)) { position: static; display: block; height: auto; max-height: none; padding: 0; background: transparent; overflow: visible; }
   .dialogBackdrop:has(:global(#disconnection-order-print)) > *:not(.disconnectionReportDialog) { display: none !important; }
@@ -975,11 +1022,107 @@
   :global(#service-installation-print) * {
     visibility: visible;
   }
+  :global(#reconnection-order-print),
+  :global(#reconnection-order-print) * {
+    visibility: visible;
+  }
   :global(#payment-print) {
-    position: absolute;
-    inset: 0;
+    position: static;
+    inset: auto;
     width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
     color: #000;
+    overflow: visible;
+  }
+  .paymentSuccessScreen {
+    display: none !important;
+  }
+  .paymentReceipt {
+    display: block;
+    width: 100%;
+    font-size: 10pt;
+    line-height: 1.25;
+  }
+  .paymentReceiptHeader {
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+  .paymentReceiptLogo {
+    width: 46px;
+    height: 46px;
+  }
+  .paymentReceiptOrganization,
+  .paymentReceiptMeta {
+    font-size: 8.5pt;
+  }
+  .paymentReceiptOrganization strong { font-size: 13pt; }
+  .paymentReceiptTitle { margin: 10px 0 7px; font-size: 12pt; }
+  .paymentReceiptInfoGrid { gap: 7px; }
+  .paymentReceiptSection h3 { padding: 4px 6px; font-size: 8pt; }
+  .paymentReceiptSection > div:not(.paymentReceiptDetails) { grid-template-columns: 95px 1fr; gap: 5px; padding: 3px 6px; font-size: 8.5pt; }
+  .paymentReceiptDetails { grid-template-columns: 85px 1fr 85px 1fr 85px 1fr; gap: 4px 6px; padding: 6px; font-size: 8.5pt; }
+  .paymentReceiptParticulars { margin-top: 7px; }
+  .paymentReceiptParticulars table,
+  .paymentReceiptAllocations { font-size: 8.5pt; }
+  .paymentReceiptParticulars th,
+  .paymentReceiptAllocations th,
+  .paymentReceiptParticulars td,
+  .paymentReceiptAllocations td { padding: 4px 6px; }
+  .paymentReceiptTotal { padding: 6px; font-size: 9pt; }
+  .paymentReceiptTotal strong { font-size: 12pt; }
+  .paymentReceiptParticulars p { padding: 6px; font-size: 8.5pt; }
+  .paymentReceiptStatus { grid-template-columns: 90px 1fr 90px 1fr; gap: 4px 6px; margin-top: 7px; padding: 6px; font-size: 8.5pt; }
+  .paymentReceiptFooter { margin-top: 12px; font-size: 8.5pt; }
+  .paymentReceiptFooter p { margin-bottom: 10px; }
+  .main:has(.dialogBackdrop:has(:global(#payment-print))) > *:not(.dialogBackdrop) {
+    display: none !important;
+  }
+  .page:has(:global(#payment-print)),
+  .page:has(:global(#payment-print)) .main {
+    position: static;
+    inset: auto;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .dialogBackdrop:has(:global(#payment-print)) {
+    position: static;
+    inset: auto;
+    display: block;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: visible;
+  }
+  .paymentSuccessDialog {
+    position: static;
+    inset: auto;
+    display: block;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .paymentSuccessDialog > h2,
+  .paymentSuccessActions {
+    display: none !important;
   }
   :global(#bill-print) {
     position: static;

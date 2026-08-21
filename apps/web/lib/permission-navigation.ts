@@ -11,6 +11,7 @@ export const transactionNavigation: readonly PermissionNavigationItem[] = [
   { label: "Billing inquiry", href: "/billing-inquiry", permissions: ["BILLING_INQUIRY_VIEW"] },
   { label: "Meters", href: "/transactions/meters", permissions: ["METER_VIEW"] },
   { label: "Meter installations", href: "/transactions/meter-installations", permissions: ["METER_INSTALLATION_VIEW"] },
+  { label: "Reconnection orders", href: "/transactions/reconnection-orders", permissions: ["METER_INSTALLATION_VIEW"] },
   { label: "Disconnection orders", href: "/transactions/disconnection-orders", permissions: ["METER_INSTALLATION_VIEW"] },
   { label: "Service installations", href: "/transactions/service-installations", permissions: ["METER_INSTALLATION_VIEW"] },
   { label: "Meter readings", href: "/transactions/meter-readings", permissions: ["METER_READING_VIEW"] },

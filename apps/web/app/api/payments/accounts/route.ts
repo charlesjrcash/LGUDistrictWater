@@ -9,10 +9,13 @@ export async function GET(request: Request) {
   if (auth.response) return auth.response;
   const params = new URL(request.url).searchParams;
   const search = clean(params.get("search"));
+  const reconnectionMode = params.get("mode") === "reconnection";
   const page = Math.max(1, Number(params.get("page")) || 1);
   const pageSize = Math.min(50, Math.max(10, Number(params.get("pageSize")) || 20));
   const values: unknown[] = [];
-  const where = ["UPPER(COALESCE(cs.status_code,''))='ACTIVE'"];
+  const where = reconnectionMode
+    ? ["UPPER(COALESCE(cs.status_code,''))='DISCONNECTED'", "EXISTS(SELECT 1 FROM reconnection_orders ro WHERE ro.service_account_id=sa.service_account_id AND ro.status='PENDING')"]
+    : ["UPPER(COALESCE(cs.status_code,''))='ACTIVE'"];
   if (search) {
     values.push(`%${search}%`);
     where.push(`(sa.control_no ILIKE $${values.length} OR c.customer_name ILIKE $${values.length} OR COALESCE(m.meter_no,'') ILIKE $${values.length} OR COALESCE(sa.address,'') ILIKE $${values.length})`);
