@@ -19,7 +19,7 @@ const allGroups = [
   {
     label: "Monitoring",
     items: [
-      { id: "operational", label: "Operational Overview" },
+      { id: "operational", label: "Application Overview" },
       { id: "billing", label: "Billing & Collection" },
       { id: "service", label: "Service Operations" },
     ],

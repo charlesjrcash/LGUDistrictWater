@@ -28,14 +28,14 @@ export const transactionModules: readonly TransactionModule[] = [
   },
   { slug: "meters", label: "Meters", category: "operational", permission: "METER_VIEW" },
   {
-    slug: "meter-installations",
-    label: "Meter installations",
+    slug: "service-installations",
+    label: "Service installations",
     category: "operational",
     permission: "METER_INSTALLATION_VIEW",
   },
   {
-    slug: "service-installations",
-    label: "Service installations",
+    slug: "meter-installations",
+    label: "Meter installations",
     category: "operational",
     permission: "METER_INSTALLATION_VIEW",
   },

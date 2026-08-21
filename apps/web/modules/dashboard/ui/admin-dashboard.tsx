@@ -58,7 +58,7 @@ const adminGroups: { label: string; items: { id: Section; label: string }[] }[] 
   {
     label: "Monitoring",
     items: [
-      { id: "operational", label: "Operational Overview" },
+      { id: "operational", label: "Application Overview" },
       { id: "billing", label: "Billing & Collection" },
       { id: "service", label: "Service Operations" },
     ],
@@ -705,7 +705,7 @@ export function AdminDashboard({ data, permissions, systemAdministrator }: {
         {section === "operational" && (
           <>
             <SectionHeader
-              title="Operational Overview"
+              title="Application Overview"
               copy="Current customer, application, account, and metering activity."
             />
             <TransactionLinks transactions={operationalTransactionsForUser} />
@@ -740,9 +740,10 @@ export function AdminDashboard({ data, permissions, systemAdministrator }: {
                 </Link>
               ))}
               {visibleMaintenance
-                .filter((item) => ["/maintenance/billing-periods", "/maintenance/water-rates", "/maintenance/fees"].includes(item.href))
+                .filter((item) => ["/maintenance/billing-periods"].includes(item.href))
                 .map((item) => <Link href={item.href} key={item.href}>{item.label} →</Link>)}
               {permissionSet.has("BILLING_INQUIRY_VIEW") && <Link href="/billing-inquiry">Billing inquiry →</Link>}
+              {permissionSet.has("BILL_EDIT") && <Link href="/transactions/payment">Payments →</Link>}
             </div>
             <MetricGrid
               items={[
