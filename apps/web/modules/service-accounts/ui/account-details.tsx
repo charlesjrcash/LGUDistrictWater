@@ -21,10 +21,13 @@ function formatDate(value: string | null, long = false) {
 export function AccountDetails({
   controlNo,
   canEdit,
+  variant = "page",
 }: {
   controlNo: string;
   canEdit: boolean;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const [account, setAccount] = useState<ServiceAccountDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -66,7 +69,7 @@ export function AccountDetails({
 
   if (loading)
     return (
-      <TransactionShell active="service-accounts">
+      <TransactionShell active="service-accounts" variant={variant}>
         <div className={`${styles.panel} ${styles.loading}`}>
           <div className={styles.skeleton} style={{ height: 220 }} />
         </div>
@@ -74,10 +77,15 @@ export function AccountDetails({
     );
   if (!account)
     return (
-      <TransactionShell active="service-accounts">
-        <Link className={styles.backLink} href="/transactions/service-accounts">
-          ← Service Accounts
-        </Link>
+      <TransactionShell active="service-accounts" variant={variant}>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href="/transactions/service-accounts"
+          >
+            ← Service Accounts
+          </Link>
+        )}
         <div className={`${styles.panel} ${styles.errorState}`}>
           <h2>Service account unavailable</h2>
           <p>{error}</p>
@@ -111,10 +119,15 @@ export function AccountDetails({
     ],
   ];
   return (
-    <TransactionShell active="service-accounts">
-      <Link className={styles.backLink} href="/transactions/service-accounts">
-        ← Service Accounts
-      </Link>
+    <TransactionShell active="service-accounts" variant={variant}>
+      {!isModal && (
+        <Link
+          className={styles.backLink}
+          href="/transactions/service-accounts"
+        >
+          ← Service Accounts
+        </Link>
+      )}
       {notice && <div className={styles.successNotice}>{notice}</div>}
       {error && <div className={styles.notice}>{error}</div>}
       <header className={styles.detailHeader}>

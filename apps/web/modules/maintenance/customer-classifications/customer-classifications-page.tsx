@@ -151,9 +151,27 @@ export default function CustomerClassificationsPage() {
             onSubmit={save}
             className="w-full max-w-xl rounded-xl bg-white p-6 space-y-4"
           >
-            <h2 className="text-xl font-semibold">
-              {id ? "Edit" : "Add"} Customer Classification
-            </h2>
+            <div className="flex items-start justify-between">
+              <h2 className="text-xl font-semibold">
+                {id ? "Edit" : "Add"} Customer Classification
+              </h2>
+              <button
+                type="button"
+                onClick={() => setModal(false)}
+                aria-label="Close"
+                className="-mr-2 -mt-1 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-5 w-5"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
             {formError && <p className="text-red-600">{formError}</p>}
             <input
               required

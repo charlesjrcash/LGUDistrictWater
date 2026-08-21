@@ -242,8 +242,25 @@ export default function SystemModulesPage() {
             onSubmit={save}
             className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl bg-white"
           >
-            <div className="border-b border-gray-200 p-5 text-xl font-semibold">
+            <div className="flex items-start justify-between border-b border-gray-200 p-5 text-xl font-semibold">
               {id ? "Edit Module" : "Add Module"}
+              <button
+                type="button"
+                onClick={() => !saving && setModal(false)}
+                disabled={saving}
+                aria-label="Close"
+                className="-mr-2 -mt-1 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-5 w-5"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
+              </button>
             </div>
             <div className="space-y-4 p-6">
               {formError && (

@@ -264,10 +264,13 @@ export function MeterReadingsPage({
 export function MeterReadingDetail({
   readingId,
   canEdit,
+  variant = "page",
 }: {
   readingId: string;
   canEdit: boolean;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const [item, setItem] = useState<Reading | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
@@ -293,16 +296,21 @@ export function MeterReadingDetail({
   }, [load]);
   if (loading)
     return (
-      <TransactionShell active="meter-readings">
+      <TransactionShell active="meter-readings" variant={variant}>
         <Loading />
       </TransactionShell>
     );
   if (!item)
     return (
-      <TransactionShell active="meter-readings">
-        <Link className={styles.backLink} href="/transactions/meter-readings">
-          ← Meter Readings
-        </Link>
+      <TransactionShell active="meter-readings" variant={variant}>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href="/transactions/meter-readings"
+          >
+            ← Meter Readings
+          </Link>
+        )}
         <Failure message={error} retry={load} />
       </TransactionShell>
     );
@@ -328,10 +336,12 @@ export function MeterReadingDetail({
       ["Consumption", num(item.consumption)],
     ];
   return (
-    <TransactionShell active="meter-readings">
-      <Link className={styles.backLink} href="/transactions/meter-readings">
-        ← Meter Readings
-      </Link>
+    <TransactionShell active="meter-readings" variant={variant}>
+      {!isModal && (
+        <Link className={styles.backLink} href="/transactions/meter-readings">
+          ← Meter Readings
+        </Link>
+      )}
       <header className={styles.detailHeader}>
         <div>
           <div className={styles.applicationNumber}>
@@ -378,7 +388,14 @@ export function MeterReadingDetail({
   );
 }
 
-export function MeterReadingForm({ readingId }: { readingId?: string }) {
+export function MeterReadingForm({
+  readingId,
+  variant = "page",
+}: {
+  readingId?: string;
+  variant?: "page" | "modal";
+}) {
+  const isModal = variant === "modal";
   const editing = Boolean(readingId),
     router = useRouter(),
     [options, setOptions] = useState<Options | null>(null),
@@ -509,18 +526,20 @@ export function MeterReadingForm({ readingId }: { readingId?: string }) {
     }
   }
   return (
-    <TransactionShell active="meter-readings">
+    <TransactionShell active="meter-readings" variant={variant}>
       <div className={styles.formShell}>
-        <Link
-          className={styles.backLink}
-          href={
-            editing
-              ? `/transactions/meter-readings/${readingId}`
-              : "/transactions/meter-readings"
-          }
-        >
-          ← {editing ? `Reading #${readingId}` : "Meter Readings"}
-        </Link>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href={
+              editing
+                ? `/transactions/meter-readings/${readingId}`
+                : "/transactions/meter-readings"
+            }
+          >
+            ← {editing ? `Reading #${readingId}` : "Meter Readings"}
+          </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Billing Operations</div>

@@ -263,7 +263,6 @@ function InstallationDialog({ row, onClose, onSaved }: {
             <div className={styles.dialogHeader}>
                 <div>
                     <h2>{editing ? `Service Installation #${row!.installationId}` : "New Service Installation"}</h2>
-                    <p>{completed ? "Completed installation: core installation fields are protected." : "Fields marked with an asterisk are required."}</p>
                 </div>
                 <button type="button" className={styles.dialogClose} onClick={onClose} aria-label="Close">×</button>
             </div>
@@ -271,7 +270,6 @@ function InstallationDialog({ row, onClose, onSaved }: {
                 {error && <div className={styles.notice}>{error}</div>}
                 {completing && <div className={styles.notice}>Completing this installation will lock Materials Used from further editing. Confirm the installation date, meter, installer, and materials before saving.</div>}
                 <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Service Account</h2>
                     {account ? <div className={styles.detailItems}>
                         <div className={styles.detailItem}><span>Control No.</span><strong>{account.controlNo}</strong></div>
                         <div className={styles.detailItem}><span>Customer</span><strong>{account.customerName}</strong></div>

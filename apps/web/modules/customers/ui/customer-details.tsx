@@ -18,7 +18,14 @@ function formatDate(value: string) {
     timeZone: "UTC",
   }).format(new Date(`${value}T00:00:00Z`));
 }
-export function CustomerDetails({ customerNo }: { customerNo: string }) {
+export function CustomerDetails({
+  customerNo,
+  variant = "page",
+}: {
+  customerNo: string;
+  variant?: "page" | "modal";
+}) {
+  const isModal = variant === "modal";
   const [customer, setCustomer] = useState<CustomerDetail | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [loading, setLoading] = useState(true);
@@ -60,7 +67,7 @@ export function CustomerDetails({ customerNo }: { customerNo: string }) {
   }, [customerNo, load]);
   if (loading)
     return (
-      <TransactionShell active="customers">
+      <TransactionShell active="customers" variant={variant}>
         <div className={`${styles.panel} ${styles.loading}`}>
           <div className={styles.skeleton} style={{ height: 220 }} />
         </div>
@@ -68,10 +75,12 @@ export function CustomerDetails({ customerNo }: { customerNo: string }) {
     );
   if (!customer)
     return (
-      <TransactionShell active="customers">
-        <Link className={styles.backLink} href="/transactions/customers">
-          ← Customers
-        </Link>
+      <TransactionShell active="customers" variant={variant}>
+        {!isModal && (
+          <Link className={styles.backLink} href="/transactions/customers">
+            ← Customers
+          </Link>
+        )}
         <div className={`${styles.panel} ${styles.errorState}`}>
           <h2>Customer unavailable</h2>
           <p>{error}</p>
@@ -95,10 +104,12 @@ export function CustomerDetails({ customerNo }: { customerNo: string }) {
     ["Status", customer.status],
   ];
   return (
-    <TransactionShell active="customers">
-      <Link className={styles.backLink} href="/transactions/customers">
-        ← Customers
-      </Link>
+    <TransactionShell active="customers" variant={variant}>
+      {!isModal && (
+        <Link className={styles.backLink} href="/transactions/customers">
+          ← Customers
+        </Link>
+      )}
       {notice && <div className={styles.successNotice}>{notice}</div>}
       <header className={styles.detailHeader}>
         <div>
@@ -108,12 +119,6 @@ export function CustomerDetails({ customerNo }: { customerNo: string }) {
           </div>
           <p className={styles.detailCustomer}>{customer.customerNo}</p>
         </div>
-        <Link
-          className={styles.secondaryButton}
-          href={`/transactions/customers/${encodeURIComponent(customer.customerNo)}/edit`}
-        >
-          Edit Customer
-        </Link>
       </header>
       <div
         className={styles.panel}

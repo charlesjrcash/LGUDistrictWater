@@ -10,6 +10,8 @@ import type {
 } from "@/modules/service-applications/types";
 import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
 import styles from "@/modules/transactions/ui/transactions.module.css";
+import { CustomerForm } from "@/modules/customers/ui/customer-form";
+import { Modal } from "@/modules/shared/ui/modal";
 
 function localDate() {
   const now = new Date();
@@ -40,12 +42,15 @@ function CustomerCard({ customer }: { customer: CustomerSummary }) {
 export function ApplicationForm({
   applicationNo,
   initialCustomerNo,
+  variant = "page",
 }: {
   applicationNo?: string;
   initialCustomerNo?: string;
+  variant?: "page" | "modal";
 }) {
   const router = useRouter();
   const editing = Boolean(applicationNo);
+  const isModal = variant === "modal";
   const [types, setTypes] = useState<ReferenceOption[]>([]);
   const [connectionTypes, setConnectionTypes] = useState<ReferenceOption[]>([]);
   const [meterSizes, setMeterSizes] = useState<ReferenceOption[]>([]);
@@ -64,6 +69,7 @@ export function ApplicationForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [addCustomerOpen, setAddCustomerOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -148,6 +154,28 @@ export function ApplicationForm({
       cancelled = true;
     };
   }, [editing, initialCustomerNo]);
+
+  async function selectCustomerByNo(newCustomerNo: string) {
+    setAddCustomerOpen(false);
+    try {
+      const response = await fetch(
+        `/api/service-applications/customers?q=${encodeURIComponent(newCustomerNo)}`,
+      );
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.message);
+      const match = (body.data as CustomerSummary[]).find(
+        (customer) => customer.customerNo === newCustomerNo,
+      );
+      if (match) setSelectedCustomer(match);
+      else setError("The newly created customer could not be found.");
+    } catch (loadError) {
+      setError(
+        loadError instanceof Error
+          ? loadError.message
+          : "Unable to select the customer.",
+      );
+    }
+  }
 
   useEffect(() => {
     if (editing || customerQuery.trim().length < 2) return;
@@ -248,18 +276,20 @@ export function ApplicationForm({
   }
 
   return (
-    <TransactionShell>
+    <TransactionShell variant={variant}>
       <div className={styles.formShell}>
-        <Link
-          href={
-            editing && applicationNo
-              ? `/transactions/service-applications/${encodeURIComponent(applicationNo)}`
-              : "/transactions/service-applications"
-          }
-          className={styles.backLink}
-        >
-          ← {editing ? applicationNo : "Service Applications"}
-        </Link>
+        {!isModal && (
+          <Link
+            href={
+              editing && applicationNo
+                ? `/transactions/service-applications/${encodeURIComponent(applicationNo)}`
+                : "/transactions/service-applications"
+            }
+            className={styles.backLink}
+          >
+            ← {editing ? applicationNo : "Service Applications"}
+          </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Service Applications</div>
@@ -399,12 +429,20 @@ export function ApplicationForm({
                     )}
                     <p className={styles.muted}>
                       Customer not listed?{" "}
-                      <Link
-                        href="/transactions/customers/new?returnTo=/transactions/service-applications/new"
+                      <button
+                        type="button"
                         className={styles.viewLink}
+                        style={{
+                          background: "none",
+                          border: 0,
+                          padding: 0,
+                          font: "inherit",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setAddCustomerOpen(true)}
                       >
                         ＋ Add New Customer
-                      </Link>
+                      </button>
                     </p>
                   </div>
                 )}
@@ -569,6 +607,11 @@ export function ApplicationForm({
           )}
         </form>
       </div>
+      {addCustomerOpen && (
+        <Modal wide onClose={() => setAddCustomerOpen(false)}>
+          <CustomerForm variant="modal" onSuccess={selectCustomerByNo} />
+        </Modal>
+      )}
     </TransactionShell>
   );
 }

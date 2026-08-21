@@ -643,7 +643,7 @@ export default function WaterRatesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-3xl rounded-xl bg-white shadow-xl">
             {/* HEADER */}
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
+            <div className="flex items-start justify-between border-b border-gray-200 px-6 py-5">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
                   {editingRateId ? "Edit Water Rate" : "Add Water Rate"}
@@ -660,9 +660,18 @@ export default function WaterRatesPage() {
                 type="button"
                 onClick={() => setShowModal(false)}
                 disabled={saving}
-                className="rounded-lg px-3 py-2 text-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                aria-label="Close"
+                className="-mr-2 -mt-1 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
               >
-                ×
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-5 w-5"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
               </button>
             </div>
 

@@ -41,9 +41,12 @@ function DetailItems({ items }: { items: [string, string][] }) {
 
 export function ApplicationDetails({
   applicationNo,
+  variant = "page",
 }: {
   applicationNo: string;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const [application, setApplication] =
     useState<ServiceApplicationDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -125,13 +128,15 @@ export function ApplicationDetails({
 
   if (loading)
     return (
-      <TransactionShell>
-        <Link
-          href="/transactions/service-applications"
-          className={styles.backLink}
-        >
-          ← Service Applications
-        </Link>
+      <TransactionShell variant={variant}>
+        {!isModal && (
+          <Link
+            href="/transactions/service-applications"
+            className={styles.backLink}
+          >
+            ← Service Applications
+          </Link>
+        )}
         <div className={styles.panel}>
           <div className={styles.loading}>
             <div
@@ -145,13 +150,15 @@ export function ApplicationDetails({
     );
   if (error && !application)
     return (
-      <TransactionShell>
-        <Link
-          href="/transactions/service-applications"
-          className={styles.backLink}
-        >
-          ← Service Applications
-        </Link>
+      <TransactionShell variant={variant}>
+        {!isModal && (
+          <Link
+            href="/transactions/service-applications"
+            className={styles.backLink}
+          >
+            ← Service Applications
+          </Link>
+        )}
         <div className={`${styles.panel} ${styles.errorState}`}>
           <h2>Application unavailable</h2>
           <p>{error}</p>
@@ -199,13 +206,15 @@ export function ApplicationDetails({
   ];
 
   return (
-    <TransactionShell>
-      <Link
-        href="/transactions/service-applications"
-        className={styles.backLink}
-      >
-        ← Service Applications
-      </Link>
+    <TransactionShell variant={variant}>
+      {!isModal && (
+        <Link
+          href="/transactions/service-applications"
+          className={styles.backLink}
+        >
+          ← Service Applications
+        </Link>
+      )}
       {notice && (
         <div className={styles.successNotice} role="status">
           {notice}

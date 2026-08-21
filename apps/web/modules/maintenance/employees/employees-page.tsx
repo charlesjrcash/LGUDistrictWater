@@ -323,14 +323,33 @@ export default function EmployeesPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl">
-            <div className="border-b border-gray-200 px-6 py-5">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {editingId ? "Edit Employee" : "Add Employee"}
-              </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Fields marked with <span className="text-red-600">*</span> are
-                required.
-              </p>
+            <div className="flex items-start justify-between border-b border-gray-200 px-6 py-5">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {editingId ? "Edit Employee" : "Add Employee"}
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  Fields marked with <span className="text-red-600">*</span>{" "}
+                  are required.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={saving}
+                aria-label="Close"
+                className="-mr-2 -mt-1 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-5 w-5"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
+              </button>
             </div>
             <form onSubmit={save}>
               <div className="space-y-5 px-6 py-6">
