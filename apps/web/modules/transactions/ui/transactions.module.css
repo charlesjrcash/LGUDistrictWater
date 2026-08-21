@@ -627,6 +627,11 @@
   max-height: calc(100vh - 32px);
   overflow-y: auto;
 }
+.disconnectionReportDialog {
+  width: min(820px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
 .dialog h2 {
   margin: 0 0 9px;
   font-size: 20px;
@@ -857,6 +862,19 @@
 }
 
 @media print {
+  .main:has(:global(#disconnection-order-print)) > *:not(.dialogBackdrop) { display: none !important; }
+  .dialogBackdrop:has(:global(#disconnection-order-print)) { position: static; display: block; height: auto; max-height: none; padding: 0; background: transparent; overflow: visible; }
+  .dialogBackdrop:has(:global(#disconnection-order-print)) > *:not(.disconnectionReportDialog) { display: none !important; }
+  .disconnectionReportDialog { position: static; display: block; width: auto; height: auto; max-height: none; margin: 0; padding: 0; background: transparent; overflow: visible; box-shadow: none; }
+  .disconnectionReportDialog > h2, .disconnectionReportDialog > .dialogActions { display: none !important; }
+  :global(#disconnection-order-print), :global(#disconnection-order-print) * { visibility: visible; }
+  :global(#disconnection-order-print) { display: block; position: static; width: 100%; height: auto; max-height: none; margin: 0; padding: 0; color: #000; overflow: visible; }
+  :global(#disconnection-order-print) .section { margin: 5px 0 0; padding: 5px; break-inside: avoid; page-break-inside: avoid; }
+  :global(#disconnection-order-print) .sectionTitle { margin: 3px 0; font-size: 10pt; }
+  :global(#disconnection-order-print) .detailItems { gap: 4px 12px; }
+  :global(#disconnection-order-print) .detailItem span { font-size: 8pt; }
+  :global(#disconnection-order-print) .detailItem strong { font-size: 9pt; }
+  .page:has(:global(#disconnection-order-print)), .page:has(:global(#disconnection-order-print)) .main, .dialogBackdrop:has(:global(#disconnection-order-print)), .disconnectionReportDialog { visibility: visible; width: auto; min-height: 0; height: auto; margin: 0; padding: 0; overflow: visible; }
   .main:has(:global(#service-installation-print)) > *:not(.dialogBackdrop) {
     display: none !important;
   }

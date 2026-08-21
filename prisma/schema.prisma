@@ -80,7 +80,6 @@ model users {
   customers_customers_created_byTousers                                   customers[]                  @relation("customers_created_byTousers")
   customers_customers_updated_byTousers                                   customers[]                  @relation("customers_updated_byTousers")
   disconnection_orders_disconnection_orders_created_byTousers             disconnection_orders[]       @relation("disconnection_orders_created_byTousers")
-  disconnection_orders_disconnection_orders_performed_byTousers           disconnection_orders[]       @relation("disconnection_orders_performed_byTousers")
   document_attachments                                                    document_attachments[]
   meter_readings_meter_readings_created_byTousers                         meter_readings[]             @relation("meter_readings_created_byTousers")
   meter_readings_meter_readings_updated_byTousers                         meter_readings[]             @relation("meter_readings_updated_byTousers")
@@ -153,7 +152,6 @@ model users {
   payments_payments_cashier_idTousers                                     payments[]                   @relation("payments_cashier_idTousers")
   payments_payments_created_byTousers                                     payments[]                   @relation("payments_created_byTousers")
   reconnection_orders_reconnection_orders_created_byTousers               reconnection_orders[]        @relation("reconnection_orders_created_byTousers")
-  reconnection_orders_reconnection_orders_performed_byTousers             reconnection_orders[]        @relation("reconnection_orders_performed_byTousers")
   service_accounts_service_accounts_created_byTousers                     service_accounts[]           @relation("service_accounts_created_byTousers")
   service_accounts_service_accounts_updated_byTousers                     service_accounts[]           @relation("service_accounts_updated_byTousers")
   service_applications_service_applications_created_byTousers             service_applications[]       @relation("service_applications_created_byTousers")
@@ -327,7 +325,7 @@ model disconnection_orders {
   created_at                                     DateTime                @default(now()) @db.Timestamp(6)
   updated_at                                     DateTime?               @db.Timestamp(6)
   users_disconnection_orders_created_byTousers   users?                  @relation("disconnection_orders_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_created_by")
-  users_disconnection_orders_performed_byTousers users?                  @relation("disconnection_orders_performed_byTousers", fields: [performed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_performed_by")
+  mt_employee_disconnection_orders_performed_byTomt_employee mt_employee? @relation("disconnection_orders_performed_byTomt_employee", fields: [performed_by], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_performed_by")
   mt_disconnection_reason                        mt_disconnection_reason @relation(fields: [reason_id], references: [reason_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_reason")
   service_accounts                               service_accounts        @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_disconnection_service")
 
@@ -642,6 +640,8 @@ model mt_employee {
   service_installations_service_installations_inspector_idTomt_employee service_installations[] @relation("service_installations_inspector_idTomt_employee")
   service_installations_service_installations_installer_idTomt_employee service_installations[] @relation("service_installations_installer_idTomt_employee")
   meter_installations_meter_installations_performed_byTomt_employee     meter_installations[] @relation("meter_installations_performed_byTomt_employee")
+  disconnection_orders_disconnection_orders_performed_byTomt_employee   disconnection_orders[] @relation("disconnection_orders_performed_byTomt_employee")
+  reconnection_orders_reconnection_orders_performed_byTomt_employee     reconnection_orders[] @relation("reconnection_orders_performed_byTomt_employee")
   mt_meter_reader                     mt_meter_reader[]
 }
 
@@ -1037,7 +1037,7 @@ model reconnection_orders {
   created_at                                    DateTime         @default(now()) @db.Timestamp(6)
   updated_at                                    DateTime?        @db.Timestamp(6)
   users_reconnection_orders_created_byTousers   users?           @relation("reconnection_orders_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_created_by")
-  users_reconnection_orders_performed_byTousers users?           @relation("reconnection_orders_performed_byTousers", fields: [performed_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_performed_by")
+  mt_employee_reconnection_orders_performed_byTomt_employee mt_employee? @relation("reconnection_orders_performed_byTomt_employee", fields: [performed_by], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_performed_by")
   service_accounts                              service_accounts @relation(fields: [service_account_id], references: [service_account_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reconnection_service")
 
   @@index([service_account_id], map: "idx_reconnection_service")
