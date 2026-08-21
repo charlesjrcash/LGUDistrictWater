@@ -182,11 +182,30 @@ export default function ReadingStatusesPage() {
           <div className="w-full max-w-2xl rounded-xl bg-white">
             <form onSubmit={save}>
               <div className="space-y-5 px-6 py-6">
-                <h2 className="text-xl font-semibold">
-                  {editingReadingStatusId
-                    ? "Edit Reading Status"
-                    : "Add Reading Status"}
-                </h2>
+                <div className="flex items-start justify-between">
+                  <h2 className="text-xl font-semibold">
+                    {editingReadingStatusId
+                      ? "Edit Reading Status"
+                      : "Add Reading Status"}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => !saving && setShowModal(false)}
+                    disabled={saving}
+                    aria-label="Close"
+                    className="-mr-2 -mt-1 rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="h-5 w-5"
+                    >
+                      <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
                 {formError && (
                   <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                     {formError}

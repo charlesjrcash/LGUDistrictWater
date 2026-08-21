@@ -20,12 +20,17 @@ type Duplicate = {
 export function CustomerForm({
   customerNo,
   returnTo,
+  variant = "page",
+  onSuccess,
 }: {
   customerNo?: string;
   returnTo?: string;
+  variant?: "page" | "modal";
+  onSuccess?: (customerNo: string) => void;
 }) {
   const router = useRouter();
   const editing = Boolean(customerNo);
+  const isModal = variant === "modal";
   const [barangays, setBarangays] = useState<CustomerOption[]>([]);
   const [puroks, setPuroks] = useState<PurokOption[]>([]);
   const [form, setForm] = useState({
@@ -139,6 +144,10 @@ export function CustomerForm({
         throw new Error(body.message || "Unable to save customer.");
       }
       const savedNo = editing ? customerNo! : body.data.customerNo;
+      if (onSuccess) {
+        onSuccess(savedNo);
+        return;
+      }
       const safeReturn = returnTo?.startsWith(
         "/transactions/service-applications/new",
       )
@@ -162,18 +171,20 @@ export function CustomerForm({
     (item) => item.barangayCode === form.barangayCode,
   );
   return (
-    <TransactionShell active="customers">
+    <TransactionShell active="customers" variant={variant}>
       <div className={styles.formShell}>
-        <Link
-          className={styles.backLink}
-          href={
-            editing
-              ? `/transactions/customers/${encodeURIComponent(customerNo!)}`
-              : "/transactions/customers"
-          }
-        >
-          ← {editing ? customerNo : "Customers"}
-        </Link>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href={
+              editing
+                ? `/transactions/customers/${encodeURIComponent(customerNo!)}`
+                : "/transactions/customers"
+            }
+          >
+            ← {editing ? customerNo : "Customers"}
+          </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Customer Management</div>

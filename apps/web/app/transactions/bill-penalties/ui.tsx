@@ -155,24 +155,32 @@ export function BillPenaltiesPage() {
 }
 export function BillPenaltyRecord({
   billPenaltyId,
+  variant = "page",
 }: {
   billPenaltyId: string;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const { data, error, loading, load } = useData<Penalty>(
     `/api/bill-penalties/${encodeURIComponent(billPenaltyId)}`,
   );
   if (loading)
     return (
-      <TransactionShell>
+      <TransactionShell variant={variant}>
         <Loading />
       </TransactionShell>
     );
   if (!data)
     return (
-      <TransactionShell>
-        <Link className={styles.backLink} href="/transactions/bill-penalties">
-          ← Bill Penalties
-        </Link>
+      <TransactionShell variant={variant}>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href="/transactions/bill-penalties"
+          >
+            ← Bill Penalties
+          </Link>
+        )}
         <Failure message={error} retry={load} />
       </TransactionShell>
     );
@@ -198,10 +206,12 @@ export function BillPenaltyRecord({
     </section>
   );
   return (
-    <TransactionShell>
-      <Link className={styles.backLink} href="/transactions/bill-penalties">
-        ← Bill Penalties
-      </Link>
+    <TransactionShell variant={variant}>
+      {!isModal && (
+        <Link className={styles.backLink} href="/transactions/bill-penalties">
+          ← Bill Penalties
+        </Link>
+      )}
       <header className={styles.detailHeader}>
         <div>
           <h1>Bill Penalty #{data.billPenaltyId}</h1>

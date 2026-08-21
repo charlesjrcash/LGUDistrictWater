@@ -167,22 +167,31 @@ export function BillDetailsPage() {
     </TransactionShell>
   );
 }
-export function BillDetailRecord({ billDetailId }: { billDetailId: string }) {
+export function BillDetailRecord({
+  billDetailId,
+  variant = "page",
+}: {
+  billDetailId: string;
+  variant?: "page" | "modal";
+}) {
+  const isModal = variant === "modal";
   const { data, error, loading, load } = useData<Detail>(
     `/api/bill-details/${encodeURIComponent(billDetailId)}`,
   );
   if (loading)
     return (
-      <TransactionShell>
+      <TransactionShell variant={variant}>
         <Loading />
       </TransactionShell>
     );
   if (!data)
     return (
-      <TransactionShell>
-        <Link className={styles.backLink} href="/transactions/bill-details">
-          ← Bill Details
-        </Link>
+      <TransactionShell variant={variant}>
+        {!isModal && (
+          <Link className={styles.backLink} href="/transactions/bill-details">
+            ← Bill Details
+          </Link>
+        )}
         <Failure message={error} retry={load} />
       </TransactionShell>
     );
@@ -208,10 +217,12 @@ export function BillDetailRecord({ billDetailId }: { billDetailId: string }) {
     </section>
   );
   return (
-    <TransactionShell>
-      <Link className={styles.backLink} href="/transactions/bill-details">
-        ← Bill Details
-      </Link>
+    <TransactionShell variant={variant}>
+      {!isModal && (
+        <Link className={styles.backLink} href="/transactions/bill-details">
+          ← Bill Details
+        </Link>
+      )}
       <header className={styles.detailHeader}>
         <div>
           <h1>Bill Detail #{data.billDetailId}</h1>

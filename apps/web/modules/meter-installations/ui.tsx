@@ -284,10 +284,13 @@ function Skeleton() {
 export function InstallationDetail({
   installationId,
   canEdit,
+  variant = "page",
 }: {
   installationId: string;
   canEdit: boolean;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const [item, setItem] = useState<Installation | null>(null),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -330,7 +333,7 @@ export function InstallationDetail({
   }, [installationId]);
   if (loading)
     return (
-      <TransactionShell active="meter-installations">
+      <TransactionShell active="meter-installations" variant={variant}>
         <div className={`${styles.panel} ${styles.loading}`}>
           <div className={styles.skeleton} style={{ height: 220 }} />
         </div>
@@ -338,13 +341,15 @@ export function InstallationDetail({
     );
   if (!item)
     return (
-      <TransactionShell active="meter-installations">
-        <Link
-          className={styles.backLink}
-          href="/transactions/meter-installations"
-        >
-          ← Meter Installations
-        </Link>
+      <TransactionShell active="meter-installations" variant={variant}>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href="/transactions/meter-installations"
+          >
+            ← Meter Installations
+          </Link>
+        )}
         <div className={`${styles.panel} ${styles.errorState}`}>
           <h2>Installation unavailable</h2>
           <p>{error}</p>
@@ -374,13 +379,15 @@ export function InstallationDetail({
     ["Serial Number", item.serialNo || "—"],
   ];
   return (
-    <TransactionShell active="meter-installations">
-      <Link
-        className={styles.backLink}
-        href="/transactions/meter-installations"
-      >
-        ← Meter Installations
-      </Link>
+    <TransactionShell active="meter-installations" variant={variant}>
+      {!isModal && (
+        <Link
+          className={styles.backLink}
+          href="/transactions/meter-installations"
+        >
+          ← Meter Installations
+        </Link>
+      )}
       {notice && <div className={styles.successNotice}>{notice}</div>}
       <header className={styles.detailHeader}>
         <div>
@@ -497,11 +504,14 @@ export function InstallationDetail({
 
 export function InstallationForm({
   installationId,
+  variant = "page",
 }: {
   installationId?: string;
+  variant?: "page" | "modal";
 }) {
   const editing = Boolean(installationId),
     router = useRouter();
+  const isModal = variant === "modal";
   const [options, setOptions] = useState<Options | null>(null);
   const [form, setForm] = useState({
     serviceAccountId: "",
@@ -622,19 +632,23 @@ export function InstallationForm({
         meter.serviceAccountId === form.serviceAccountId,
     ) || [];
   return (
-    <TransactionShell active="meter-installations">
+    <TransactionShell active="meter-installations" variant={variant}>
       <div className={styles.formShell}>
-        <Link
-          className={styles.backLink}
-          href={
-            editing
-              ? `/transactions/meter-installations/${installationId}`
-              : "/transactions/meter-installations"
-          }
-        >
-          ←{" "}
-          {editing ? `Installation #${installationId}` : "Meter Installations"}
-        </Link>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href={
+              editing
+                ? `/transactions/meter-installations/${installationId}`
+                : "/transactions/meter-installations"
+            }
+          >
+            ←{" "}
+            {editing
+              ? `Installation #${installationId}`
+              : "Meter Installations"}
+          </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Asset Management</div>

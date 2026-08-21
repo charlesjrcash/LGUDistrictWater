@@ -294,10 +294,13 @@ export function BillsPage({
 export function BillDetail({
   billNo,
   canEdit,
+  variant = "page",
 }: {
   billNo: string;
   canEdit: boolean;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const [penaltyModal, setPenaltyModal] = useState<string | null>(null);
   const [adjustmentModal, setAdjustmentModal] = useState<string | null>(null);
   const [approval, setApproval] = useState<NonNullable<Bill["adjustments"]>[number] | null>(null);
@@ -310,16 +313,18 @@ export function BillDetail({
   } = useFetch<Bill>(`/api/bills/${encodeURIComponent(billNo)}`);
   if (loading)
     return (
-      <TransactionShell>
+      <TransactionShell variant={variant}>
         <Loading />
       </TransactionShell>
     );
   if (!item)
     return (
-      <TransactionShell>
+      <TransactionShell variant={variant}>
+        {!isModal && (
         <Link className={styles.backLink} href="/transactions/bills">
           â† Bills
         </Link>
+        )}
         <Failure message={error} retry={load} />
       </TransactionShell>
     );
@@ -345,10 +350,12 @@ export function BillDetail({
     </section>
   );
   return (
-    <TransactionShell>
+    <TransactionShell variant={variant}>
+      {!isModal && (
       <Link className={styles.backLink} href="/transactions/bills">
         â† Bills
       </Link>
+      )}
       <header className={styles.detailHeader}>
         <div>
           <div className={styles.applicationNumber}>
@@ -479,8 +486,15 @@ export function BillDetail({
     </TransactionShell>
   );
 }
-export function BillForm({ billNo }: { billNo?: string }) {
+export function BillForm({
+  billNo,
+  variant = "page",
+}: {
+  billNo?: string;
+  variant?: "page" | "modal";
+}) {
   const editing = Boolean(billNo),
+    isModal = variant === "modal",
     router = useRouter(),
     options = useFetch<Options>("/api/bills/options"),
     existing = useFetch<Bill>(
@@ -585,13 +599,13 @@ export function BillForm({ billNo }: { billNo?: string }) {
   );
   if (options.loading || (editing && existing.loading))
     return (
-      <TransactionShell>
+      <TransactionShell variant={variant}>
         <Loading />
       </TransactionShell>
     );
   if (options.error || (editing && existing.error))
     return (
-      <TransactionShell>
+      <TransactionShell variant={variant}>
         <Failure
           message={options.error || existing.error}
           retry={options.load}
@@ -599,8 +613,9 @@ export function BillForm({ billNo }: { billNo?: string }) {
       </TransactionShell>
     );
   return (
-    <TransactionShell>
+    <TransactionShell variant={variant}>
       <div className={styles.formShell}>
+        {!isModal && (
         <Link
           className={styles.backLink}
           href={
@@ -611,6 +626,7 @@ export function BillForm({ billNo }: { billNo?: string }) {
         >
           â† {editing ? "Bill" : "Bills"}
         </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Billing Operations</div>

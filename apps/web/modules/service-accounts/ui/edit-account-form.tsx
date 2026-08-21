@@ -7,7 +7,14 @@ import type { ServiceAccountDetail } from "@/modules/service-accounts/types";
 import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
 import styles from "@/modules/transactions/ui/transactions.module.css";
 
-export function EditAccountForm({ controlNo }: { controlNo: string }) {
+export function EditAccountForm({
+  controlNo,
+  variant = "page",
+}: {
+  controlNo: string;
+  variant?: "page" | "modal";
+}) {
+  const isModal = variant === "modal";
   const router = useRouter();
   const [account, setAccount] = useState<ServiceAccountDetail | null>(null);
   const [options, setOptions] = useState<{
@@ -123,14 +130,16 @@ export function EditAccountForm({ controlNo }: { controlNo: string }) {
     }
   }
   return (
-    <TransactionShell active="service-accounts">
+    <TransactionShell active="service-accounts" variant={variant}>
       <div className={styles.formShell}>
-        <Link
-          className={styles.backLink}
-          href={`/transactions/service-accounts/${encodeURIComponent(controlNo)}`}
-        >
-          ← {controlNo}
-        </Link>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href={`/transactions/service-accounts/${encodeURIComponent(controlNo)}`}
+          >
+            ← {controlNo}
+          </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Service Accounts</div>

@@ -312,10 +312,13 @@ function MeterTableSkeleton() {
 export function MeterDetail({
   meterNo,
   canEdit,
+  variant = "page",
 }: {
   meterNo: string;
   canEdit: boolean;
+  variant?: "page" | "modal";
 }) {
+  const isModal = variant === "modal";
   const [meter, setMeter] = useState<Meter | null>(null),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -359,7 +362,7 @@ export function MeterDetail({
   }, [meterNo]);
   if (loading)
     return (
-      <TransactionShell active="meters">
+      <TransactionShell active="meters" variant={variant}>
         <div className={`${styles.panel} ${styles.loading}`}>
           <div className={styles.skeleton} style={{ height: 220 }} />
         </div>
@@ -367,10 +370,12 @@ export function MeterDetail({
     );
   if (!meter)
     return (
-      <TransactionShell active="meters">
-        <Link className={styles.backLink} href="/transactions/meters">
-          ← Meters
-        </Link>
+      <TransactionShell active="meters" variant={variant}>
+        {!isModal && (
+          <Link className={styles.backLink} href="/transactions/meters">
+            ← Meters
+          </Link>
+        )}
         <div className={`${styles.panel} ${styles.errorState}`}>
           <h2>Meter unavailable</h2>
           <p>{error}</p>
@@ -400,10 +405,12 @@ export function MeterDetail({
     ["Date Connected", formatDate(meter.dateConnected)],
   ];
   return (
-    <TransactionShell active="meters">
-      <Link className={styles.backLink} href="/transactions/meters">
-        ← Meters
-      </Link>
+    <TransactionShell active="meters" variant={variant}>
+      {!isModal && (
+        <Link className={styles.backLink} href="/transactions/meters">
+          ← Meters
+        </Link>
+      )}
       {notice && <div className={styles.successNotice}>{notice}</div>}
       <header className={styles.detailHeader}>
         <div>
@@ -474,8 +481,15 @@ export function MeterDetail({
   );
 }
 
-export function MeterForm({ meterNo }: { meterNo?: string }) {
+export function MeterForm({
+  meterNo,
+  variant = "page",
+}: {
+  meterNo?: string;
+  variant?: "page" | "modal";
+}) {
   const isEditing = Boolean(meterNo),
+    isModal = variant === "modal",
     router = useRouter();
   const [options, setOptions] = useState<Options | null>(null),
     [meter, setMeter] = useState<Meter | null>(null);
@@ -617,18 +631,20 @@ export function MeterForm({ meterNo }: { meterNo?: string }) {
     ),
     fieldsDisabled = loading || submitting;
   return (
-    <TransactionShell active="meters">
+    <TransactionShell active="meters" variant={variant}>
       <div className={styles.formShell}>
-        <Link
-          className={styles.backLink}
-          href={
-            isEditing
-              ? `/transactions/meters/${encodeURIComponent(meterNo!)}`
-              : "/transactions/meters"
-          }
-        >
-          ← {isEditing ? meterNo : "Meters"}
-        </Link>
+        {!isModal && (
+          <Link
+            className={styles.backLink}
+            href={
+              isEditing
+                ? `/transactions/meters/${encodeURIComponent(meterNo!)}`
+                : "/transactions/meters"
+            }
+          >
+            ← {isEditing ? meterNo : "Meters"}
+          </Link>
+        )}
         <div className={styles.headingRow}>
           <div>
             <div className={styles.eyebrow}>Asset Management</div>

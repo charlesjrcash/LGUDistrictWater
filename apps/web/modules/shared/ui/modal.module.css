@@ -1,0 +1,53 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.45);
+  padding: 40px 16px;
+}
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+}
+.dialog.wide {
+  max-width: 1040px;
+}
+.closeButton {
+  position: sticky;
+  float: right;
+  top: 14px;
+  right: 14px;
+  margin: 14px 14px -40px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #52657f;
+  cursor: pointer;
+  z-index: 1;
+}
+.closeButton:hover {
+  background: #e2e8f0;
+  color: #172b34;
+}
+.closeButton svg {
+  width: 16px;
+  height: 16px;
+}
+.content {
+  padding: 8px 0 0;
+}
