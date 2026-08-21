@@ -34,6 +34,12 @@ export const transactionModules: readonly TransactionModule[] = [
     permission: "METER_INSTALLATION_VIEW",
   },
   {
+    slug: "service-installations",
+    label: "Service installations",
+    category: "operational",
+    permission: "METER_INSTALLATION_VIEW",
+  },
+  {
     slug: "meter-readings",
     label: "Meter readings",
     category: "operational",

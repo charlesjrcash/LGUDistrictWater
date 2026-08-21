@@ -12,6 +12,7 @@ export function TransactionShell({
     | "service-accounts"
     | "meters"
     | "meter-installations"
+    | "service-installations"
     | "meter-readings";
 }) {
   return (
