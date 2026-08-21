@@ -12,7 +12,7 @@
 .dialog {
   position: relative;
   width: 100%;
-  max-width: 720px;
+  max-width: 560px;
   max-height: calc(100vh - 80px);
   overflow-y: auto;
   border-radius: 12px;
@@ -20,7 +20,7 @@
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
 }
 .dialog.wide {
-  max-width: 1040px;
+  max-width: 720px;
 }
 .closeButton {
   position: sticky;
@@ -49,5 +49,5 @@
   height: 16px;
 }
 .content {
-  padding: 8px 0 0;
+  padding: 16px 28px 28px;
 }

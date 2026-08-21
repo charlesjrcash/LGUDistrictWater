@@ -355,7 +355,7 @@ export function MeterReadingDetail({
             </span>
           </p>
         </div>
-        {canEdit && (
+        {canEdit && !isModal && (
           <Link
             className={styles.secondaryButton}
             href={`/transactions/meter-readings/${item.readingId}/edit`}
@@ -364,8 +364,7 @@ export function MeterReadingDetail({
           </Link>
         )}
       </header>
-      <div className={styles.detailGrid}>
-        <div>
+      <div>
           <Card title="Reading Information" values={info} />
           <Card title="Service Account" values={account} />
           <Card title="Meter" values={meter} />
@@ -382,7 +381,6 @@ export function MeterReadingDetail({
               ["Updated At", time(item.updatedAt)],
             ]}
           />
-        </div>
       </div>
     </TransactionShell>
   );

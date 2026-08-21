@@ -48,16 +48,56 @@ const billingPermissions = transactionNavigation
   .filter((item) => item.permissions.some((permission) => permission.startsWith("BILL")))
   .flatMap((item) => item.permissions);
 
-function MenuIcon() {
+function Icon({
+  name,
+}: {
+  name:
+    | "overview"
+    | "monitor"
+    | "billing"
+    | "service"
+    | "health"
+    | "warning"
+    | "data"
+    | "users"
+    | "activity";
+}) {
+  const paths = {
+    overview: "M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z",
+    monitor: "M4 19V9m5 10V5m5 14v-7m5 7V3",
+    billing: "M4 5h16v14H4zM7 9h10M7 13h4",
+    service: "M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3",
+    health: "M12 21s8-4 8-10V5l-8-3-8 3v6c0 6 8 10 8 10zm-3-9 2 2 4-5",
+    warning: "M12 3 2 21h20L12 3zm0 6v5m0 3h.01",
+    data: "M4 6c0-2 16-2 16 0s-16 2-16 0zm0 0v6c0 2 16 2 16 0V6m-16 6v6c0 2 16 2 16 0v-6",
+    users:
+      "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
+    activity: "M3 12h4l2-6 4 12 2-6h6",
+  };
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="4" y="4" width="6" height="6" rx="1" />
-      <rect x="14" y="4" width="6" height="6" rx="1" />
-      <rect x="4" y="14" width="6" height="6" rx="1" />
-      <rect x="14" y="14" width="6" height="6" rx="1" />
+      <path
+        d={paths[name]}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
+const iconBySection: Record<string, Parameters<typeof Icon>[0]["name"]> = {
+  overview: "overview",
+  operational: "monitor",
+  billing: "billing",
+  service: "service",
+  health: "health",
+  attention: "warning",
+  master: "data",
+  access: "users",
+  activity: "activity",
+};
 
 export function MaintenanceAdminShell({
   children,
@@ -153,7 +193,7 @@ export function MaintenanceAdminShell({
                 }
                 onClick={() => openSection(item.id)}
               >
-                <MenuIcon />
+                <Icon name={iconBySection[item.id]} />
                 <span>{item.label}</span>
               </button>
             ))}

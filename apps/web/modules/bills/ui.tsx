@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
 import styles from "@/modules/transactions/ui/transactions.module.css";
+import { ViewIcon, EditIcon, PrintIcon } from "@/modules/shared/ui/action-icons";
 type Organization = { name: string | null; officeName: string | null; address: string | null; tin: string | null; vatNo: string | null; contactNo: string | null; email: string | null; website: string | null; logoPath: string | null; footerNote: string | null };
 type Bill = Record<string, string | null> & {
   billId: string;
@@ -239,27 +240,35 @@ export function BillsPage({
                         </span>
                       </td>
                       <td>
-                        <Link
-                          className={styles.viewLink}
-                          href={`/transactions/bills/${encodeURIComponent(b.billNo)}`}
-                        >
-                          View
-                        </Link>
-                        <span className={styles.muted}> · </span>
-                        <button type="button" className={styles.viewLink} onClick={() => setPreviewBillNo(b.billNo)}>
-                          Preview Bill
-                        </button>
-                        {canEdit && (
-                          <>
-                            <span className={styles.muted}> Â· </span>
+                        <div className={styles.iconActions}>
+                          <Link
+                            className={styles.iconAction}
+                            href={`/transactions/bills/${encodeURIComponent(b.billNo)}`}
+                            title="View"
+                            aria-label="View bill"
+                          >
+                            <ViewIcon />
+                          </Link>
+                          <button
+                            type="button"
+                            className={styles.iconAction}
+                            onClick={() => setPreviewBillNo(b.billNo)}
+                            title="Print"
+                            aria-label="Print bill"
+                          >
+                            <PrintIcon />
+                          </button>
+                          {canEdit && (
                             <Link
-                              className={styles.viewLink}
+                              className={styles.iconAction}
                               href={`/transactions/bills/${encodeURIComponent(b.billNo)}/edit`}
+                              title="Edit"
+                              aria-label="Edit bill"
                             >
-                              Edit
+                              <EditIcon />
                             </Link>
-                          </>
-                        )}
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -369,7 +378,7 @@ export function BillDetail({
             <span>{item.customerName}</span>
           </p>
         </div>
-        {canEdit && (
+        {canEdit && !isModal && (
           <Link
             className={styles.secondaryButton}
             href={`/transactions/bills/${encodeURIComponent(item.billNo)}/edit`}
@@ -378,8 +387,7 @@ export function BillDetail({
           </Link>
         )}
       </header>
-      <div className={styles.detailGrid}>
-        <div>
+      <div>
           <Card
             title="Bill Information"
             rows={[
@@ -477,7 +485,6 @@ export function BillDetail({
               ["Updated At", item.updatedAt || "â€”"],
             ]}
           />
-        </div>
       </div>
       {penaltyModal && <PenaltyModal billId={item.billId} penalty={item.penalties?.find((x) => x.billPenaltyId === penaltyModal)} onClose={() => setPenaltyModal(null)} onSaved={() => { setPenaltyModal(null); void load(); }} />}
       {adjustmentModal && <AdjustmentModal billId={item.billId} adjustment={item.adjustments?.find((x) => x.adjustmentId === adjustmentModal)} onClose={() => setAdjustmentModal(null)} onSaved={() => { setAdjustmentModal(null); void load(); }} />}
