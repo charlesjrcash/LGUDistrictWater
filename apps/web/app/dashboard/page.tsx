@@ -76,6 +76,8 @@ export default async function DashboardPage() {
       ('Engineering','Materials',(SELECT COUNT(*)::text FROM mt_material),'/maintenance/materials'),
       ('Engineering','Units',(SELECT COUNT(*)::text FROM mt_unit_of_measure),'/maintenance/units'),
       ('Disconnection','Reasons',(SELECT COUNT(*)::text FROM mt_disconnection_reason),'/maintenance/disconnection-reasons'),
+      ('Disconnection','Orders',(SELECT COUNT(*)::text FROM disconnection_orders),'/transactions/disconnection-orders'),
+      ('Reconnection','Orders',(SELECT COUNT(*)::text FROM reconnection_orders),'/transactions/reconnection-orders'),
       ('Collection','Payment Methods',(SELECT COUNT(*)::text FROM mt_payment_method),'/maintenance/payment-methods'),
       ('Collection','Payment Types',(SELECT COUNT(*)::text FROM mt_payment_type),'/maintenance/payment-types'),
       ('Collection','Receipt Types',(SELECT COUNT(*)::text FROM mt_receipt_type),'/maintenance/receipt-types'),

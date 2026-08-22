@@ -12,6 +12,7 @@ import styles from "./admin-dashboard.module.css";
 import {
   accessNavigation,
   maintenanceNavigation,
+  transactionNavigation,
   visibleNavigation,
 } from "@/lib/permission-navigation";
 
@@ -384,8 +385,11 @@ export function AdminDashboard({ data, permissions, systemAdministrator }: {
   const canAny = (...codes: string[]) => codes.some((code) => permissionSet.has(code));
   const visibleMaintenance = visibleNavigation(maintenanceNavigation, permissionSet);
   const visibleAccess = visibleNavigation(accessNavigation, permissionSet);
+  const visibleTransactions = visibleNavigation(transactionNavigation, permissionSet);
   const operationalTransactionsForUser = operationalTransactions.filter((item) => permissionSet.has(item.permission));
   const billingTransactionsForUser = billingTransactions.filter((item) => permissionSet.has(item.permission));
+  const customerTransactionForUser = operationalTransactionsForUser.filter((item) => item.slug === "customers");
+  const serviceOpsTransactionsForUser = operationalTransactionsForUser.filter((item) => item.slug !== "customers");
   const visibleSections = new Set<Section>([
     ...(permissionSet.has("DASHBOARD_VIEW") ? ["overview" as const] : []),
     ...(canAny("CUSTOMER_VIEW", "SERVICE_APPLICATION_VIEW", "SERVICE_ACCOUNT_VIEW", "METER_VIEW", "METER_INSTALLATION_VIEW", "METER_READING_VIEW") ? ["operational" as const, "service" as const] : []),
@@ -708,7 +712,7 @@ export function AdminDashboard({ data, permissions, systemAdministrator }: {
               title="Application Overview"
               copy="Current customer, application, account, and metering activity."
             />
-            <TransactionLinks transactions={operationalTransactionsForUser} />
+            <TransactionLinks transactions={customerTransactionForUser} />
             <MetricGrid
               items={[
                 { label: "Customers", value: m.customers },
@@ -764,7 +768,7 @@ export function AdminDashboard({ data, permissions, systemAdministrator }: {
               title="Service Operations"
               copy="Application, meter, reading, installation, and field-order workload."
             />
-            <TransactionLinks transactions={operationalTransactionsForUser} />
+            <TransactionLinks transactions={serviceOpsTransactionsForUser} />
             <MetricGrid
               items={[
                 {
@@ -868,7 +872,10 @@ export function AdminDashboard({ data, permissions, systemAdministrator }: {
                   <h3>{category}</h3>
                   {data.masterData
                     .filter((item) => item.category === category)
-                    .filter((item) => visibleMaintenance.some((entry) => entry.href === item.href))
+                    .filter((item) =>
+                      visibleMaintenance.some((entry) => entry.href === item.href) ||
+                      visibleTransactions.some((entry) => entry.href === item.href),
+                    )
                     .map((item) => (
                       <Link href={item.href} key={item.label}>
                         <span>{item.label}</span>
