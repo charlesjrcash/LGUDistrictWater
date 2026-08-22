@@ -4,13 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { TransactionShell } from "@/modules/transactions/ui/transaction-shell";
 import styles from "@/modules/transactions/ui/transactions.module.css";
 
-type Order = { reconnectionId: string; controlNo: string; customerName: string; orderDate: string; reconnectionDate: string | null; feeAmount: string; paymentStatus: "PAID" | "UNPAID"; performedBy: string | null; status: "PENDING" | "COMPLETED" | "CANCELLED"; remarks: string | null };
+type Order = { reconnectionId: string; controlNo: string; customerName: string; orderDate: string; reconnectionDate: string | null; feeAmount: string; paymentStatus: "PAID" | "UNPAID"; performedBy: string | null; status: "PENDING" | "COMPLETED" | "CANCELLED"; remarks: string | null; cancelledBy?: string | null; cancelledByName?: string | null; cancelledAt?: string | null };
 type Employee = { employeeId: string; employeeName: string };
 type EligibleAccount = { serviceAccountId: string; controlNo: string; customerName: string; address: string | null; meterNo: string | null; connectionStatus: string };
 type Organization = { name?: string | null; officeName?: string | null; address?: string | null; tin?: string | null; vatNo?: string | null; contactNo?: string | null; email?: string | null; website?: string | null; logoPath?: string | null; footerNote?: string | null };
 type ReportOrder = Order & { address?: string | null; classification?: string | null; connectionStatus?: string | null; meterNo?: string | null; performedByName?: string | null; createdBy?: string | null; createdAt?: string | null; updatedAt?: string | null; organization?: Organization | null };
 type OrderDetail = Order & { address?: string | null; meterNo?: string | null; connectionStatus?: string | null; performedByName?: string | null; createdBy?: string | null; createdAt?: string | null; updatedAt?: string | null };
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : "-";
+const timestamp = (value: string | null | undefined) => value ? new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "-";
 const money = (value: string) => Number(value || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" });
 const badge = (value: string) => <span className={`${styles.badge} ${value === "PAID" || value === "COMPLETED" ? styles.approved : value === "CANCELLED" ? styles.neutral : styles.pending}`}>{value}</span>;
 const localDate = () => {
@@ -119,11 +120,6 @@ function EditReconnectionOrderModal({ reconnectionId, onClose, onSaved }: { reco
 
   useEffect(() => {
     const controller = new AbortController();
-    setDetail(null);
-    setEditLoading(true);
-    setEditError("");
-    setEditOrderDate("");
-    setEditRemarks("");
     void fetch(`/api/reconnection-orders/${reconnectionId}`, { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         const body = await response.json();
@@ -724,6 +720,8 @@ function ReconnectionOrderReport({ reconnectionId, onClose }: { reconnectionId: 
               <div className={styles.detailItems}>
                 {item("Performed By", order.performedByName)}
                 {item("Prepared By / Created By", order.createdBy)}
+                {item("Cancelled By", order.cancelledByName)}
+                {item("Cancelled At", timestamp(order.cancelledAt))}
                 {item("Created Date", date(order.createdAt || null))}
                 {item("Updated Date", date(order.updatedAt || null))}
               </div>
@@ -754,6 +752,5 @@ function ReconnectionOrderDetailModal({ reconnectionId, onClose }: { reconnectio
     return () => { window.clearTimeout(resetTimer); controller.abort(); };
   }, [reconnectionId]);
   const value = (item: string | null | undefined) => item || "-";
-  const timestamp = (item: string | null | undefined) => item ? new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeStyle: "short" }).format(new Date(item)) : "-";
-  return <div className={styles.dialogBackdrop} role="presentation"><div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label="Reconnection order detail"><h2>Reconnection Order #{reconnectionId}</h2>{loading ? <p>Loading reconnection order...</p> : error ? <p className={styles.fieldError}>{error}</p> : detail && <div className={styles.detailItems}>{[["Order ID", `#${detail.reconnectionId}`],["Control No.", detail.controlNo],["Customer", detail.customerName],["Service Address", value(detail.address)],["Meter No.", value(detail.meterNo)],["Connection Status", value(detail.connectionStatus)],["Order Date", date(detail.orderDate)],["Reconnection Date", date(detail.reconnectionDate)],["Fee Amount", money(detail.feeAmount)],["Payment Status", detail.paymentStatus],["Performed By", value(detail.performedByName)],["Status", detail.status],["Remarks", value(detail.remarks)],["Created By", value(detail.createdBy)],["Created At", timestamp(detail.createdAt)],["Updated At", timestamp(detail.updatedAt)]].map(([label, item]) => <div className={styles.detailItem} key={String(label)}><span>{label}</span><strong>{label === "Payment Status" || label === "Status" ? badge(String(item)) : item}</strong></div>)}</div>}<div className={styles.dialogActions}><button type="button" className={styles.secondaryButton} onClick={onClose}>Close</button></div></div></div>;
+  return <div className={styles.dialogBackdrop} role="presentation"><div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label="Reconnection order detail"><h2>Reconnection Order #{reconnectionId}</h2>{loading ? <p>Loading reconnection order...</p> : error ? <p className={styles.fieldError}>{error}</p> : detail && <div className={styles.detailItems}>{[["Order ID", `#${detail.reconnectionId}`],["Control No.", detail.controlNo],["Customer", detail.customerName],["Service Address", value(detail.address)],["Meter No.", value(detail.meterNo)],["Connection Status", value(detail.connectionStatus)],["Order Date", date(detail.orderDate)],["Reconnection Date", date(detail.reconnectionDate)],["Fee Amount", money(detail.feeAmount)],["Payment Status", detail.paymentStatus],["Performed By", value(detail.performedByName)],["Status", detail.status],["Remarks", value(detail.remarks)],["Created By", value(detail.createdBy)],["Cancelled By", value(detail.cancelledByName)],["Cancelled At", timestamp(detail.cancelledAt)],["Created At", timestamp(detail.createdAt)],["Updated At", timestamp(detail.updatedAt)]].map(([label, item]) => <div className={styles.detailItem} key={String(label)}><span>{label}</span><strong>{label === "Payment Status" || label === "Status" ? badge(String(item)) : item}</strong></div>)}</div>}<div className={styles.dialogActions}><button type="button" className={styles.secondaryButton} onClick={onClose}>Close</button></div></div></div>;
 }
