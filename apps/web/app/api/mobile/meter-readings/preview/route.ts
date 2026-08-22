@@ -5,6 +5,9 @@ import { requirePermission } from "@/lib/permissions";
 export const runtime = "nodejs";
 
 function previewDto(row: Record<string, unknown>) {
+  const readingStatusId = stringValue(value(row, "reading_status_id"));
+  const workflowStatusCode = requiredString(row, "workflow_status_code");
+  const unreadAssignment = !readingStatusId && ["FOR_READ", "IN_PROGRESS"].includes(workflowStatusCode);
   return {
     readingId: requiredString(row, "reading_id"),
     serviceAccountId: requiredString(row, "service_account_id"),
@@ -15,11 +18,11 @@ function previewDto(row: Record<string, unknown>) {
     meterNo: requiredString(row, "meter_no"),
     scheduledReadingDate: localDateValue(value(row, "reading_date")),
     previousReading: stringValue(value(row, "previous_reading")),
-    presentReading: stringValue(value(row, "present_reading")),
-    consumption: stringValue(value(row, "consumption")),
-    readingStatusId: stringValue(value(row, "reading_status_id")),
+    presentReading: unreadAssignment ? null : stringValue(value(row, "present_reading")),
+    consumption: unreadAssignment ? null : stringValue(value(row, "consumption")),
+    readingStatusId,
     serverWorkflowStatusId: requiredString(row, "reading_workflow_status_id"),
-    serverWorkflowStatusCode: requiredString(row, "workflow_status_code"),
+    serverWorkflowStatusCode: workflowStatusCode,
   };
 }
 
