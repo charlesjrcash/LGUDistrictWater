@@ -63,6 +63,7 @@ export const transactionModules: readonly TransactionModule[] = [
     category: "operational",
     permission: "METER_READING_VIEW",
   },
+  { slug: "meter-readings/mobile-returns", label: "Mobile Reading Returns", category: "operational", permission: "METER_READING_VIEW" },
   { slug: "bills", label: "Bills", category: "billing", permission: "BILL_VIEW" },
   { slug: "bill-details", label: "Bill details", category: "billing", permission: "BILL_DETAIL_VIEW" },
   { slug: "bill-penalties", label: "Bill penalties", category: "billing", permission: "BILL_PENALTY_VIEW" },

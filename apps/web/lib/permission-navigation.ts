@@ -16,6 +16,7 @@ export const transactionNavigation: readonly PermissionNavigationItem[] = [
   { label: "Service installations", href: "/transactions/service-installations", permissions: ["METER_INSTALLATION_VIEW"] },
   { label: "Meter readings", href: "/transactions/meter-readings", permissions: ["METER_READING_VIEW"] },
   { label: "Transfer to Android", href: "/transactions/meter-readings/mobile-transfer", permissions: ["METER_READING_VIEW"] },
+  { label: "Mobile Reading Returns", href: "/transactions/meter-readings/mobile-returns", permissions: ["METER_READING_VIEW"] },
   { label: "Bills", href: "/transactions/bills", permissions: ["BILL_VIEW"] },
   { label: "Connection fees", href: "/transactions/connection-fees", permissions: ["BILL_VIEW"] },
   { label: "Bill adjustments", href: "/transactions/bill-adjustments", permissions: ["BILL_ADJUSTMENT_VIEW"] },
