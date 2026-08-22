@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AdminBrandMark } from "@/modules/dashboard/ui/admin-brand-mark";
 import styles from "@/modules/dashboard/ui/admin-dashboard.module.css";
@@ -40,6 +41,11 @@ const allGroups = [
     ],
   },
 ] as const;
+
+const mfaEligiblePermissions = [
+  ...maintenanceNavigation,
+  ...accessNavigation,
+].flatMap((item) => item.permissions);
 
 const operationalPermissions = transactionNavigation
   .filter((item) => !item.permissions.some((permission) => permission.startsWith("BILL")))
@@ -199,6 +205,15 @@ export function MaintenanceAdminShell({
             ))}
           </div>
         ))}
+        {hasAny(mfaEligiblePermissions) && (
+          <Link href="/account/security" className={styles.logoutButton}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s8-4 8-10V5l-8-3-8 3v6c0 6 8 10 8 10Z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <span>Security settings</span>
+          </Link>
+        )}
         <button
           type="button"
           className={styles.logoutButton}

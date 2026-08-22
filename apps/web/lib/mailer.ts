@@ -13,6 +13,13 @@ type PasswordResetCode = {
   expiresAt: Date;
 };
 
+type MfaCode = {
+  to: string;
+  code: string;
+  expiresAt: Date;
+  purpose: "enroll" | "login";
+};
+
 /** Escapes dynamic values before inserting them into the HTML email template. */
 function escapeHtml(value: string) {
   return value.replace(
@@ -102,5 +109,36 @@ export async function sendPasswordResetCodeEmail({
     subject: "Your LGU District Water password reset code",
     text: `Your password reset verification code is ${code}. It expires on ${expiresAtLabel}. If you did not request this code, you can ignore this email.`,
     html: `<p>Use this verification code to reset your LGU District Water password:</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${escapeHtml(code)}</p><p>This code expires on <strong>${escapeHtml(expiresAtLabel)}</strong>.</p><p>If you did not request this code, you can ignore this email.</p>`,
+  });
+}
+
+/** Sends a two-factor sign-in or enrollment verification code. */
+export async function sendMfaCodeEmail({ to, code, expiresAt, purpose }: MfaCode) {
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!from)
+    throw new Error(
+      "Email delivery is not configured. Set SMTP_FROM or SMTP_USER.",
+    );
+
+  const expiresAtLabel = new Intl.DateTimeFormat("en-PH", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Manila",
+  }).format(expiresAt);
+  const intro =
+    purpose === "enroll"
+      ? "Use this verification code to turn on two-factor sign-in for your LGU District Water account:"
+      : "Use this verification code to finish signing in to your LGU District Water account:";
+  const subject =
+    purpose === "enroll"
+      ? "Confirm two-factor sign-in for your LGU District Water account"
+      : "Your LGU District Water sign-in code";
+
+  await createTransporter().sendMail({
+    from,
+    to,
+    subject,
+    text: `Your verification code is ${code}. It expires on ${expiresAtLabel}. If you did not request this code, you can ignore this email.`,
+    html: `<p>${intro}</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${escapeHtml(code)}</p><p>This code expires on <strong>${escapeHtml(expiresAtLabel)}</strong>.</p><p>If you did not request this code, you can ignore this email.</p>`,
   });
 }

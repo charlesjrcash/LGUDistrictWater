@@ -10,8 +10,16 @@ const scrypt = promisify(scryptCallback);
 
 export const SESSION_COOKIE_NAME = "lgu_session";
 export const SESSION_DURATION_SECONDS = 8 * 60 * 60;
+export const SESSION_IDLE_TIMEOUT_SECONDS = 30 * 60;
 export const PASSWORD_RESET_COOKIE_NAME = "lgu_password_reset";
 export const PASSWORD_RESET_DURATION_SECONDS = 10 * 60;
+
+export const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+export const LOCKOUT_DURATION_SECONDS = 15 * 60;
+
+export const MFA_PENDING_COOKIE_NAME = "lgu_mfa_pending";
+export const MFA_PENDING_DURATION_SECONDS = 10 * 60;
+export const MAX_MFA_CODE_ATTEMPTS = 5;
 
 /** Uses HTTPS cookies behind a trusted proxy while allowing plain-HTTP LAN development. */
 export function isSecureRequest(request: Request) {

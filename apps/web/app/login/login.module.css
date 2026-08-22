@@ -419,3 +419,20 @@
   color: #075fc5;
   text-decoration: underline;
 }
+.forgotPassword button {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #0871ee;
+  cursor: pointer;
+}
+.forgotPassword button:hover:not(:disabled) {
+  color: #075fc5;
+  text-decoration: underline;
+}
+.forgotPassword button:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}

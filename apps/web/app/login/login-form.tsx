@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
@@ -52,6 +52,33 @@ export default function LoginForm({
         : null,
   );
   const [submitting, setSubmitting] = useState(false);
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCooldown]);
+
+  function completeSignIn(result: {
+    message?: string;
+    mustChangePassword?: boolean;
+    redirectTo?: string;
+  }) {
+    if (result.mustChangePassword) router.push("/login/change-password");
+    else {
+      setStatus({
+        type: "success",
+        message: result.message || "Signed in successfully.",
+      });
+      router.push(nextPath || result.redirectTo || "/");
+      router.refresh();
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,17 +96,17 @@ export default function LoginForm({
         message?: string;
         mustChangePassword?: boolean;
         redirectTo?: string;
+        mfaRequired?: boolean;
       };
       if (!response.ok) throw new Error(result.message || "Unable to sign in.");
-      if (result.mustChangePassword) router.push("/login/change-password");
-      else {
+      if (result.mfaRequired) {
+        setMfaRequired(true);
+        setResendCooldown(60);
         setStatus({
           type: "success",
-          message: result.message || "Signed in successfully.",
+          message: result.message || "Enter the 6-digit code sent to your email.",
         });
-        router.push(nextPath || result.redirectTo || "/");
-        router.refresh();
-      }
+      } else completeSignIn(result);
     } catch (error) {
       setStatus({
         type: "error",
@@ -89,6 +116,121 @@ export default function LoginForm({
       setSubmitting(false);
     }
   }
+
+  async function handleMfaSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus(null);
+    setSubmitting(true);
+    try {
+      const form = new FormData(event.currentTarget);
+      const response = await fetch("/api/auth/mfa/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: form.get("code") }),
+      });
+      const result = (await response.json()) as {
+        message?: string;
+        mustChangePassword?: boolean;
+        redirectTo?: string;
+      };
+      if (!response.ok)
+        throw new Error(result.message || "Unable to verify your code.");
+      completeSignIn(result);
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message:
+          error instanceof Error ? error.message : "Unable to verify your code.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function resendCode() {
+    if (resending || resendCooldown > 0) return;
+    setResending(true);
+    setStatus(null);
+    try {
+      const response = await fetch("/api/auth/mfa/resend", { method: "POST" });
+      const result = (await response.json()) as { message?: string };
+      if (!response.ok)
+        throw new Error(result.message || "Unable to send another code.");
+      setResendCooldown(60);
+      setStatus({
+        type: "success",
+        message: result.message || "A new verification code has been sent.",
+      });
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message:
+          error instanceof Error ? error.message : "Unable to send another code.",
+      });
+    } finally {
+      setResending(false);
+    }
+  }
+
+  if (mfaRequired)
+    return (
+      <form onSubmit={handleMfaSubmit} className={styles.form}>
+        <div className={styles.formHeading}>
+          <span>VERIFY YOUR IDENTITY</span>
+          <h1>Enter your sign-in code</h1>
+          <p>We emailed a 6-digit verification code to your registered address.</p>
+        </div>
+        <div className={styles.fields}>
+          <label>
+            Verification code
+            <div className={styles.inputWrap}>
+              <input
+                name="code"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                required
+                autoComplete="one-time-code"
+                autoFocus
+                placeholder="123456"
+              />
+            </div>
+          </label>
+        </div>
+        {status && (
+          <p
+            role="alert"
+            className={`${styles.status} ${status.type === "success" ? styles.success : styles.error}`}
+          >
+            {status.message}
+          </p>
+        )}
+        <button type="submit" disabled={submitting}>
+          {submitting ? (
+            <>
+              <i className={styles.spinner} /> Verifying...
+            </>
+          ) : (
+            <>
+              Verify <span>→</span>
+            </>
+          )}
+        </button>
+        <div className={styles.forgotPassword}>
+          <button
+            type="button"
+            disabled={submitting || resending || resendCooldown > 0}
+            onClick={() => void resendCode()}
+          >
+            {resending
+              ? "Sending code..."
+              : resendCooldown > 0
+                ? `Send code again in ${resendCooldown}s`
+                : "Send code again"}
+          </button>
+        </div>
+      </form>
+    );
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>

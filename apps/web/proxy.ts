@@ -36,7 +36,30 @@ const legacyMaintenanceRoutes: Record<string, string> = {
   "/maintenance/Units": "/maintenance/units",
 };
 
+const safeMethods = new Set(["GET", "HEAD", "OPTIONS"]);
+
+/** Rejects cross-site API mutations while leaving same-origin fetches untouched. */
+function blockedByCrossSiteOrigin(request: NextRequest) {
+  if (!request.nextUrl.pathname.startsWith("/api/")) return false;
+  if (safeMethods.has(request.method)) return false;
+
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+
+  try {
+    return new URL(origin).host !== request.headers.get("host");
+  } catch {
+    return true;
+  }
+}
+
 export function proxy(request: NextRequest) {
+  if (blockedByCrossSiteOrigin(request))
+    return NextResponse.json(
+      { message: "Cross-site request blocked." },
+      { status: 403 },
+    );
+
   const legacyTransactionPrefixes: Record<string, string> = {
     "/bills": "/transactions/bills",
     "/meters": "/transactions/meters",
@@ -49,28 +72,31 @@ export function proxy(request: NextRequest) {
       request.nextUrl.pathname.startsWith(`${source}/`),
   );
 
+  let response: NextResponse;
+
   if (legacyTransactionRoute) {
     const [source, destination] = legacyTransactionRoute;
     const url = request.nextUrl.clone();
     url.pathname = `${destination}${request.nextUrl.pathname.slice(source.length)}`;
-    return NextResponse.redirect(url, 308);
+    response = NextResponse.redirect(url, 308);
+  } else {
+    const destination = legacyMaintenanceRoutes[request.nextUrl.pathname];
+    response = destination
+      ? NextResponse.redirect(new URL(destination, request.url), 308)
+      : NextResponse.next();
   }
 
-  const destination = legacyMaintenanceRoutes[request.nextUrl.pathname];
+  // Prevents the browser's back-forward cache from repainting a stale,
+  // already-authenticated page after logout or on a shared device — see
+  // the back/forward navigation report investigated on 2026-08-22.
+  response.headers.set(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate",
+  );
 
-  if (!destination) {
-    return NextResponse.next();
-  }
-
-  return NextResponse.redirect(new URL(destination, request.url), 308);
+  return response;
 }
 
 export const config = {
-  matcher: [
-    "/maintenance/:path*",
-    "/bills/:path*",
-    "/meters/:path*",
-    "/meter-installations/:path*",
-    "/meter-readings/:path*",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

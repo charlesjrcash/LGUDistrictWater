@@ -1,5 +1,20 @@
 import { db } from "@/lib/db";
 import { requireSessionUser, type SessionUser } from "@/lib/server-session";
+import {
+  accessNavigation,
+  maintenanceNavigation,
+} from "@/lib/permission-navigation";
+
+const mfaEligiblePermissions = new Set(
+  [...maintenanceNavigation, ...accessNavigation].flatMap(
+    (item) => item.permissions,
+  ),
+);
+
+/** Admin/maintenance-area access is the bar for being offered two-factor sign-in. */
+export function isMfaEligible(permissions: readonly string[]) {
+  return permissions.some((permission) => mfaEligiblePermissions.has(permission));
+}
 
 export type CurrentUserPermissions =
   | {
