@@ -60,8 +60,8 @@ const adminGroups: { label: string; items: { id: Section; label: string }[] }[] 
     label: "Monitoring",
     items: [
       { id: "operational", label: "Application Overview" },
-      { id: "billing", label: "Billing & Collection" },
       { id: "service", label: "Service Operations" },
+      { id: "billing", label: "Billing & Collection" },
     ],
   },
   {

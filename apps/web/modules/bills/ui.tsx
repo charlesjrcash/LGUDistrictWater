@@ -139,14 +139,16 @@ export function BillsPage({
             Review and manage recorded bill amounts.
           </p>
         </div>
-        {canCreatePayment && (
-          <Link className={styles.secondaryButton} href="/transactions/payment">
-            New Payment
-          </Link>
-        )}
-        {canCreate && <><button className={styles.secondaryButton} onClick={() => setGenerationOpen(true)}>Generate Bills</button><Link className={styles.button} href="/transactions/bills/new">
-            + New Bill
-          </Link></>}
+        <div className={styles.headingActions}>
+          {canCreatePayment && (
+            <Link className={styles.secondaryButton} href="/transactions/payment">
+              New Payment
+            </Link>
+          )}
+          {canCreate && <><button className={styles.secondaryButton} onClick={() => setGenerationOpen(true)}>Generate Bills</button><Link className={styles.button} href="/transactions/bills/new">
+              + New Bill
+            </Link></>}
+        </div>
       </div>
       <section className={styles.panel}>
         <div className={styles.filters}>

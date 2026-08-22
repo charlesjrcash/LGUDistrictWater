@@ -15,6 +15,11 @@
   gap: 24px;
   margin-bottom: 26px;
 }
+.headingActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .eyebrow {
   color: #0874e8;
   font-size: 12px;
