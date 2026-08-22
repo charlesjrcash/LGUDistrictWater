@@ -9,6 +9,7 @@ type Employee = { employeeId: string; employeeName: string };
 type EligibleAccount = { serviceAccountId: string; controlNo: string; customerName: string; address: string | null; meterNo: string | null; connectionStatus: string };
 type Organization = { name?: string | null; officeName?: string | null; address?: string | null; tin?: string | null; vatNo?: string | null; contactNo?: string | null; email?: string | null; website?: string | null; logoPath?: string | null; footerNote?: string | null };
 type ReportOrder = Order & { address?: string | null; classification?: string | null; connectionStatus?: string | null; meterNo?: string | null; performedByName?: string | null; createdBy?: string | null; createdAt?: string | null; updatedAt?: string | null; organization?: Organization | null };
+type OrderDetail = Order & { address?: string | null; meterNo?: string | null; connectionStatus?: string | null; performedByName?: string | null; createdBy?: string | null; createdAt?: string | null; updatedAt?: string | null };
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T00:00:00Z`)) : "-";
 const money = (value: string) => Number(value || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" });
 const badge = (value: string) => <span className={`${styles.badge} ${value === "PAID" || value === "COMPLETED" ? styles.approved : value === "CANCELLED" ? styles.neutral : styles.pending}`}>{value}</span>;
@@ -18,7 +19,7 @@ const localDate = () => {
 };
 
 export function ReconnectionOrdersPage({ canCreate, canEdit }: { canCreate: boolean; canEdit: boolean }) {
-  const [rows, setRows] = useState<Order[]>([]), [search, setSearch] = useState(""), [status, setStatus] = useState(""), [paymentStatus, setPaymentStatus] = useState(""), [loading, setLoading] = useState(true), [error, setError] = useState(""), [selectedId, setSelectedId] = useState<string | null>(null), [previewId, setPreviewId] = useState<string | null>(null), [createOpen, setCreateOpen] = useState(false), [performOrder, setPerformOrder] = useState<Order | null>(null);
+  const [rows, setRows] = useState<Order[]>([]), [search, setSearch] = useState(""), [status, setStatus] = useState(""), [paymentStatus, setPaymentStatus] = useState(""), [loading, setLoading] = useState(true), [error, setError] = useState(""), [selectedId, setSelectedId] = useState<string | null>(null), [previewId, setPreviewId] = useState<string | null>(null), [createOpen, setCreateOpen] = useState(false), [performOrder, setPerformOrder] = useState<Order | null>(null), [editOrderId, setEditOrderId] = useState<string | null>(null), [cancelOrder, setCancelOrder] = useState<Order | null>(null);
   const load = useCallback(async () => { setLoading(true); setError(""); try { const params = new URLSearchParams(); if (search.trim()) params.set("search", search.trim()); if (status) params.set("status", status); if (paymentStatus) params.set("paymentStatus", paymentStatus); const response = await fetch(`/api/reconnection-orders?${params}`, { cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.message); setRows(body.data); } catch (caught) { setError(caught instanceof Error ? caught.message : "Unable to load reconnection orders."); } finally { setLoading(false); } }, [search, status, paymentStatus]);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 200); return () => window.clearTimeout(timer); }, [load]);
   return (
@@ -27,6 +28,8 @@ export function ReconnectionOrdersPage({ canCreate, canEdit }: { canCreate: bool
       {previewId && <ReconnectionOrderReport reconnectionId={previewId} onClose={() => setPreviewId(null)} />}
       {createOpen && <NewReconnectionOrderModal onClose={() => setCreateOpen(false)} onSaved={() => { setCreateOpen(false); void load(); }} />}
       {performOrder && <PerformReconnectionModal order={performOrder} onClose={() => setPerformOrder(null)} onPerformed={() => void load()} />}
+      {editOrderId && <EditReconnectionOrderModal reconnectionId={editOrderId} onClose={() => setEditOrderId(null)} onSaved={() => { setEditOrderId(null); void load(); }} />}
+      {cancelOrder && <CancelReconnectionOrderModal order={cancelOrder} onClose={() => setCancelOrder(null)} onCancelled={() => void load()} />}
       <div className={styles.headingRow}>
         <div>
           <div className={styles.eyebrow}>Service Operations</div>
@@ -84,8 +87,14 @@ export function ReconnectionOrdersPage({ canCreate, canEdit }: { canCreate: bool
                     <td>
                       <button type="button" className={styles.tableAction} onClick={() => setPreviewId(row.reconnectionId)}>Preview Report</button>
                       <button type="button" className={styles.tableAction} onClick={() => setSelectedId(row.reconnectionId)}>View</button>
+                      {canEdit && row.status === "PENDING" && (
+                        <button type="button" className={styles.tableAction} onClick={() => setEditOrderId(row.reconnectionId)}>Edit</button>
+                      )}
                       {canEdit && row.status === "PENDING" && row.paymentStatus === "PAID" && (
                         <button type="button" className={styles.tableAction} onClick={() => setPerformOrder(row)}>Perform Reconnection</button>
+                      )}
+                      {canEdit && row.status === "PENDING" && row.paymentStatus === "UNPAID" && (
+                        <button type="button" className={styles.tableAction} onClick={() => setCancelOrder(row)}>Cancel</button>
                       )}
                     </td>
                   </tr>
@@ -97,6 +106,138 @@ export function ReconnectionOrdersPage({ canCreate, canEdit }: { canCreate: bool
         )}
       </section>
     </TransactionShell>
+  );
+}
+
+function EditReconnectionOrderModal({ reconnectionId, onClose, onSaved }: { reconnectionId: string; onClose: () => void; onSaved: () => void }) {
+  const [detail, setDetail] = useState<OrderDetail | null>(null);
+  const [editLoading, setEditLoading] = useState(true);
+  const [editError, setEditError] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editOrderDate, setEditOrderDate] = useState("");
+  const [editRemarks, setEditRemarks] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setDetail(null);
+    setEditLoading(true);
+    setEditError("");
+    setEditOrderDate("");
+    setEditRemarks("");
+    void fetch(`/api/reconnection-orders/${reconnectionId}`, { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        const body = await response.json();
+        if (!response.ok || !body?.success) throw new Error(body?.message || "Unable to load the reconnection order.");
+        if (!controller.signal.aborted) {
+          const item = body.data as OrderDetail;
+          setDetail(item);
+          setEditOrderDate(item.orderDate.slice(0, 10));
+          setEditRemarks(item.remarks || "");
+        }
+      })
+      .catch((caught) => { if (!controller.signal.aborted) setEditError(caught instanceof Error ? caught.message : "Unable to load the reconnection order."); })
+      .finally(() => { if (!controller.signal.aborted) setEditLoading(false); });
+    return () => controller.abort();
+  }, [reconnectionId]);
+
+  async function save() {
+    if (editSaving || editLoading) return;
+    if (!editOrderDate) {
+      setEditError("Enter an order date before saving.");
+      return;
+    }
+    setEditSaving(true);
+    setEditError("");
+    try {
+      const response = await fetch(`/api/reconnection-orders/${reconnectionId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderDate: editOrderDate, remarks: editRemarks }),
+      });
+      const body = await response.json();
+      if (!response.ok || !body?.success) throw new Error(body?.message || "Unable to update the reconnection order.");
+      onSaved();
+    } catch (caught) {
+      setEditError(caught instanceof Error && caught.message ? caught.message : "Unable to update the reconnection order. Please try again.");
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  return (
+    <div className={styles.dialogBackdrop} role="presentation">
+      <div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label="Edit reconnection order">
+        <h2>Edit Reconnection Order</h2>
+        {editLoading ? <p>Loading reconnection order...</p> : detail && <>
+          <div className={styles.detailItems}>
+            <div className={styles.detailItem}><span>Order ID</span><strong>#{detail.reconnectionId}</strong></div>
+            <div className={styles.detailItem}><span>Control No.</span><strong>{detail.controlNo}</strong></div>
+            <div className={styles.detailItem}><span>Customer</span><strong>{detail.customerName}</strong></div>
+            <div className={styles.detailItem}><span>Service Address</span><strong>{detail.address || "-"}</strong></div>
+            <div className={styles.detailItem}><span>Meter No.</span><strong>{detail.meterNo || "-"}</strong></div>
+            <div className={styles.detailItem}><span>Fee Amount</span><strong>{money(detail.feeAmount)}</strong></div>
+            <div className={styles.detailItem}><span>Payment Status</span><strong>{badge(detail.paymentStatus)}</strong></div>
+            <div className={styles.detailItem}><span>Status</span><strong>{badge(detail.status)}</strong></div>
+          </div>
+          <p className={styles.sectionDescription}>Reconnection Fee remains based on the original order fee snapshot.</p>
+          <div className={styles.fieldGrid}>
+            <label><span className={styles.label}>Order Date *</span><input className={styles.input} type="date" value={editOrderDate} onChange={(event) => setEditOrderDate(event.target.value)} disabled={editSaving} required /></label>
+            <label className={styles.fullField}><span className={styles.label}>Remarks</span><textarea className={styles.textarea} value={editRemarks} onChange={(event) => setEditRemarks(event.target.value)} disabled={editSaving} /></label>
+          </div>
+        </>}
+        {editError && <p className={styles.fieldError}>{editError}</p>}
+        <div className={styles.dialogActions}>
+          <button type="button" className={styles.secondaryButton} onClick={onClose} disabled={editSaving}>Close</button>
+          <button type="button" className={styles.button} onClick={() => void save()} disabled={editSaving || editLoading || !detail}>{editSaving ? "Saving..." : "Save Changes"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CancelReconnectionOrderModal({ order, onClose, onCancelled }: { order: Order; onClose: () => void; onCancelled: () => void }) {
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelError, setCancelError] = useState("");
+  const [cancelResult, setCancelResult] = useState(false);
+
+  async function cancel() {
+    if (cancelLoading || cancelResult) return;
+    setCancelLoading(true);
+    setCancelError("");
+    try {
+      const response = await fetch(`/api/reconnection-orders/${order.reconnectionId}/cancel`, { method: "POST" });
+      const body = await response.json();
+      if (!response.ok || !body?.success) throw new Error(body?.message || "Unable to cancel the reconnection order.");
+      setCancelResult(true);
+      onCancelled();
+    } catch (caught) {
+      setCancelError(caught instanceof Error && caught.message ? caught.message : "Unable to cancel the reconnection order. Please try again.");
+    } finally {
+      setCancelLoading(false);
+    }
+  }
+
+  return (
+    <div className={styles.dialogBackdrop} role="presentation">
+      <div className={`${styles.dialog} ${styles.serviceInstallationDialog}`} role="dialog" aria-modal="true" aria-label="Cancel reconnection order">
+        <h2>{cancelResult ? "Reconnection Order Cancelled" : "Cancel Reconnection Order"}</h2>
+        {cancelResult ? <div className={styles.detailItems}><div className={styles.detailItem}><span>Order Status</span><strong>CANCELLED</strong></div><div className={styles.detailItem}><span>Service Account</span><strong>Remains DISCONNECTED</strong></div></div> : <>
+          <div className={styles.detailItems}>
+            <div className={styles.detailItem}><span>Order ID</span><strong>#{order.reconnectionId}</strong></div>
+            <div className={styles.detailItem}><span>Control No.</span><strong>{order.controlNo}</strong></div>
+            <div className={styles.detailItem}><span>Customer</span><strong>{order.customerName}</strong></div>
+            <div className={styles.detailItem}><span>Fee Amount</span><strong>{money(order.feeAmount)}</strong></div>
+            <div className={styles.detailItem}><span>Payment Status</span><strong>{badge(order.paymentStatus)}</strong></div>
+          </div>
+          <p className={styles.sectionDescription}>This will cancel the pending reconnection order. The service account will remain disconnected.</p>
+          {cancelError && <p className={styles.fieldError}>{cancelError}</p>}
+        </>}
+        <div className={styles.dialogActions}>
+          <button type="button" className={styles.secondaryButton} onClick={onClose} disabled={cancelLoading}>{cancelResult ? "Close" : "Back"}</button>
+          {!cancelResult && <button type="button" className={styles.button} onClick={() => void cancel()} disabled={cancelLoading}>{cancelLoading ? "Cancelling..." : "Cancel Order"}</button>}
+        </div>
+      </div>
+    </div>
   );
 }
 
